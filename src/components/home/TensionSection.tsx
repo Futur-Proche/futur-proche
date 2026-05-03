@@ -11,7 +11,7 @@ const painPoints = [
   },
   {
     num: "03",
-    text: "Une décision à prendre, pas le temps de faire appel à une agence ou un cabinet.",
+    text: "Un doute sur un outil ou une nouvelle techno, personne à qui poser la question autour de vous.",
   },
 ];
 
