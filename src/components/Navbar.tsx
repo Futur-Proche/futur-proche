@@ -77,7 +77,7 @@ export const Navbar = () => {
             onClick={() => setOpen(false)}
             className="mt-4 inline-block bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-grotesk font-medium text-sm"
           >
-            Je candidate →
+            Devenir Futuriste →
           </Link>
         </div>
       )}
