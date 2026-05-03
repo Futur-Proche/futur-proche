@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const posteOptions = [
   "Dir. Marketing / Com ou assimilé",
@@ -66,25 +67,41 @@ const Candidater = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // For now, log the form data — will be connected to admin/backend later
-    console.log("Candidature submitted:", form);
-
-    toast({
-      title: "Candidature envoyée !",
-      description: "Nous reviendrons vers vous rapidement.",
+    const { error } = await supabase.from("candidatures").insert({
+      prenom: form.prenom,
+      nom: form.nom,
+      poste: form.poste,
+      entreprise: form.entreprise || null,
+      secteur: form.secteur || null,
+      email: form.email,
+      telephone: form.telephone || null,
+      linkedin: form.linkedin || null,
+      cooptation: form.cooptation || null,
     });
 
-    setForm({
-      prenom: "",
-      nom: "",
-      poste: "",
-      entreprise: "",
-      secteur: "",
-      email: "",
-      telephone: "",
-      linkedin: "",
-      cooptation: "",
-    });
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Candidature envoyée !",
+        description: "Nous reviendrons vers vous sous 48h.",
+      });
+      setForm({
+        prenom: "",
+        nom: "",
+        poste: "",
+        entreprise: "",
+        secteur: "",
+        email: "",
+        telephone: "",
+        linkedin: "",
+        cooptation: "",
+      });
+    }
 
     setIsSubmitting(false);
   };

@@ -1,54 +1,130 @@
 
-## Problème actuel
+# Plan — Admin, Espace Membre et Gestion d'Événements
 
-L'alternance des fonds est cassée — 3 sections Navy consécutives (KeyElements → Formats → PhotoBanner), ce qui crée un bloc visuel monotone. De plus, le site manque d'éléments graphiques dynamiques pour un rendu moderne.
+## Prérequis
 
-## Plan
+**Lovable Cloud (Supabase)** doit être activé sur le projet. Il n'y a actuellement aucune intégration Supabase. On commencera par activer Lovable Cloud, puis on construira tout dessus.
 
-### 1. Corriger l'alternance des backgrounds
+---
 
-Nouvelle séquence stricte Navy / Cream :
+## 1. Base de données (migrations Supabase)
 
-| # | Section | Fond |
-|---|---------|------|
-| 1 | Hero | Navy |
-| 2 | Tension | Cream |
-| 3 | KeyElements + Formats | Navy (fusionner en une seule section, stats en haut puis formats en dessous) |
-| 4 | PhotoBanner | Cream |
-| 5 | Testimonials | Navy (inverser — les cards en halo sur fond sombre seront plus impactantes) |
-| 6 | ForYou | Cream |
-| 7 | MembersCloud | Navy |
-| 8 | Join | Cream |
-| 9 | CTA | Mesh gradient |
+### Tables principales
 
-Fichiers modifiés : `Index.tsx`, `PhotoBanner.tsx`, `TestimonialsSection.tsx`, `ForYouSection.tsx`, `MembersCloud.tsx`, `JoinSection.tsx`, `KeyElementsSection.tsx`
+- **profiles** — id (FK auth.users), prenom, nom, poste, entreprise, secteur, email, telephone, linkedin, photo_url, bio, ville, statut (`pending` | `approved` | `rejected`), created_at
+- **user_roles** — id, user_id (FK auth.users), role (`admin` | `member`). RLS via fonction `has_role()` security definer.
+- **candidatures** — id, prenom, nom, poste, entreprise, secteur, email, telephone, linkedin, cooptation, statut (`pending` | `approved` | `rejected`), created_at, reviewed_by, reviewed_at
+- **events** — id, titre, slug, description, format (`after_proche` | `diner` | `workshop` | `autre`), date, heure, ville, lieu, capacite, prix (nullable, pour Stripe), image_url, statut (`draft` | `published` | `past`), speakers (jsonb), created_at
+- **event_registrations** — id, event_id, user_id, statut (`registered` | `paid` | `cancelled`), stripe_payment_id (nullable), created_at
+- **resources** — id, titre, description, type (`etude` | `synthese` | `podcast` | `newsletter` | `autre`), url, file_url, access (`public` | `members`), published_at, created_at
 
-### 2. Éléments graphiques dynamiques
+### RLS Policies
+- Profiles : les membres voient les profils `approved`, chacun peut éditer le sien
+- Candidatures : insert public (formulaire), select/update admin only
+- Events : select public pour `published`/`past`, insert/update/delete admin only
+- Resources : select selon `access` (public ou authenticated), insert/update/delete admin only
 
-Ajouter des éléments visuels animés pour moderniser le site :
+### Storage Buckets
+- `avatars` — photos de profil membres
+- `event-images` — visuels événements
+- `resources` — fichiers ressources
 
-- **Grille de points animée** (dot grid) : motif subtil de points cyan en arrière-plan des sections Navy, avec une animation de pulsation douce. Ajouté via CSS dans `index.css`.
+---
 
-- **Ligne de séparation animée** : trait horizontal cyan avec un gradient qui "glisse" entre certaines sections (animation CSS `shimmer`).
+## 2. Authentification
 
-- **Floating orbs** : cercles flous (blobs) en position absolue qui dérivent lentement dans le Hero et le CTA, renforçant l'effet mesh/halo.
+- Login par email + mot de passe (Supabase Auth)
+- Page `/login` pour les membres
+- Trigger DB : quand une candidature est approuvée, un compte auth est créé et un profil `approved` est inséré
+- Contexte React `AuthProvider` avec `onAuthStateChange` + `getSession`
+- Route guard `ProtectedRoute` pour `/espace-membre/*` et `/admin/*`
 
-- **Scroll fade-in** : utiliser `IntersectionObserver` dans un hook `useScrollReveal` pour animer les sections au scroll (fade-in + légère translation vers le haut). Appliqué à chaque section.
+---
 
-- **Cards hover lift** : les card-halo et testimonial cards auront un `translateY(-4px)` au hover avec transition fluide.
+## 3. Formulaire de candidature (refonte)
 
-- **Compteurs animés** : les chiffres de KeyElementsSection s'animeront de 0 à leur valeur au scroll (count-up effect).
+- Le formulaire `/candidater` existant sera connecté à Supabase (insert dans `candidatures`)
+- Validation Zod côté client
+- Confirmation visuelle après soumission
 
-Fichiers créés/modifiés :
-- `src/hooks/useScrollReveal.ts` (nouveau)
-- `src/hooks/useCountUp.ts` (nouveau)
-- `src/index.css` (nouvelles animations : shimmer, float, dot-grid)
-- Toutes les sections homepage (wrapping avec scroll reveal)
+---
 
-### Détails techniques
+## 4. Espace Admin (`/admin/*`)
 
-- Les animations CSS (`@keyframes`) seront ajoutées dans `index.css` : `float`, `shimmer`, `dot-pulse`
-- Le hook `useScrollReveal` utilisera `IntersectionObserver` avec `threshold: 0.15` et appliquera les classes `animate-fade-in` existantes
-- Le hook `useCountUp` utilisera `requestAnimationFrame` pour un compteur fluide
-- Les floating orbs seront des `div` en `position: absolute` avec `filter: blur()` et animation `float`
-- Pas de dépendance externe ajoutée — tout en CSS natif + React hooks
+Accessible uniquement aux users avec le rôle `admin`.
+
+### Pages admin :
+- **`/admin/candidatures`** — Liste des candidatures entrantes, filtrage par statut, actions approuver/rejeter. L'approbation crée automatiquement le compte membre.
+- **`/admin/membres`** — Annuaire complet des membres avec recherche, filtre par ville/secteur/poste. Actions : modifier, suspendre.
+- **`/admin/evenements`** — CRUD événements. Formulaire avec champs : titre, format, date, ville, lieu, capacité, prix, description, speakers, image. Template visuel inspiré du screen (mesh aurora, date encadrée cyan, speakers en grille).
+- **`/admin/ressources`** — CRUD ressources (études, synthèses, podcasts). Upload de fichiers, gestion de la visibilité (public/membres).
+- **`/admin/dashboard`** — Vue d'ensemble : nombre de membres, candidatures en attente, prochain événement, stats.
+
+### Layout admin
+- Sidebar avec navigation (Dashboard, Candidatures, Membres, Événements, Ressources)
+- Design Navy sombre cohérent avec la charte
+
+---
+
+## 5. Espace Membre (`/espace-membre/*`)
+
+Accessible aux users authentifiés avec rôle `member` ou `admin`.
+
+### Pages :
+- **`/espace-membre`** — Dashboard personnel : prochain événement, dernières ressources
+- **`/espace-membre/profil`** — Édition du profil (photo, bio, poste, entreprise, ville, LinkedIn). Upload photo vers bucket `avatars`.
+- **`/espace-membre/annuaire`** — Annuaire des membres approuvés. Grille de cards avec photo, nom, poste, entreprise. Recherche + filtres (ville, secteur).
+- **`/espace-membre/evenements`** — Événements à venir (inscription) + événements passés. Card visuelle style event poster (inspiré du screen : mesh aurora, date encadrée, speakers).
+- **`/espace-membre/ressources`** — Accès aux ressources membres (études, synthèses mensuelles)
+
+---
+
+## 6. Lien Annuaire / MembersCloud (Homepage)
+
+- Le composant `MembersCloud` sur la homepage sera connecté à Supabase
+- Query les profils `approved` avec `photo_url` renseigné
+- Affiche les vraies photos en cercles (fallback sur initiales si pas de photo)
+- Mélange aléatoire, limité à ~24-30 profils
+
+---
+
+## 7. Gestion des événements et billetterie
+
+- Les événements gratuits : inscription directe (insert dans `event_registrations`)
+- Les événements payants : le champ `prix` est renseigné, un bouton "Réserver" est prévu pour intégrer Stripe Checkout plus tard
+- Pour l'instant, on prépare l'UI et la structure DB. L'intégration Stripe (Lovable Payments) sera activée dans un second temps comme demandé.
+- Templates visuels d'événements inspirés du screen : fond mesh aurora bleu/violet, date encadrée en cyan, titre bold + sous-titre italic, speakers en row
+
+---
+
+## 8. Routing
+
+Nouvelles routes :
+```
+/login
+/admin                → AdminDashboard
+/admin/candidatures   → AdminCandidatures
+/admin/membres        → AdminMembres
+/admin/evenements     → AdminEvenements
+/admin/ressources     → AdminRessources
+/espace-membre        → MembreDashboard
+/espace-membre/profil → MembreProfil
+/espace-membre/annuaire → MembreAnnuaire
+/espace-membre/evenements → MembreEvenements
+/espace-membre/ressources → MembreRessources
+```
+
+---
+
+## Ordre d'implémentation
+
+1. Activer Lovable Cloud (Supabase)
+2. Créer les migrations (tables, RLS, fonctions, triggers, storage)
+3. Créer AuthProvider + pages login
+4. Connecter le formulaire de candidature
+5. Construire l'espace admin (layout + 5 pages)
+6. Construire l'espace membre (layout + 5 pages)
+7. Connecter MembersCloud à la DB
+8. Préparer la structure billetterie (UI prête pour Stripe)
+
+C'est un gros chantier (~20+ fichiers). Je procéderai par blocs logiques.
