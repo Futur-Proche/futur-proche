@@ -2,8 +2,15 @@ import { Link } from "react-router-dom";
 
 export const CTASection = () => (
   <section className="relative overflow-hidden gradient-mesh-bg">
+    {/* Floating orbs for depth */}
+    <div className="orb orb--cyan w-[400px] h-[400px] top-[-20%] left-[20%]" />
+    <div className="orb orb--violet w-[300px] h-[300px] bottom-[-10%] right-[15%]" />
+
+    {/* Grain */}
+    <div className="grain-overlay" />
+
     <div className="relative z-10 container mx-auto px-6 lg:px-12 py-20 md:py-28 text-center">
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-grotesk font-medium tracking-tight">
+      <h2 className="text-3xl md:text-4xl lg:text-5xl font-grotesk font-medium tracking-tight text-white">
         Votre prochaine{" "}
         <span className="font-serif-accent">(bonne)</span>{" "}
         décision commence ici.

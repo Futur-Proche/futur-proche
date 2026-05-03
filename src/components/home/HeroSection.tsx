@@ -3,14 +3,18 @@ import { ArrowDown } from "lucide-react";
 
 export const HeroSection = () => (
   <section className="relative min-h-[90vh] flex items-center pt-16 section-navy overflow-hidden">
-    {/* Ambient glow */}
-    <div className="absolute top-0 right-0 w-2/3 h-full opacity-40 pointer-events-none"
-      style={{
-        background: "radial-gradient(ellipse 70% 80% at 80% 40%, hsl(186 79% 47% / 0.15) 0%, transparent 60%)"
-      }}
-    />
+    {/* Floating orbs */}
+    <div className="orb orb--cyan w-[500px] h-[500px] top-[-10%] right-[-5%]" />
+    <div className="orb orb--blue w-[400px] h-[400px] bottom-[-15%] left-[-10%]" />
+    <div className="orb orb--violet w-[300px] h-[300px] top-[30%] left-[40%]" />
 
-    <div className="container mx-auto px-6 lg:px-12 py-16 md:py-24">
+    {/* Dot grid */}
+    <div className="dot-grid" />
+
+    {/* Grain texture */}
+    <div className="grain-overlay" />
+
+    <div className="container relative z-10 mx-auto px-6 lg:px-12 py-16 md:py-24">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
         <div className="lg:col-span-7 space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary/50">
