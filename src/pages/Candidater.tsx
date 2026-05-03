@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const posteOptions = [
   "Dir. Marketing / Com ou assimilé",
