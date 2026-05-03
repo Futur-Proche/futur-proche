@@ -1,5 +1,3 @@
-import { useScrollReveal } from "@/hooks/useScrollReveal";
-
 const testimonials = [
   {
     quote: "Enfin un endroit où poser mes vraies questions sans passer pour un junior.",
@@ -40,31 +38,30 @@ const testimonials = [
 ];
 
 export const TestimonialsSection = () => {
-  const ref = useScrollReveal<HTMLDivElement>();
-
   return (
-    <section className="section-navy">
-      {/* Subtle orb */}
-      <div className="orb orb--cyan w-[350px] h-[350px] top-[10%] right-[5%]" />
-
-      <div ref={ref} className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
+    <section className="section-cream">
+      <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
         <span className="section-label">— Ce qu'en disent les Futuristes</span>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-3 mb-10 tracking-tight text-white">
+        <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-3 mb-10 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
           La parole à ceux qui en sont.
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {testimonials.map((t) => (
-            <div key={t.name} className="card-halo p-6">
-              <span className="text-3xl font-serif leading-none text-primary">"</span>
-              <p className="text-sm leading-relaxed mt-1 mb-5 text-white/80">{t.quote}</p>
+            <div
+              key={t.name}
+              className="bg-white rounded-xl p-6 card-lift"
+              style={{ border: "1px solid hsl(228 10% 85%)" }}
+            >
+              <span className="text-3xl font-serif leading-none" style={{ color: "hsl(186 60% 32%)" }}>"</span>
+              <p className="text-sm leading-relaxed mt-1 mb-5" style={{ color: "hsl(228 15% 30%)" }}>{t.quote}</p>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center bg-primary">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "hsl(186 79% 47%)" }}>
                   <span className="font-mono text-[10px] font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.initials}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">{t.name}</p>
-                  <p className="text-xs text-white/40">{t.role}</p>
+                  <p className="text-sm font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.name}</p>
+                  <p className="text-xs" style={{ color: "hsl(228 15% 55%)" }}>{t.role}</p>
                 </div>
               </div>
             </div>

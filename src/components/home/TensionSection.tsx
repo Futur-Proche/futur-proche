@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const painPoints = [
   {
@@ -17,11 +16,9 @@ const painPoints = [
 ];
 
 export const TensionSection = () => {
-  const ref = useScrollReveal<HTMLDivElement>();
-
   return (
     <section id="tension" className="section-cream">
-      <div ref={ref} className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
+      <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
         <span className="section-label">— Le constat</span>
         <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-2 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
           Vous connaissez sûrement ça.
