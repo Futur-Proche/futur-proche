@@ -28,7 +28,7 @@ export const HeroSection = () => (
           </h1>
 
           <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
-            850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Les arbitrages en cours, les outils, les doutes : les décisions qui comptent.
+            850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes : la communauté où se prennent les décisions qui comptent.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-1">
@@ -51,12 +51,12 @@ export const HeroSection = () => (
         <div className="lg:col-span-5 space-y-4">
           <div className="card-halo p-6">
             <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Commu_Active</span>
-            <p className="text-5xl font-grotesk font-bold text-white mt-2">850<span className="text-primary text-3xl align-top">+</span></p>
+            <p className="text-5xl font-grotesk font-bold text-white mt-2">850<span className="text-3xl text-white align-top">+</span></p>
             <p className="text-sm text-white/50 mt-2">Leaders Marketing / Comm rassemblés. Tous secteurs, toutes tailles.</p>
           </div>
           <div className="card-halo p-6">
             <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Séniorité_Min</span>
-            <p className="text-5xl font-grotesk font-bold text-white mt-2">7 <span className="text-primary text-3xl">ans</span></p>
+            <p className="text-5xl font-grotesk font-bold text-white mt-2">7 <span className="text-3xl text-white">ans</span></p>
             <p className="text-sm text-white/50 mt-2">Filtre d'admission strict. CMO, VP, Directors, Heads of, indés seniors.</p>
           </div>
         </div>
