@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const { signIn } = useAuth();
@@ -19,8 +20,25 @@ const Login = () => {
     const { error } = await signIn(email, password);
     if (error) {
       toast({ title: "Erreur de connexion", description: "Email ou mot de passe incorrect.", variant: "destructive" });
-    } else {
-      navigate("/espace-membre");
+      setLoading(false);
+      return;
+    }
+
+    // Check if user is admin to redirect accordingly
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (roleData) {
+        navigate("/admin");
+      } else {
+        navigate("/espace-membre");
+      }
     }
     setLoading(false);
   };
