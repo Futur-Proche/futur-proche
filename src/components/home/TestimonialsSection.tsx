@@ -39,7 +39,7 @@ const testimonials = [
 
 export const TestimonialsSection = () => {
   return (
-    <section className="section-cream">
+    <section className="section-navy">
       <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
         <span className="section-label">— Ce qu'en disent les Futuristes</span>
         <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-3 mb-10 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
