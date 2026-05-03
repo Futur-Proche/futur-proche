@@ -33,7 +33,7 @@ const AdminMembres = () => {
         const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "admin" as any });
+        const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "admin" });
         if (error) throw error;
       }
     },
