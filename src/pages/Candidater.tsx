@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import membresFondateurs from "@/assets/membres-fondateurs.jpg";
 import groupeAfterProche from "@/assets/groupe-after-proche.jpg";
 import { ShieldCheck, Users, Zap, Clock, MessageSquare, TrendingUp } from "lucide-react";
