@@ -37,6 +37,7 @@ const AdminEvenements = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
+  const [visualEvent, setVisualEvent] = useState<Event | null>(null);
 
   const { data: events, isLoading } = useQuery({
     queryKey: ["admin-events"],
