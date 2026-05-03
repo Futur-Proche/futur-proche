@@ -45,7 +45,7 @@ export const Navbar = () => {
             to="/candidater"
             className="bg-primary text-primary-foreground px-5 py-2 rounded-lg font-grotesk font-medium text-sm hover:opacity-90 transition-opacity"
           >
-            Je candidate →
+            Devenir Futuriste →
           </Link>
         </div>
 
