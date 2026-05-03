@@ -1,6 +1,6 @@
 import communityGroup from "@/assets/community-group.jpg";
 import eventTalk from "@/assets/event-talk.jpg";
-import eventCommunity from "@/assets/event-community.jpg";
+import networkingEchanges from "@/assets/networking-echanges.jpg";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 export const PhotoBanner = () => {
