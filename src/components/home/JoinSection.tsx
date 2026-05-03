@@ -18,7 +18,7 @@ export const JoinSection = () => (
             futur proche rassemble des leaders et responsables Marketing / Comm seniors francophones. Tous secteurs, toutes tailles.
           </p>
           <p className="text-base md:text-lg text-white/60 leading-relaxed">
-            Le critère : une expérience senior confirmée et l'envie de jouer le jeu du collectif. Chaque Futuriste contribue autant qu'il reçoit — c'est ce qui fait la qualité des échanges.
+            Le critère : une expérience senior confirmée et l'envie de jouer le jeu du collectif. Chaque Futuriste contribue autant qu'il reçoit : c'est ce qui fait la qualité des échanges.
           </p>
           <p className="text-base text-white/40 leading-relaxed">
             Chaque nouveau profil est validé par l'équipe Onboarding pour garantir que la communauté gagne en valeur à chaque nouveau membre.
