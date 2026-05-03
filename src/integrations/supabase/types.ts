@@ -23,6 +23,9 @@ export type Database = {
           id: string
           linkedin: string | null
           nom: string
+          photo_fetched_at: string | null
+          photo_source: string | null
+          photo_url: string | null
           poste: string
           prenom: string
           reviewed_at: string | null
@@ -39,6 +42,9 @@ export type Database = {
           id?: string
           linkedin?: string | null
           nom: string
+          photo_fetched_at?: string | null
+          photo_source?: string | null
+          photo_url?: string | null
           poste: string
           prenom: string
           reviewed_at?: string | null
@@ -55,6 +61,9 @@ export type Database = {
           id?: string
           linkedin?: string | null
           nom?: string
+          photo_fetched_at?: string | null
+          photo_source?: string | null
+          photo_url?: string | null
           poste?: string
           prenom?: string
           reviewed_at?: string | null
