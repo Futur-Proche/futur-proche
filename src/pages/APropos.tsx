@@ -48,7 +48,7 @@ const team = [
 
 const convictions = [
   "Le Marketing est avant tout un métier de terrain, pas que de théorie. Les meilleures décisions se prennent en les confrontant à des pairs qui en comprennent le contexte, l'enjeu et qui nous permettent d'aller plus loin plus vite.",
-  "Avancer seul(e) n'est plus une option. Le métier est trop large, il change trop rapidement, il est trop fragmenté pour qu'une seule personne maîtrise tout.",
+  "Avancer seul·e n'est plus une option. Le métier est trop large, il change trop rapidement, il est trop fragmenté pour qu'une seule personne maîtrise tout.",
   "La valeur d'une Communauté se mesure à la qualité de chaque membre, pas uniquement à leur nombre.",
   "La connexion en physique d'abord. Les liens les plus forts se créent en face-à-face. Le digital entretient, le physique construit.",
 ];
@@ -62,15 +62,48 @@ const APropos = () => (
       {/* ── S1 — Hero ── */}
       <section className="section-navy relative pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="dot-grid" />
-        <div className="container relative z-10 mx-auto px-6 lg:px-12 max-w-4xl">
+        <div className="container relative z-10 mx-auto px-6 lg:px-12 max-w-5xl">
           <span className="section-label mb-4 inline-block">— À propos</span>
-          <h1 className="text-3xl md:text-5xl font-grotesk font-bold tracking-tight text-white leading-[1.15] mb-6">
+          <h1 className="text-3xl md:text-5xl font-grotesk font-bold tracking-tight text-white leading-[1.15] mb-10">
             futur proche est né d'un problème{" "}
             <span className="font-serif-accent text-primary">que l'on a tous.</span>
           </h1>
-          <p className="text-base md:text-lg leading-relaxed text-white/60 max-w-3xl">
-            Le Marketing se complexifie mais les leaders Marketing et Communication en France manquaient d'un espace dynamique et non-verticalisé pour échanger au quotidien. Des communautés existaient déjà mais elles étaient soit trop ciblées, soit pas assez modernes et dynamiques, soit trop régionales et pas nationales. Pas une formation, pas un réseau transactionnel, pas un énième webinar : futur proche c'est un endroit où poser les vraies questions et se forger de nouvelles convictions et compétences, entre pairs. Fin 2023, six pros du marketing ont décidé de le créer.
-          </p>
+
+          {/* Decomposed subtitle into digestible blocks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div className="rounded-xl p-6" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Le constat</span>
+              </div>
+              <p className="text-sm leading-relaxed text-white/60">
+                Le Marketing se complexifie mais les leaders Marketing / Comm en France manquaient d'un espace <strong className="text-white/80">dynamique et non-verticalisé</strong> pour échanger au quotidien.
+              </p>
+            </div>
+
+            <div className="rounded-xl p-6" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Le problème</span>
+              </div>
+              <p className="text-sm leading-relaxed text-white/60">
+                Des communautés existaient déjà mais elles étaient soit <strong className="text-white/80">trop ciblées</strong>, soit pas assez modernes et dynamiques, soit <strong className="text-white/80">trop régionales</strong> et pas nationales.
+              </p>
+            </div>
+
+            <div className="rounded-xl p-6 md:col-span-2" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full" style={{ background: "hsl(51 100% 50%)" }} />
+                <span className="font-mono text-[10px] uppercase tracking-[1.2px]" style={{ color: "hsl(51 100% 50%)" }}>La réponse</span>
+              </div>
+              <p className="text-base leading-relaxed text-white/70 max-w-3xl">
+                Pas une formation, pas un réseau transactionnel, pas un énième webinar : <strong className="text-white font-serif-accent text-lg italic">futur proche c'est un endroit où poser les vraies questions</strong> et se forger de nouvelles convictions et compétences, entre pairs.
+              </p>
+              <p className="mt-4 text-sm text-white/40 font-mono">
+                Fin 2023, six pros du marketing ont décidé de le créer.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

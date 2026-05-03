@@ -3,6 +3,8 @@ import { Footer } from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import membresFondateurs from "@/assets/membres-fondateurs.jpg";
+import groupeAfterProche from "@/assets/groupe-after-proche.jpg";
 
 const posteOptions = [
   "Dir. Marketing / Com ou assimilé",
@@ -10,12 +12,12 @@ const posteOptions = [
   "CMO ou assimilé",
   "Head of Marketing / Com ou assimilé",
   "Responsable Marketing / Comm ou assimilé",
-  "Expert(e) Senior (copywriting, ads, SEA, SEO etc.)",
+  "Expert·e Senior (copywriting, ads, SEA, SEO etc.)",
   "Autre",
 ];
 
 const secteurOptions = [
-  "Si indépendant(e), ne rien indiquer",
+  "Si indépendant·e, ne rien indiquer",
   "SaaS / Logiciels",
   "Marketplace",
   "E-commerce / DTC",
@@ -136,6 +138,36 @@ const Candidater = () => {
           </div>
         </section>
 
+        {/* Photos section */}
+        <section className="section-navy relative">
+          <div className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="space-y-3">
+                <img
+                  src={membresFondateurs}
+                  alt="Les six membres fondateurs de futur proche"
+                  className="w-full rounded-xl object-cover aspect-[16/10]"
+                  loading="lazy"
+                />
+                <p className="text-xs font-mono uppercase tracking-wider text-white/30 text-center">
+                  L'équipe fondatrice
+                </p>
+              </div>
+              <div className="space-y-3">
+                <img
+                  src={groupeAfterProche}
+                  alt="Photo de groupe lors d'un After Proche"
+                  className="w-full rounded-xl object-cover aspect-[16/10]"
+                  loading="lazy"
+                />
+                <p className="text-xs font-mono uppercase tracking-wider text-white/30 text-center">
+                  Un After Proche en images
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="section-cream">
           <div className="container mx-auto px-6 lg:px-12 py-16 md:py-20">
             <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
@@ -188,7 +220,7 @@ const Candidater = () => {
                   style={{ borderColor: "hsl(228 10% 80%)", color: form.poste ? "hsl(228 56% 10%)" : "hsl(228 15% 55%)" }}
                 >
                   <option value="" disabled>
-                    Quel job exercez-vous ? (indé ou salarié(e))
+                    Quel job exercez-vous ? (indé ou salarié·e)
                   </option>
                   {posteOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -210,7 +242,7 @@ const Candidater = () => {
                   required
                   value={form.entreprise}
                   onChange={handleChange}
-                  placeholder="Si indépendant(e), ne rien indiquer"
+                  placeholder="Si indépendant·e, ne rien indiquer"
                   className={inputClass}
                   style={{ borderColor: "hsl(228 10% 80%)", color: "hsl(228 56% 10%)" }}
                 />
@@ -296,7 +328,7 @@ const Candidater = () => {
               {/* Cooptation */}
               <div>
                 <label htmlFor="cooptation" className={labelClass} style={{ color: "hsl(228 56% 10%)" }}>
-                  Êtes-vous coopté(e) par un membre ?
+                  Êtes-vous coopté·e par un membre ?
                 </label>
                 <input
                   id="cooptation"
@@ -320,7 +352,7 @@ const Candidater = () => {
               </button>
 
               <p className="text-center text-xs mt-4" style={{ color: "hsl(228 15% 55%)" }}>
-                En soumettant ce formulaire, vous acceptez d'être contacté(e) par l'équipe futur proche.
+                En soumettant ce formulaire, vous acceptez d'être contacté·e par l'équipe futur proche.
               </p>
             </form>
           </div>
