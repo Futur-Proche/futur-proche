@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +11,19 @@ import {
   UtensilsCrossed,
   Handshake,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+
+import speakerEventImg from "@/assets/speaker-event.jpg";
+import speakerEventPublicImg from "@/assets/speaker-event-public.jpg";
+import dinerCommunauteImg from "@/assets/diner-communaute.jpg";
+import femmesCommunauteImg from "@/assets/femmes-communaute.jpg";
+import networkingEchangesImg from "@/assets/networking-echanges.jpg";
+import ambianceGroupeImg from "@/assets/ambiance-groupe.jpg";
+import terrasseGroupeImg from "@/assets/terrasse-groupe.jpg";
+import conferencePublicImg from "@/assets/conference-public-nombreux.jpg";
+import selfieFpImg from "@/assets/selfie-fp.jpg";
 
 /* ───────── TYPES ───────── */
 
@@ -59,6 +72,15 @@ const formatLabels: Record<string, string> = {
   autre: "Autre",
 };
 
+const carouselImages = [
+  { src: femmesCommunauteImg, alt: "Les Futuristes — networking entre membres" },
+  { src: networkingEchangesImg, alt: "Échanges et rencontres entre pairs" },
+  { src: ambianceGroupeImg, alt: "Selfie de groupe — ambiance Futuristes" },
+  { src: terrasseGroupeImg, alt: "Terrasse parisienne avec vue" },
+  { src: conferencePublicImg, alt: "Conférence — public nombreux" },
+  { src: selfieFpImg, alt: "L'équipe futur proche" },
+];
+
 /* ───────── COMPONENT ───────── */
 
 const Evenements = () => {
@@ -74,6 +96,18 @@ const Evenements = () => {
       return data;
     },
   });
+
+  /* Carousel state */
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = carouselImages.length;
+
+  const next = useCallback(() => setCurrentSlide((p) => (p + 1) % totalSlides), [totalSlides]);
+  const prev = useCallback(() => setCurrentSlide((p) => (p - 1 + totalSlides) % totalSlides), [totalSlides]);
+
+  useEffect(() => {
+    const id = setInterval(next, 4500);
+    return () => clearInterval(id);
+  }, [next]);
 
   return (
     <>
@@ -115,22 +149,50 @@ const Evenements = () => {
             </h2>
             <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
 
-            <p className="text-base md:text-lg leading-relaxed max-w-3xl mb-10" style={{ color: "hsl(228 15% 35%)" }}>
-              Le format récurrent de futur proche. Tous les mois ou presque, dans une ville de France, futur proche rassemble des leaders Marketing / Comm autour d'un sujet stratégique du métier.
-            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
+              <div>
+                <p className="text-base md:text-lg leading-relaxed mb-10" style={{ color: "hsl(228 15% 35%)" }}>
+                  Le format récurrent de futur proche. Tous les mois ou presque, dans une ville de France, futur proche rassemble des leaders Marketing / Comm autour d'un sujet stratégique du métier.
+                </p>
 
-            <h3 className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5" style={{ color: "hsl(186 60% 32%)" }}>
-              Le format
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-              {formatDetails.map((d, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 font-mono text-[10px] font-bold" style={{ background: "hsl(186 79% 47% / 0.12)", color: "hsl(186 60% 32%)" }}>
-                    {i + 1}
-                  </span>
-                  <p className="text-sm leading-relaxed" style={{ color: "hsl(228 15% 30%)" }}>{d}</p>
+                <h3 className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5" style={{ color: "hsl(186 60% 32%)" }}>
+                  Le format
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {formatDetails.map((d, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 font-mono text-[10px] font-bold" style={{ background: "hsl(186 79% 47% / 0.12)", color: "hsl(186 60% 32%)" }}>
+                        {i + 1}
+                      </span>
+                      <p className="text-sm leading-relaxed" style={{ color: "hsl(228 15% 30%)" }}>{d}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Photos After Proche */}
+              <div className="grid grid-cols-2 gap-3">
+                <img
+                  src={speakerEventImg}
+                  alt="Speakers en discussion lors d'un After Proche chez Brevo"
+                  className="rounded-xl object-cover w-full h-full col-span-2"
+                  style={{ maxHeight: 280 }}
+                />
+                <img
+                  src={speakerEventPublicImg}
+                  alt="Le public d'un After Proche"
+                  className="rounded-xl object-cover w-full h-48"
+                />
+                <div
+                  className="rounded-xl flex items-center justify-center p-6"
+                  style={{ background: "hsl(228 56% 10%)" }}
+                >
+                  <p className="text-center font-grotesk font-semibold text-white text-sm leading-snug">
+                    <span className="text-primary text-2xl font-bold block mb-1">35+</span>
+                    After Proche organisés depuis 2023
+                  </p>
+                </div>
+              </div>
             </div>
 
             <h3 className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5" style={{ color: "hsl(186 60% 32%)" }}>
@@ -168,17 +230,24 @@ const Evenements = () => {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-xl p-7 card-lift" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(186 79% 47% / 0.12)" }}>
-                    <UtensilsCrossed size={20} className="text-primary" />
+              <div className="rounded-xl overflow-hidden card-lift" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+                <img
+                  src={dinerCommunauteImg}
+                  alt="Dîner entre Futuristes"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-7">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(186 79% 47% / 0.12)" }}>
+                      <UtensilsCrossed size={20} className="text-primary" />
+                    </div>
+                    <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Dîners</span>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Dîners</span>
+                  <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">Dîners futur proche</h3>
+                  <p className="text-sm leading-relaxed text-white/60">
+                    Des dîners en petit comité (10-15 personnes), une fois par mois. Un sujet, une table, des échanges sans filtre. À Paris et partout en France.
+                  </p>
                 </div>
-                <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">Dîners futur proche</h3>
-                <p className="text-sm leading-relaxed text-white/60">
-                  Des dîners en petit comité (10-15 personnes), une fois par mois. Un sujet, une table, des échanges sans filtre. À Paris et partout en France.
-                </p>
               </div>
 
               <div className="rounded-xl p-7 card-lift" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
@@ -220,13 +289,11 @@ const Evenements = () => {
                       style={{ border: "1px solid hsl(228 10% 85%)" }}
                     >
                       <div className="flex flex-col sm:flex-row">
-                        {/* Date badge */}
                         <div className="flex-shrink-0 flex sm:flex-col items-center justify-center gap-1 px-6 py-4 sm:py-6" style={{ background: "hsl(228 56% 10%)" }}>
                           <span className="text-[10px] font-mono uppercase tracking-wider text-primary">{monthShort}</span>
                           <span className="text-3xl font-grotesk font-bold text-white">{day}</span>
                         </div>
 
-                        {/* Content */}
                         <div className="flex-1 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -253,7 +320,6 @@ const Evenements = () => {
                               )}
                             </div>
 
-                            {/* Speaker round photos */}
                             {speakers.length > 0 && (
                               <div className="flex items-center gap-3">
                                 <div className="flex -space-x-2">
@@ -288,7 +354,6 @@ const Evenements = () => {
                             )}
                           </div>
 
-                          {/* CTA */}
                           <div className="flex-shrink-0">
                             <Link
                               to="/candidater"
@@ -348,7 +413,7 @@ const Evenements = () => {
           </div>
         </section>
 
-        {/* ── SECTION 6 — En images ── */}
+        {/* ── SECTION 6 — En images (carousel) ── */}
         <section className="section-cream">
           <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
             <span className="section-label">— futur proche en images</span>
@@ -356,22 +421,53 @@ const Evenements = () => {
               Les moments qui comptent
             </h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-lg flex items-center justify-center"
-                  style={{ background: "hsl(228 10% 85%)" }}
-                >
-                  <span className="font-mono text-[10px] uppercase tracking-wider" style={{ color: "hsl(228 15% 60%)" }}>
-                    Photo {i + 1}
-                  </span>
-                </div>
-              ))}
+            {/* Carousel */}
+            <div className="relative overflow-hidden rounded-2xl">
+              <div
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {carouselImages.map((img, i) => (
+                  <div key={i} className="min-w-full">
+                    <img
+                      src={img.src}
+                      alt={img.alt}
+                      className="w-full h-[320px] md:h-[480px] object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Controls */}
+              <button
+                onClick={prev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors hover:bg-white/30"
+                style={{ background: "hsl(228 56% 10% / 0.5)" }}
+                aria-label="Photo précédente"
+              >
+                <ChevronLeft size={20} className="text-white" />
+              </button>
+              <button
+                onClick={next}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors hover:bg-white/30"
+                style={{ background: "hsl(228 56% 10% / 0.5)" }}
+                aria-label="Photo suivante"
+              >
+                <ChevronRight size={20} className="text-white" />
+              </button>
+
+              {/* Dots */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {carouselImages.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentSlide(i)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${i === currentSlide ? "bg-primary scale-110" : "bg-white/40"}`}
+                    aria-label={`Photo ${i + 1}`}
+                  />
+                ))}
+              </div>
             </div>
-            <p className="text-center text-xs mt-4 font-mono uppercase tracking-wider" style={{ color: "hsl(228 15% 65%)" }}>
-              Photos à ajouter depuis l'espace admin
-            </p>
           </div>
         </section>
 

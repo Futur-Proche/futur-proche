@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { MembersCloud } from "@/components/home/MembersCloud";
 import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3 } from "lucide-react";
+
+import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
 
 /* ───────────── DATA ───────────── */
 
@@ -93,58 +96,79 @@ const Communaute = () => (
         </div>
       </section>
 
-      {/* ── SECTION 2 — Le quotidien ── */}
+      {/* ── SECTION 2 — Le quotidien + Members Cloud ── */}
       <section className="section-cream">
         <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-          <span className="section-label">— Le quotidien chez futur proche</span>
-          <h2
-            className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
-            style={{ color: "hsl(228 56% 10%)" }}
-          >
-            Ce qui se passe chaque semaine
-          </h2>
-          <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
-
-          <p
-            className="text-base md:text-lg leading-relaxed max-w-3xl mb-10"
-            style={{ color: "hsl(228 15% 35%)" }}
-          >
-            La communauté vit sur WhatsApp, tous les jours, toute l'année. Des centaines de messages par semaine. Des Futuristes qui partagent leurs arbitrages en cours, leurs doutes, leurs trouvailles, leurs idées. Des réponses concrètes, sourcées, sans détour.
-          </p>
-
-          {/* Sujets réels */}
-          <h3
-            className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5"
-            style={{ color: "hsl(186 60% 32%)" }}
-          >
-            Exemples de sujets réels
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-            {sujets.map((s, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-xl p-5 card-lift"
-                style={{ border: "1px solid hsl(228 10% 85%)" }}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+            {/* Left: texte */}
+            <div className="lg:col-span-3">
+              <span className="section-label">— Le quotidien chez futur proche</span>
+              <h2
+                className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
+                style={{ color: "hsl(228 56% 10%)" }}
               >
-                <span
-                  className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-2"
-                  style={{ color: "hsl(186 60% 32%)" }}
-                >
-                  #{String(i + 1).padStart(2, "0")}
-                </span>
-                <p
-                  className="text-sm leading-relaxed font-medium"
-                  style={{ color: "hsl(228 56% 10%)" }}
-                >
-                  {s}
-                </p>
-              </div>
-            ))}
-          </div>
+                Ce qui se passe chaque semaine
+              </h2>
+              <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
 
-          <p className="text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 15% 45%)" }}>
-            Pas des discussions théoriques, des décisions qui se prennent, en live. Des réponses de pros qui ont déjà été confrontés au même choix, aux mêmes freins.
-          </p>
+              <p
+                className="text-base md:text-lg leading-relaxed max-w-3xl mb-10"
+                style={{ color: "hsl(228 15% 35%)" }}
+              >
+                La communauté vit sur WhatsApp, tous les jours, toute l'année. Des centaines de messages par semaine. Des Futuristes qui partagent leurs arbitrages en cours, leurs doutes, leurs trouvailles, leurs idées. Des réponses concrètes, sourcées, sans détour.
+              </p>
+
+              <h3
+                className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5"
+                style={{ color: "hsl(186 60% 32%)" }}
+              >
+                Exemples de sujets réels
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                {sujets.map((s, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-xl p-5 card-lift"
+                    style={{ border: "1px solid hsl(228 10% 85%)" }}
+                  >
+                    <span
+                      className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-2"
+                      style={{ color: "hsl(186 60% 32%)" }}
+                    >
+                      #{String(i + 1).padStart(2, "0")}
+                    </span>
+                    <p
+                      className="text-sm leading-relaxed font-medium"
+                      style={{ color: "hsl(228 56% 10%)" }}
+                    >
+                      {s}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 15% 45%)" }}>
+                Pas des discussions théoriques, des décisions qui se prennent, en live. Des réponses de pros qui ont déjà été confrontés au même choix, aux mêmes freins.
+              </p>
+            </div>
+
+            {/* Right: Members Cloud inline */}
+            <div className="lg:col-span-2 flex flex-col items-center justify-start pt-8">
+              <div
+                className="rounded-2xl p-6 w-full"
+                style={{ background: "hsl(228 56% 10%)" }}
+              >
+                <h3 className="text-lg font-grotesk font-semibold text-white mb-2 text-center">
+                  Ils sont déjà{" "}
+                  <span className="font-serif-accent text-primary">Futuristes.</span>
+                </h3>
+                <p className="text-xs text-white/50 text-center mb-5">
+                  850+ leaders Marketing / Comm qui échangent chaque jour.
+                </p>
+                <MembersCloudInline />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -201,35 +225,47 @@ const Communaute = () => (
           </h2>
           <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
 
-          <p
-            className="text-base md:text-lg leading-relaxed max-w-3xl mb-10"
-            style={{ color: "hsl(228 15% 35%)" }}
-          >
-            Pas de profil type unique. Le Marketing est riche et diversifié, futur proche est un miroir de ça. Ce qui rassemble les Futuristes, c'est le niveau d'expérience en Marketing / Comm et l'envie de la mettre au service des autres.
-          </p>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="bg-white rounded-xl p-6"
-                style={{ border: "1px solid hsl(228 10% 85%)" }}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+            <div>
+              <p
+                className="text-base md:text-lg leading-relaxed mb-10"
+                style={{ color: "hsl(228 15% 35%)" }}
               >
-                <span
-                  className="font-mono text-[10px] uppercase tracking-[1.5px] block mb-2"
-                  style={{ color: "hsl(186 60% 32%)" }}
-                >
-                  {s.label}
-                </span>
-                <p
-                  className="text-sm leading-relaxed font-medium"
-                  style={{ color: "hsl(228 56% 10%)" }}
-                >
-                  {s.value}
-                </p>
+                Pas de profil type unique. Le Marketing est riche et diversifié, futur proche est un miroir de ça. Ce qui rassemble les Futuristes, c'est le niveau d'expérience en Marketing / Comm et l'envie de la mettre au service des autres.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {stats.map((s) => (
+                  <div
+                    key={s.label}
+                    className="bg-white rounded-xl p-6"
+                    style={{ border: "1px solid hsl(228 10% 85%)" }}
+                  >
+                    <span
+                      className="font-mono text-[10px] uppercase tracking-[1.5px] block mb-2"
+                      style={{ color: "hsl(186 60% 32%)" }}
+                    >
+                      {s.label}
+                    </span>
+                    <p
+                      className="text-sm leading-relaxed font-medium"
+                      style={{ color: "hsl(228 56% 10%)" }}
+                    >
+                      {s.value}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Group photo */}
+            <div className="flex items-center">
+              <img
+                src={groupeAfterProcheImg}
+                alt="Groupe de Futuristes lors d'un After Proche"
+                className="rounded-2xl object-cover w-full h-full max-h-[400px]"
+              />
+            </div>
           </div>
 
           {/* Ce qui les rassemble */}
@@ -324,5 +360,60 @@ const Communaute = () => (
     <Footer />
   </>
 );
+
+/* ── Inline Members Cloud (reuses the query from MembersCloud) ── */
+
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+const MembersCloudInline = () => {
+  const { data: members } = useQuery({
+    queryKey: ["homepage-members"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, prenom, nom, photo_url")
+        .limit(20);
+      return data ?? [];
+    },
+  });
+
+  const placeholders = Array.from({ length: 16 }, (_, i) => ({
+    id: `ph-${i}`,
+    prenom: ["A", "C", "E", "G", "I", "K", "M", "O"][i % 8],
+    nom: ["B", "D", "F", "H", "J", "L", "N", "P"][i % 8],
+    photo_url: null as string | null,
+  }));
+
+  const displayMembers = members?.length ? members : placeholders;
+
+  return (
+    <div className="flex flex-wrap gap-2 justify-center">
+      {displayMembers.map((m) => (
+        <div key={m.id} className="relative group">
+          {m.photo_url ? (
+            <img
+              src={m.photo_url}
+              alt={`${m.prenom} ${m.nom}`}
+              className="w-11 h-11 rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
+              style={{ border: "2px solid hsl(228 30% 22%)" }}
+            />
+          ) : (
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center text-[10px] font-mono font-medium"
+              style={{
+                border: "1px solid hsl(228 30% 22%)",
+                background: "hsl(228 40% 14%)",
+                color: "hsl(228 15% 55%)",
+              }}
+            >
+              {m.prenom[0]}{m.nom[0]}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default Communaute;
