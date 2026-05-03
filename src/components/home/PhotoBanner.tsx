@@ -7,7 +7,7 @@ export const PhotoBanner = () => {
   const ref = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section className="section-cream">
+    <section className="section-navy">
       <div ref={ref} className="container mx-auto px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <figure>
