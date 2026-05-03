@@ -72,7 +72,23 @@ const Candidater = () => {
     cooptation: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const { data: members } = useQuery({
+    queryKey: ["candidater-members"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("id, prenom, nom, photo_url").limit(30);
+      return data ?? [];
+    },
+  });
+
+  const placeholders = Array.from({ length: 20 }, (_, i) => ({
+    id: `ph-${i}`,
+    prenom: "ACEGIKMOQS"[i % 10],
+    nom: "BDFHJLNPRT"[i % 10],
+    photo_url: null as string | null,
+  }));
+  const cloudMembers = members?.length ? members : placeholders;
+
+
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
