@@ -1,11 +1,11 @@
 export const JoinSection = () => (
-  <section className="bg-background">
-    <div className="container mx-auto px-6 py-24 md:py-32">
-      <div className="flex items-center gap-2 mb-4">
+  <section className="section-navy">
+    <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
+      <div className="flex items-center gap-2 mb-3">
         <span className="w-2 h-2 rounded-full bg-primary" />
         <span className="section-label">Rejoindre</span>
       </div>
-      <h2 className="text-3xl md:text-4xl font-grotesk font-medium tracking-tight mb-8">
+      <h2 className="text-3xl md:text-4xl font-grotesk font-medium tracking-tight mb-6">
         Comment devenir{" "}
         <span className="font-serif-accent">Futuriste</span> ?
       </h2>
