@@ -2,50 +2,77 @@ import { Link } from "react-router-dom";
 
 const painPoints = [
   {
-    num: "01",
-    text: "Justifier votre budget à des gens qui ne comprennent pas votre métier.",
+    num: 1,
+    text: "On nous demande\nde faire plus avec moins",
   },
   {
-    num: "02",
-    text: "Chercher des réponses sur Google alors que vous avez 10 ans d'expérience.",
+    num: 2,
+    text: "On doit devenir\nAI natif en 24h",
   },
   {
-    num: "03",
-    text: "Un doute sur un outil ou une nouvelle techno, personne à qui poser la question autour de vous.",
+    num: 3,
+    text: "Le scope du marketing\nn'a jamais été si large",
   },
 ];
 
 export const TensionSection = () => {
   return (
-    <section id="tension" className="section-cream">
+    <section className="section-navy relative overflow-hidden">
       <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-        <span className="section-label">— Le constat</span>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-2 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
-          Vous connaissez sûrement ça.
-        </h2>
-
-        {/* Cyan separator line */}
-        <div className="w-16 h-[3px] bg-primary mb-10 rounded-full" />
-
-        {/* 3 pain points */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {painPoints.map((p) => (
-            <div key={p.num} className="border-t pt-5" style={{ borderColor: "hsl(228 10% 80%)" }}>
-              <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-primary">{p.num}</span>
-              <p className="text-base leading-relaxed mt-3" style={{ color: "hsl(228 15% 30%)" }}>
-                {p.text}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <Link
-          to="/communaute"
-          className="inline-flex items-center gap-2 mt-10 font-grotesk font-medium text-sm hover:opacity-80 transition-opacity"
-          style={{ color: "hsl(186 60% 32%)" }}
+        {/* Dark gradient card */}
+        <div
+          className="relative rounded-2xl px-8 py-14 md:px-14 md:py-20 overflow-hidden"
+          style={{
+            background: "linear-gradient(160deg, hsl(228 56% 18%) 0%, hsl(228 56% 10%) 100%)",
+            border: "1px solid hsl(228 30% 22%)",
+          }}
         >
-          On a créé futur proche pour ça. →
-        </Link>
+          {/* Subtle gradient overlay */}
+          <div
+            className="absolute inset-0 opacity-30 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse at 50% 0%, hsl(228 40% 28%) 0%, transparent 60%)",
+            }}
+          />
+
+          <div className="relative z-10">
+            {/* Title */}
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-grotesk font-bold text-white text-center mb-14 leading-snug">
+              <span className="font-serif italic text-white/80">Parce que</span> le quotidien des leaders Marketing / Comm,
+              <br className="hidden md:block" />
+              <span className="text-primary"> ce n'est pas de la tarte…</span>
+            </h2>
+
+            {/* 3 pain points with coral circles */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 mb-14">
+              {painPoints.map((p) => (
+                <div key={p.num} className="flex flex-col items-center text-center">
+                  {/* Coral numbered circle */}
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-grotesk font-bold text-lg mb-5 shrink-0"
+                    style={{
+                      background: "linear-gradient(135deg, hsl(8 85% 65%) 0%, hsl(15 90% 58%) 100%)",
+                      boxShadow: "0 4px 20px hsl(8 85% 65% / 0.35)",
+                    }}
+                  >
+                    {p.num}
+                  </div>
+                  <p className="text-white/90 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line">
+                    {p.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom punchline */}
+            <p className="text-center text-white/50 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
+              …il est temps de sortir de ce cycle.{" "}
+              <Link to="/communaute" className="text-primary hover:text-primary/80 transition-colors font-medium">
+                Appuie-toi sur les meilleurs leaders Marketing / Comm pour accélérer ton impact&nbsp;→
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
