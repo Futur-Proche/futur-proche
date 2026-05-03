@@ -50,8 +50,8 @@ export const TestimonialsSection = () => {
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="bg-white rounded-xl p-6 card-lift"
-              style={{ border: "1px solid hsl(228 10% 85%)" }}
+              className="rounded-xl p-6 card-lift"
+              style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
             >
               <span className="text-3xl font-serif leading-none" style={{ color: "hsl(186 60% 32%)" }}>"</span>
               <p className="text-sm leading-relaxed mt-1 mb-5" style={{ color: "hsl(228 15% 30%)" }}>{t.quote}</p>
