@@ -4,7 +4,6 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { TensionSection } from "@/components/home/TensionSection";
 import { KeyElementsSection } from "@/components/home/KeyElementsSection";
 import { FormatsSection } from "@/components/home/FormatsSection";
-import { PhotoBanner } from "@/components/home/PhotoBanner";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { ForYouSection } from "@/components/home/ForYouSection";
 import { MembersCloud } from "@/components/home/MembersCloud";
@@ -17,23 +16,21 @@ const Index = () => (
     <main>
       {/* 1. Navy — Hero */}
       <HeroSection />
-      {/* 2. Cream — Constat */}
+      {/* 2. Navy — Constat (dark card design) */}
       <TensionSection />
-      {/* 3. Navy — Stats */}
+      {/* 3. Cream — Stats */}
       <KeyElementsSection />
-      {/* 4. Cream — Formats */}
+      {/* 4. Navy — Formats + Photos */}
       <FormatsSection />
-      {/* 5. Navy — Photos */}
-      <PhotoBanner />
-      {/* 6. Cream — Testimonials */}
+      {/* 5. Cream — Testimonials */}
       <TestimonialsSection />
-      {/* 7. Navy — Pour qui */}
+      {/* 6. Navy — Pour qui */}
       <ForYouSection />
-      {/* 8. Cream — Members */}
+      {/* 7. Cream — Members */}
       <MembersCloud />
-      {/* 9. Navy — Join */}
+      {/* 8. Navy — Join */}
       <JoinSection />
-      {/* 10. Mesh gradient — CTA */}
+      {/* 9. Mesh gradient — CTA */}
       <CTASection />
     </main>
     <Footer />
