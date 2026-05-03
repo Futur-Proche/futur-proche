@@ -17,7 +17,7 @@ export const KeyElementsSection = () => (
         {stats.map((s) => (
           <div key={s.label} className="flex flex-col gap-2">
             <span className="text-5xl md:text-6xl font-grotesk font-bold text-white leading-none">
-              {s.value}<span className="text-primary text-3xl md:text-4xl align-top">{s.suffix}</span>
+              {s.value}<span className="text-3xl text-white md:text-4xl align-top">{s.suffix}</span>
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-white/40">{s.label}</span>
           </div>
