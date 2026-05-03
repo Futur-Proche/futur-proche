@@ -88,7 +88,7 @@ const Candidater = () => {
   }));
   const cloudMembers = members?.length ? members : placeholders;
 
-
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
