@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit2, Trash2, Calendar } from "lucide-react";
+import { Plus, Edit2, Trash2, Calendar, Image } from "lucide-react";
 import { useState } from "react";
 import type { Database } from "@/integrations/supabase/types";
+import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -36,6 +37,7 @@ const AdminEvenements = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
+  const [visualEvent, setVisualEvent] = useState<Event | null>(null);
 
   const { data: events, isLoading } = useQuery({
     queryKey: ["admin-events"],
@@ -218,6 +220,9 @@ const AdminEvenements = () => {
                 <button onClick={() => openEdit(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                   <Edit2 className="w-3 h-3" /> Modifier
                 </button>
+                <button onClick={() => setVisualEvent(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-primary/60 hover:text-primary hover:bg-primary/5 transition-colors">
+                  <Image className="w-3 h-3" /> Visuels
+                </button>
                 <button onClick={() => deleteMutation.mutate(ev.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-colors">
                   <Trash2 className="w-3 h-3" /> Supprimer
                 </button>
@@ -227,6 +232,12 @@ const AdminEvenements = () => {
             </div>
           ))}
         </div>
+      )}
+      {visualEvent && (
+        <EventVisualGenerator
+          event={visualEvent}
+          onClose={() => setVisualEvent(null)}
+        />
       )}
     </div>
   );
