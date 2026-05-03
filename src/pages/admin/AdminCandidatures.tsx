@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Check, X, Clock, ExternalLink } from "lucide-react";
+import { Check, X, ExternalLink, ImageUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 import type { Database } from "@/integrations/supabase/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials, isLikelyLinkedInUrl } from "@/lib/linkedinPhoto";
 
 type Candidature = Database["public"]["Tables"]["candidatures"]["Row"];
 
@@ -35,6 +37,37 @@ const AdminCandidatures = () => {
       qc.invalidateQueries({ queryKey: ["admin-candidatures"] });
       qc.invalidateQueries({ queryKey: ["admin-stats"] });
       toast({ title: statut === "approved" ? "Candidature approuvée" : "Candidature refusée" });
+    },
+  });
+
+  const importPhoto = useMutation({
+    mutationFn: async (candidature: Candidature) => {
+      if (!candidature.linkedin || !isLikelyLinkedInUrl(candidature.linkedin)) {
+        throw new Error("Ajoutez un profil LinkedIn valide avant d'importer une photo.");
+      }
+
+      const { data, error } = await supabase.functions.invoke("fetch-linkedin-photo", {
+        body: {
+          candidatureId: candidature.id,
+          linkedinUrl: candidature.linkedin,
+          fullName: `${candidature.prenom} ${candidature.nom}`,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-candidatures"] });
+      toast({ title: "Photo importée", description: "La photo LinkedIn a bien été enregistrée." });
+    },
+    onError: (error) => {
+      toast({
+        title: "Import impossible",
+        description: error instanceof Error ? error.message : "Impossible de récupérer la photo pour le moment.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -72,6 +105,13 @@ const AdminCandidatures = () => {
         <div className="space-y-3">
           {candidatures.map((c) => (
             <div key={c.id} className="rounded-xl p-5 flex flex-col md:flex-row md:items-center gap-4" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+              <Avatar className="h-16 w-16 border border-white/10">
+                <AvatarImage src={c.photo_url || undefined} alt={`${c.prenom} ${c.nom}`} />
+                <AvatarFallback className="bg-primary/15 text-primary font-grotesk font-semibold">
+                  {getInitials(c.prenom, c.nom)}
+                </AvatarFallback>
+              </Avatar>
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-white font-grotesk font-medium">{c.prenom} {c.nom}</p>
@@ -88,10 +128,25 @@ const AdminCandidatures = () => {
                     LinkedIn <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
+                {c.photo_fetched_at && (
+                  <p className="text-white/30 text-xs mt-1">
+                    Photo importée le {new Date(c.photo_fetched_at).toLocaleDateString("fr-FR")}
+                  </p>
+                )}
                 {c.cooptation && <p className="text-white/30 text-xs mt-1">Coopté par : {c.cooptation}</p>}
               </div>
+              <div className="flex gap-2 flex-shrink-0 flex-wrap">
+                <button
+                  onClick={() => importPhoto.mutate(c)}
+                  disabled={importPhoto.isPending || !c.linkedin}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-grotesk bg-white/5 text-white/70 hover:bg-white/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {importPhoto.isPending && importPhoto.variables?.id === c.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageUp className="w-4 h-4" />}
+                  {c.photo_url ? "Rafraîchir la photo" : "Importer la photo"}
+                </button>
+
               {c.statut === "pending" && (
-                <div className="flex gap-2 flex-shrink-0">
+                <>
                   <button
                     onClick={() => updateStatus.mutate({ id: c.id, statut: "approved" })}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-grotesk bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
@@ -104,8 +159,9 @@ const AdminCandidatures = () => {
                   >
                     <X className="w-4 h-4" /> Refuser
                   </button>
-                </div>
+                </>
               )}
+              </div>
             </div>
           ))}
         </div>
