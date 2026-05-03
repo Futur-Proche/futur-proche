@@ -138,6 +138,36 @@ const Candidater = () => {
           </div>
         </section>
 
+        {/* Photos section */}
+        <section className="section-navy relative">
+          <div className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="space-y-3">
+                <img
+                  src={membresFondateurs}
+                  alt="Les six membres fondateurs de futur proche"
+                  className="w-full rounded-xl object-cover aspect-[16/10]"
+                  loading="lazy"
+                />
+                <p className="text-xs font-mono uppercase tracking-wider text-white/30 text-center">
+                  L'équipe fondatrice
+                </p>
+              </div>
+              <div className="space-y-3">
+                <img
+                  src={groupeAfterProche}
+                  alt="Photo de groupe lors d'un After Proche"
+                  className="w-full rounded-xl object-cover aspect-[16/10]"
+                  loading="lazy"
+                />
+                <p className="text-xs font-mono uppercase tracking-wider text-white/30 text-center">
+                  Un After Proche en images
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="section-cream">
           <div className="container mx-auto px-6 lg:px-12 py-16 md:py-20">
             <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
