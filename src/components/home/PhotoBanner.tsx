@@ -24,7 +24,7 @@ export const PhotoBanner = () => {
           </figure>
           <figure>
             <div className="aspect-[4/3] rounded-lg overflow-hidden">
-              <img src={eventTalk} alt="Événement communauté" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
+              <img src={networkingEchanges} alt="Networking et échanges informels" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
             <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-center" style={{ color: "hsl(228 15% 55%)" }}>Networking et échanges informels</figcaption>
           </figure>
