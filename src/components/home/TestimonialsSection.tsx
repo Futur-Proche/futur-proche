@@ -38,25 +38,25 @@ const testimonials = [
 ];
 
 export const TestimonialsSection = () => (
-  <section className="mode-lecture">
-    <div className="container mx-auto px-6 py-24 md:py-32">
+  <section className="section-cream">
+    <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
       <span className="section-label">— Ce qu'en disent les Futuristes</span>
-      <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-4 mb-12 tracking-tight text-foreground">
+      <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-3 mb-10 tracking-tight">
         La parole à ceux qui en sont.
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {testimonials.map((t) => (
-          <div key={t.name} className="bg-card border border-border rounded-lg p-7">
-            <span className="text-primary text-4xl font-serif leading-none">"</span>
-            <p className="text-base text-foreground leading-relaxed mt-2 mb-6">{t.quote}</p>
+          <div key={t.name} className="bg-white border rounded-lg p-6" style={{ borderColor: "hsl(228 10% 85%)" }}>
+            <span className="text-3xl font-serif leading-none" style={{ color: "hsl(186 60% 32%)" }}>"</span>
+            <p className="text-sm leading-relaxed mt-1 mb-5" style={{ color: "hsl(228 56% 10%)" }}>{t.quote}</p>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <span className="font-mono text-[11px] font-medium text-primary-foreground">{t.initials}</span>
+              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "hsl(186 79% 47%)" }}>
+                <span className="font-mono text-[10px] font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.initials}</span>
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground">{t.name}</p>
-                <p className="text-xs text-muted-foreground">{t.role}</p>
+                <p className="text-sm font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.name}</p>
+                <p className="text-xs" style={{ color: "hsl(228 15% 50%)" }}>{t.role}</p>
               </div>
             </div>
           </div>

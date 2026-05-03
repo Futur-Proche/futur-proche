@@ -6,7 +6,6 @@
 
 @layer base {
   :root {
-    /* Futur Proche — Mode Signature (Navy bg) */
     --background: 228 56% 10%;
     --foreground: 36 29% 93%;
 
@@ -31,13 +30,12 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 36 29% 93%;
 
-    --border: 228 30% 20%;
+    --border: 210 20% 25%;
     --input: 228 30% 20%;
     --ring: 186 79% 47%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
     --navy: 228 56% 10%;
     --cream: 36 29% 93%;
     --cyan: 186 79% 47%;
@@ -54,6 +52,13 @@
       radial-gradient(ellipse 70% 70% at 85% 100%, hsl(228 75% 53%) 0%, transparent 50%),
       hsl(228 56% 10%);
 
+    /* Cream mode overrides */
+    --cream-bg: 36 29% 93%;
+    --cream-fg: 228 56% 10%;
+    --cream-border: 228 10% 82%;
+    --cream-muted: 228 15% 50%;
+    --cream-card: 0 0% 100%;
+
     --sidebar-background: 228 56% 10%;
     --sidebar-foreground: 36 29% 93%;
     --sidebar-primary: 186 79% 47%;
@@ -62,16 +67,6 @@
     --sidebar-accent-foreground: 36 29% 93%;
     --sidebar-border: 228 30% 20%;
     --sidebar-ring: 186 79% 47%;
-  }
-
-  .mode-lecture {
-    --background: 36 29% 93%;
-    --foreground: 228 56% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 228 56% 10%;
-    --border: 228 10% 85%;
-    --muted: 36 20% 88%;
-    --muted-foreground: 228 20% 40%;
   }
 }
 
@@ -112,10 +107,63 @@
     color: hsl(var(--cyan));
   }
 
+  /* Halo glass card — navy bg, cyan glow border */
+  .card-halo {
+    background: linear-gradient(
+      135deg,
+      hsl(228 50% 14% / 0.9) 0%,
+      hsl(228 45% 12% / 0.8) 100%
+    );
+    border: 1px solid hsl(186 79% 47% / 0.2);
+    border-radius: var(--radius);
+    box-shadow:
+      0 0 20px hsl(186 79% 47% / 0.08),
+      0 0 40px hsl(186 79% 47% / 0.04),
+      inset 0 1px 0 hsl(186 79% 47% / 0.1);
+    backdrop-filter: blur(12px);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-halo:hover {
+    border-color: hsl(186 79% 47% / 0.35);
+    box-shadow:
+      0 0 30px hsl(186 79% 47% / 0.12),
+      0 0 60px hsl(186 79% 47% / 0.06),
+      inset 0 1px 0 hsl(186 79% 47% / 0.15);
+  }
+
+  /* Legacy alias */
   .card-glass {
     background: hsl(var(--secondary));
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
+  }
+
+  /* Cream section mode */
+  .section-cream {
+    background: hsl(var(--cream-bg));
+    color: hsl(var(--cream-fg));
+  }
+
+  .section-cream .section-label {
+    color: hsl(186 60% 32%);
+  }
+
+  .section-cream .text-muted-foreground,
+  .section-cream .text-cream-muted {
+    color: hsl(var(--cream-muted));
+  }
+
+  .section-cream .card-cream {
+    background: hsl(var(--cream-card));
+    border: 1px solid hsl(var(--cream-border));
+    border-radius: var(--radius);
+  }
+
+  /* Navy section (explicit) */
+  .section-navy {
+    background: hsl(var(--navy));
+    color: hsl(var(--cream));
   }
 
   .gradient-mesh-bg {
