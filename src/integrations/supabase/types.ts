@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       candidatures: {
         Row: {
+          code_postal: string | null
           cooptation: string | null
           created_at: string
           email: string
@@ -35,6 +36,7 @@ export type Database = {
           telephone: string | null
         }
         Insert: {
+          code_postal?: string | null
           cooptation?: string | null
           created_at?: string
           email: string
@@ -54,6 +56,7 @@ export type Database = {
           telephone?: string | null
         }
         Update: {
+          code_postal?: string | null
           cooptation?: string | null
           created_at?: string
           email?: string

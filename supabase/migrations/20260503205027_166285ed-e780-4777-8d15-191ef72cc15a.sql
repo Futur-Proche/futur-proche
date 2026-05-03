@@ -1,0 +1,1 @@
+ALTER TABLE public.candidatures ADD COLUMN code_postal text;
