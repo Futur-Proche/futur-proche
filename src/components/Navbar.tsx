@@ -42,6 +42,12 @@ export const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-3">
           <Link
+            to="/login"
+            className="font-mono text-[11px] uppercase tracking-[1.2px] text-muted-foreground hover:text-primary transition-colors"
+          >
+            Se connecter
+          </Link>
+          <Link
             to="/candidater"
             className="bg-primary text-primary-foreground px-5 py-2 rounded-lg font-grotesk font-medium text-sm hover:opacity-90 transition-opacity"
           >
@@ -72,6 +78,13 @@ export const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          <Link
+            to="/login"
+            onClick={() => setOpen(false)}
+            className="block py-3 font-mono text-[11px] uppercase tracking-[1.2px] text-muted-foreground hover:text-primary transition-colors"
+          >
+            Se connecter
+          </Link>
           <Link
             to="/candidater"
             onClick={() => setOpen(false)}
