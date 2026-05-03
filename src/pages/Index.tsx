@@ -16,19 +16,19 @@ const Index = () => (
     <main>
       {/* 1. Navy — Hero */}
       <HeroSection />
-      {/* 2. Navy — Constat (dark card design) */}
+      {/* 2. Cream — Constat */}
       <TensionSection />
-      {/* 3. Cream — Stats */}
-      <KeyElementsSection />
-      {/* 4. Navy — Formats + Photos */}
+      {/* 3. Navy — Formats + Photos */}
       <FormatsSection />
-      {/* 5. Cream — Testimonials */}
+      {/* 4. Cream — Testimonials */}
       <TestimonialsSection />
-      {/* 6. Navy — Pour qui */}
+      {/* 5. Navy — Stats */}
+      <KeyElementsSection />
+      {/* 6. Cream — Pour qui */}
       <ForYouSection />
-      {/* 7. Cream — Members */}
+      {/* 7. Navy — Members */}
       <MembersCloud />
-      {/* 8. Navy — Join */}
+      {/* 8. Cream — Join */}
       <JoinSection />
       {/* 9. Mesh gradient — CTA */}
       <CTASection />

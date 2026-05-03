@@ -15,39 +15,38 @@ const noItems = [
 
 export const ForYouSection = () => {
   return (
-    <section className="section-navy">
-      <div className="dot-grid" />
-      <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
+    <section className="section-cream">
+      <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
         <div className="flex items-center gap-2 mb-3">
-          <span className="w-2 h-2 rounded-full bg-primary" />
+          <span className="w-2 h-2 rounded-full" style={{ background: "hsl(186 60% 32%)" }} />
           <span className="section-label">Pour qui</span>
         </div>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10 text-white">
+        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10" style={{ color: "hsl(228 56% 10%)" }}>
           C'est pour vous si...
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
           {/* OUI */}
-          <div className="card-halo p-8">
+          <div className="bg-white rounded-xl p-8" style={{ border: "1px solid hsl(228 10% 85%)" }}>
             <span className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5 block text-primary">— Oui</span>
             <ul className="space-y-4">
               {yesItems.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <Check size={18} className="mt-0.5 flex-shrink-0 text-primary" />
-                  <span className="text-base font-medium leading-snug text-white">{item}</span>
+                  <span className="text-base font-medium leading-snug" style={{ color: "hsl(228 56% 10%)" }}>{item}</span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* NON */}
-          <div className="card-halo p-8">
-            <span className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5 block text-white/40">— Non</span>
+          <div className="bg-white rounded-xl p-8" style={{ border: "1px solid hsl(228 10% 85%)" }}>
+            <span className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5 block" style={{ color: "hsl(228 15% 60%)" }}>— Non</span>
             <ul className="space-y-4">
               {noItems.map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <X size={18} className="mt-0.5 flex-shrink-0 text-white/30" />
-                  <span className="text-base leading-snug text-white/60">{item}</span>
+                  <X size={18} className="mt-0.5 flex-shrink-0" style={{ color: "hsl(228 15% 70%)" }} />
+                  <span className="text-base leading-snug" style={{ color: "hsl(228 15% 45%)" }}>{item}</span>
                 </li>
               ))}
             </ul>
