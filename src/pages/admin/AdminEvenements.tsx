@@ -220,6 +220,9 @@ const AdminEvenements = () => {
                 <button onClick={() => openEdit(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                   <Edit2 className="w-3 h-3" /> Modifier
                 </button>
+                <button onClick={() => setVisualEvent(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-primary/60 hover:text-primary hover:bg-primary/5 transition-colors">
+                  <Image className="w-3 h-3" /> Visuels
+                </button>
                 <button onClick={() => deleteMutation.mutate(ev.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-colors">
                   <Trash2 className="w-3 h-3" /> Supprimer
                 </button>
