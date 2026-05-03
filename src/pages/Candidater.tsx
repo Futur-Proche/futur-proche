@@ -168,6 +168,36 @@ const Candidater = () => {
                     — CMO, Scale-up SaaS · Membre depuis 2024
                   </p>
                 </div>
+
+                {/* Members cloud */}
+                <div className="hidden lg:block mt-6">
+                  <p className="text-sm font-grotesk text-white/50 mb-4">
+                    Rejoignez cette communauté d'experts{" "}
+                    <span className="font-serif-accent italic text-primary">qui n'avancent plus seuls.</span>
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {cloudMembers.map((m) => (
+                      <div key={m.id} className="group">
+                        {m.photo_url ? (
+                          <img
+                            src={m.photo_url}
+                            alt={`${m.prenom} ${m.nom}`}
+                            className="w-10 h-10 rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            style={{ border: "2px solid hsl(228 30% 22%)" }}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-mono font-medium"
+                            style={{ border: "1px solid hsl(228 30% 22%)", background: "hsl(228 40% 14%)", color: "hsl(228 15% 55%)" }}
+                          >
+                            {m.prenom[0]}{m.nom[0]}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Right — form */}
