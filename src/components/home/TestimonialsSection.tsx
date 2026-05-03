@@ -60,8 +60,8 @@ export const TestimonialsSection = () => {
                   <span className="font-mono text-[10px] font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.initials}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.name}</p>
-                  <p className="text-xs" style={{ color: "hsl(228 15% 55%)" }}>{t.role}</p>
+                  <p className="text-sm font-medium text-white">{t.name}</p>
+                  <p className="text-xs text-white/50">{t.role}</p>
                 </div>
               </div>
             </div>
