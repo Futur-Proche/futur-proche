@@ -233,6 +233,12 @@ const AdminEvenements = () => {
           ))}
         </div>
       )}
+      {visualEvent && (
+        <EventVisualGenerator
+          event={visualEvent}
+          onClose={() => setVisualEvent(null)}
+        />
+      )}
     </div>
   );
 };
