@@ -54,7 +54,7 @@ export const TestimonialsSection = () => {
               style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
             >
               <span className="text-3xl font-serif leading-none" style={{ color: "hsl(186 60% 32%)" }}>"</span>
-              <p className="text-sm leading-relaxed mt-1 mb-5" style={{ color: "hsl(228 15% 30%)" }}>{t.quote}</p>
+              <p className="text-sm leading-relaxed mt-1 mb-5 text-white/80">{t.quote}</p>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "hsl(186 79% 47%)" }}>
                   <span className="font-mono text-[10px] font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.initials}</span>
