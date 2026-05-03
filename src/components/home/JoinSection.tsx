@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { ClipboardList, Eye, Rocket } from "lucide-react";
 
 const steps = [
@@ -75,20 +74,6 @@ export const JoinSection = () => {
           <p className="text-sm md:text-base leading-relaxed text-white/70 max-w-3xl">
             Parce que la valeur de futur proche repose sur la qualité de chaque membre. On ne cherche pas à grossir sans boussole, on cherche à s'assurer que la communauté gagne en valeur à chaque nouveau Futuriste onboardé.
           </p>
-        </div>
-
-        {/* CTA */}
-        <div className="text-center">
-          <Link
-            to="/candidater"
-            className="inline-flex items-center justify-center px-8 py-4 rounded-full font-grotesk font-semibold text-base transition-all duration-300 hover:scale-105"
-            style={{
-              background: "hsl(186 79% 47%)",
-              color: "hsl(228 56% 10%)",
-            }}
-          >
-            Devenir Futuriste →
-          </Link>
         </div>
       </div>
     </section>

@@ -18,12 +18,12 @@ const Index = () => (
       <HeroSection />
       {/* 2. Cream — Constat */}
       <TensionSection />
-      {/* 3. Navy — Formats + Photos */}
-      <FormatsSection />
-      {/* 4. Cream — Testimonials */}
-      <TestimonialsSection />
-      {/* 5. Navy — Stats */}
+      {/* 3. Navy — Stats */}
       <KeyElementsSection />
+      {/* 4. Cream — Formats + Photos */}
+      <FormatsSection />
+      {/* 5. Navy — Testimonials */}
+      <TestimonialsSection />
       {/* 6. Cream — Pour qui */}
       <ForYouSection />
       {/* 7. Navy — Members */}
