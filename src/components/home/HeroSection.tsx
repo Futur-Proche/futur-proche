@@ -3,7 +3,6 @@ import { ArrowDown } from "lucide-react";
 
 export const HeroSection = () => (
   <section className="relative min-h-screen flex items-center pt-16">
-    {/* Mesh gradient accent */}
     <div className="absolute top-0 right-0 w-1/2 h-full opacity-30 pointer-events-none"
       style={{
         background: "radial-gradient(ellipse 80% 100% at 90% 30%, hsl(186 79% 47% / 0.25) 0%, transparent 60%)"
@@ -16,7 +15,7 @@ export const HeroSection = () => (
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-primary">
-              700+ Leaders · Établi 2024
+              800+ leaders marketing & comm
             </span>
           </div>
 
@@ -26,8 +25,7 @@ export const HeroSection = () => (
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-            La communauté des C-levels et seniors en marketing / comm qui ont arrêté d'y aller seuls. 
-            Pas de théorie. Pas de consultants. Du concret entre ceux qui font.
+            850+ leaders échangent chaque jour sur leurs vrais sujets. Les arbitrages en cours, les outils, les doutes : les décisions qui comptent.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -35,23 +33,22 @@ export const HeroSection = () => (
               to="/candidater"
               className="bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-grotesk font-medium text-base hover:opacity-90 transition-opacity"
             >
-              Je candidate →
+              Devenir Futuriste →
             </Link>
             <a
               href="#tension"
               className="border border-border text-foreground px-7 py-3.5 rounded-lg font-grotesk font-medium text-base hover:bg-secondary transition-colors flex items-center gap-2"
             >
-              Découvrir <ArrowDown size={16} />
+              Découvrir la communauté <ArrowDown size={16} />
             </a>
           </div>
         </div>
 
-        {/* Stats cards */}
         <div className="lg:col-span-2 space-y-4">
           <div className="card-glass p-6">
-            <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Commu_Active</span>
-            <p className="text-5xl font-grotesk font-bold text-primary mt-2">700+</p>
-            <p className="text-sm text-muted-foreground mt-2">Leaders marketing & comm rassemblés. Tous secteurs, toutes tailles.</p>
+            <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Futuristes</span>
+            <p className="text-5xl font-grotesk font-bold text-primary mt-2">850+</p>
+            <p className="text-sm text-muted-foreground mt-2">Leaders Marketing / Comm rassemblés. Tous secteurs, toutes tailles.</p>
           </div>
           <div className="card-glass p-6">
             <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Séniorité_Min</span>
