@@ -11,7 +11,7 @@ const painPoints = [
   },
   {
     num: "03",
-    text: "Vous sentir seul face à des décisions que personne ne peut challenger.",
+    text: "Une décision à prendre, pas le temps de faire appel à une agence ou un cabinet.",
   },
 ];
 

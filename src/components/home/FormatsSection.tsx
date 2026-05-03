@@ -2,7 +2,7 @@ const formats = [
   {
     tag: "01_WhatsApp",
     title: "Échanges quotidiens",
-    desc: "Questions, recos, débats. Réponses en heures, pas en jours.",
+    desc: "Questions, recos, débats. Réponses en hures, pas en jours.",
   },
   {
     tag: "02_Events",

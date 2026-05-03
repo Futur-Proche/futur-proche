@@ -16,7 +16,7 @@ export const HeroSection = () => (
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary/50">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-primary">
-              850+ leaders · établi 2024
+              800+ leaders marketing & comm
             </span>
           </div>
 
@@ -28,7 +28,7 @@ export const HeroSection = () => (
           </h1>
 
           <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
-            850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes : la communauté où se prennent les décisions qui comptent.
+            850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes : l'espace où se prennent les décisions qui comptent.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-1">
