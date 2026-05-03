@@ -85,6 +85,38 @@
   }
 }
 
+/* ========== KEYFRAMES ========== */
+
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(12px, -18px) scale(1.04); }
+  66% { transform: translate(-8px, 10px) scale(0.97); }
+}
+
+@keyframes float-slower {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-16px, -24px) scale(1.06); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  30% { transform: translate(3%, -15%); }
+  50% { transform: translate(12%, 9%); }
+  70% { transform: translate(9%, 4%); }
+  90% { transform: translate(-1%, 7%); }
+}
+
 @layer components {
   .font-serif-accent {
     font-family: var(--font-serif);
@@ -121,7 +153,7 @@
       0 0 40px hsl(186 79% 47% / 0.04),
       inset 0 1px 0 hsl(186 79% 47% / 0.1);
     backdrop-filter: blur(12px);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   }
 
   .card-halo:hover {
@@ -130,6 +162,7 @@
       0 0 30px hsl(186 79% 47% / 0.12),
       0 0 60px hsl(186 79% 47% / 0.06),
       inset 0 1px 0 hsl(186 79% 47% / 0.15);
+    transform: translateY(-4px);
   }
 
   /* Legacy alias */
@@ -164,9 +197,90 @@
   .section-navy {
     background: hsl(var(--navy));
     color: hsl(var(--cream));
+    position: relative;
+    overflow: hidden;
   }
 
   .gradient-mesh-bg {
     background: var(--gradient-mesh);
+  }
+
+  /* ========== Dynamic graphic elements ========== */
+
+  /* Floating orb */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .orb--cyan {
+    background: hsl(186 79% 47% / 0.12);
+    animation: float-slow 14s ease-in-out infinite;
+  }
+
+  .orb--blue {
+    background: hsl(228 75% 53% / 0.10);
+    animation: float-slower 18s ease-in-out infinite;
+  }
+
+  .orb--violet {
+    background: hsl(248 100% 68% / 0.08);
+    animation: float-slow 20s ease-in-out infinite reverse;
+  }
+
+  /* Shimmer divider */
+  .shimmer-line {
+    position: relative;
+    height: 1px;
+    background: hsl(186 79% 47% / 0.15);
+    overflow: hidden;
+  }
+
+  .shimmer-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(186 79% 47% / 0.5), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* Dot grid background pattern */
+  .dot-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, hsl(186 79% 47% / 0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+    animation: pulse-dot 4s ease-in-out infinite;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 70%);
+  }
+
+  /* Noise/grain overlay */
+  .grain-overlay {
+    position: absolute;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 8s steps(10) infinite;
+  }
+
+  /* Card lift for cream cards */
+  .card-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px hsl(228 56% 10% / 0.12);
   }
 }
