@@ -93,7 +93,7 @@ export const findLinkedInPhoto = async (linkedinUrl: string, fullName?: string):
 
       return { imageUrl, sourceUrl, title, score };
     })
-    .filter((item): item is LinkedInPhotoCandidate & { score: number } => Boolean(item))
+    .filter((item): item is { imageUrl: string; sourceUrl: string; title: string; score: number } => Boolean(item))
     .sort((a, b) => b.score - a.score);
 
   const best = scored[0];
