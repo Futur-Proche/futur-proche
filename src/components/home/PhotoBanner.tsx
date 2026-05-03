@@ -10,19 +10,19 @@ export const PhotoBanner = () => (
           <div className="aspect-[4/3] rounded-lg overflow-hidden">
             <img src={communityGroup} alt="Communauté futur proche rassemblée" className="w-full h-full object-cover" loading="lazy" />
           </div>
-          <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-white/40">La communauté réunie lors d'un After Proche</figcaption>
+          <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-white/40 text-center">La communauté réunie lors d'un After Proche</figcaption>
         </figure>
         <figure>
           <div className="aspect-[4/3] rounded-lg overflow-hidden">
             <img src={eventTalk} alt="Conférence After Proche" className="w-full h-full object-cover" loading="lazy" />
           </div>
-          <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-white/40">Speakers & tables rondes entre pairs</figcaption>
+          <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-white/40 text-center">Speakers & tables rondes entre pairs</figcaption>
         </figure>
         <figure>
           <div className="aspect-[4/3] rounded-lg overflow-hidden">
             <img src={eventCommunity} alt="Événement communauté" className="w-full h-full object-cover" loading="lazy" />
           </div>
-          <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-white/40">Networking et échanges informels</figcaption>
+          <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-white/40 text-center">Networking et échanges informels</figcaption>
         </figure>
       </div>
     </div>
