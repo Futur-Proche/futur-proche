@@ -1,14 +1,11 @@
 import communityGroup from "@/assets/community-group.jpg";
 import eventTalk from "@/assets/event-talk.jpg";
 import networkingEchanges from "@/assets/networking-echanges.jpg";
-import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 export const PhotoBanner = () => {
-  const ref = useScrollReveal<HTMLDivElement>();
-
   return (
     <section className="section-navy">
-      <div ref={ref} className="container mx-auto px-6 lg:px-12 py-16">
+      <div className="container mx-auto px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <figure>
             <div className="aspect-[4/3] rounded-lg overflow-hidden">
