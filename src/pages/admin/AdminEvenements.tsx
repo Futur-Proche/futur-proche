@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit2, Trash2, Calendar } from "lucide-react";
+import { Plus, Edit2, Trash2, Calendar, Image } from "lucide-react";
 import { useState } from "react";
 import type { Database } from "@/integrations/supabase/types";
+import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
