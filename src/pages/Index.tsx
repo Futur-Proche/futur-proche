@@ -2,11 +2,11 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { TensionSection } from "@/components/home/TensionSection";
+import { KeyElementsSection } from "@/components/home/KeyElementsSection";
 import { FormatsSection } from "@/components/home/FormatsSection";
-import { StatsSection } from "@/components/home/StatsSection";
-import { TestimonialsSection } from "@/components/home/TestimonialsSection";
-import { ForWhoSection } from "@/components/home/ForWhoSection";
 import { PhotoBanner } from "@/components/home/PhotoBanner";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { JoinSection } from "@/components/home/JoinSection";
 import { CTASection } from "@/components/home/CTASection";
 
 const Index = () => (
@@ -15,11 +15,11 @@ const Index = () => (
     <main>
       <HeroSection />
       <TensionSection />
+      <KeyElementsSection />
       <FormatsSection />
-      <StatsSection />
       <PhotoBanner />
       <TestimonialsSection />
-      <ForWhoSection />
+      <JoinSection />
       <CTASection />
     </main>
     <Footer />

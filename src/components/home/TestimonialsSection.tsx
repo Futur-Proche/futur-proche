@@ -1,12 +1,12 @@
 const testimonials = [
   {
-    quote: "Enfin une commu où je peux poser mes vraies questions sans passer pour un junior.",
+    quote: "Enfin un endroit où poser mes vraies questions sans passer pour un junior.",
     name: "Camille L.",
     initials: "CL",
     role: "CMO · scaleup B2B SaaS",
   },
   {
-    quote: "J'ai trouvé mon prochain CMO part-time via fp. En 48h. Pas un an de Malt.",
+    quote: "J'ai trouvé mon prochain CMO part-time via fp. En 48h.",
     name: "Antoine M.",
     initials: "AM",
     role: "CEO · PME industrielle",
@@ -16,6 +16,24 @@ const testimonials = [
     name: "Sophie R.",
     initials: "SR",
     role: "Head of Marketing · grand groupe",
+  },
+  {
+    quote: "Le niveau des échanges est incomparable avec n'importe quel groupe LinkedIn.",
+    name: "Thomas D.",
+    initials: "TD",
+    role: "VP Marketing · scale-up",
+  },
+  {
+    quote: "J'ai économisé 6 mois de tâtonnement sur ma reorg grâce aux retours de la commu.",
+    name: "Julie P.",
+    initials: "JP",
+    role: "Directrice Communication · ETI",
+  },
+  {
+    quote: "On parle de vrais sujets, avec des vrais chiffres. Pas de posture.",
+    name: "Marc B.",
+    initials: "MB",
+    role: "CMO · SaaS B2B",
   },
 ];
 
@@ -27,9 +45,9 @@ export const TestimonialsSection = () => (
         La parole à ceux qui en sont.
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {testimonials.map((t) => (
-          <div key={t.name} className="bg-card border border-border rounded-lg p-8">
+          <div key={t.name} className="bg-card border border-border rounded-lg p-7">
             <span className="text-primary text-4xl font-serif leading-none">"</span>
             <p className="text-base text-foreground leading-relaxed mt-2 mb-6">{t.quote}</p>
             <div className="flex items-center gap-3">
