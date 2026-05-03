@@ -177,7 +177,7 @@ const AdminEvenements = () => {
       slug: e.slug ?? "",
     });
     // Parse existing speakers from event
-    const existingSpeakers = (e.speakers as Speaker[] | null) ?? [];
+    const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
     setSpeakers(existingSpeakers);
     setShowForm(true);
   };
@@ -430,7 +430,7 @@ const AdminEvenements = () => {
       ) : (
         <div className="space-y-3">
           {events.map((ev) => {
-            const evSpeakers = (ev.speakers as Speaker[] | null) ?? [];
+            const evSpeakers = (ev.speakers as unknown as Speaker[] | null) ?? [];
             return (
               <div key={ev.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
                 <div className="relative p-6" style={{ background: "linear-gradient(135deg, hsl(228 56% 12%) 0%, hsl(248 60% 20%) 50%, hsl(228 56% 12%) 100%)" }}>
