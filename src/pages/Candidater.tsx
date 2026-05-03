@@ -3,6 +3,8 @@ import { Footer } from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import membresFondateurs from "@/assets/membres-fondateurs.jpg";
+import groupeAfterProche from "@/assets/groupe-after-proche.jpg";
 
 const posteOptions = [
   "Dir. Marketing / Com ou assimilé",
@@ -10,12 +12,12 @@ const posteOptions = [
   "CMO ou assimilé",
   "Head of Marketing / Com ou assimilé",
   "Responsable Marketing / Comm ou assimilé",
-  "Expert(e) Senior (copywriting, ads, SEA, SEO etc.)",
+  "Expert·e Senior (copywriting, ads, SEA, SEO etc.)",
   "Autre",
 ];
 
 const secteurOptions = [
-  "Si indépendant(e), ne rien indiquer",
+  "Si indépendant·e, ne rien indiquer",
   "SaaS / Logiciels",
   "Marketplace",
   "E-commerce / DTC",
@@ -188,7 +190,7 @@ const Candidater = () => {
                   style={{ borderColor: "hsl(228 10% 80%)", color: form.poste ? "hsl(228 56% 10%)" : "hsl(228 15% 55%)" }}
                 >
                   <option value="" disabled>
-                    Quel job exercez-vous ? (indé ou salarié(e))
+                    Quel job exercez-vous ? (indé ou salarié·e)
                   </option>
                   {posteOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -210,7 +212,7 @@ const Candidater = () => {
                   required
                   value={form.entreprise}
                   onChange={handleChange}
-                  placeholder="Si indépendant(e), ne rien indiquer"
+                  placeholder="Si indépendant·e, ne rien indiquer"
                   className={inputClass}
                   style={{ borderColor: "hsl(228 10% 80%)", color: "hsl(228 56% 10%)" }}
                 />
@@ -296,7 +298,7 @@ const Candidater = () => {
               {/* Cooptation */}
               <div>
                 <label htmlFor="cooptation" className={labelClass} style={{ color: "hsl(228 56% 10%)" }}>
-                  Êtes-vous coopté(e) par un membre ?
+                  Êtes-vous coopté·e par un membre ?
                 </label>
                 <input
                   id="cooptation"
@@ -320,7 +322,7 @@ const Candidater = () => {
               </button>
 
               <p className="text-center text-xs mt-4" style={{ color: "hsl(228 15% 55%)" }}>
-                En soumettant ce formulaire, vous acceptez d'être contacté(e) par l'équipe futur proche.
+                En soumettant ce formulaire, vous acceptez d'être contacté·e par l'équipe futur proche.
               </p>
             </form>
           </div>
