@@ -205,6 +205,7 @@ const Communaute = () => {
                   style={{ color: "hsl(228 15% 50%)" }}
                 >
                   Groupes triés par thématique — on s'y retrouve facilement.
+                </p>
               </div>
 
               {/* Right: description text */}
