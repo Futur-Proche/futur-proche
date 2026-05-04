@@ -6,7 +6,7 @@ import { MembersCloud } from "@/components/home/MembersCloud";
 import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
-import whatsappMontageImg from "@/assets/whatsapp-montage.jpg";
+import whatsappMontageImg from "@/assets/whatsapp-montage.png";
 import formatAfterworkImg from "@/assets/format-afterwork.jpg";
 import formatPodcastImg from "@/assets/format-podcast.jpg";
 import formatJobsImg from "@/assets/format-jobs.jpg";
@@ -174,7 +174,7 @@ const Communaute = () => {
                   className="absolute inset-0 blur-3xl opacity-20 rounded-full"
                   style={{ background: "radial-gradient(circle, hsl(186 79% 47%), transparent 70%)" }}
                 />
-                <div className="relative w-full max-w-md group">
+                <div className="relative w-full max-w-lg group">
                   <div
                     className="absolute -inset-3 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                     style={{ background: "linear-gradient(135deg, hsl(186 79% 47% / 0.15), transparent, hsl(186 79% 47% / 0.1))" }}
@@ -182,26 +182,13 @@ const Communaute = () => {
                   <img
                     src={whatsappMontageImg}
                     alt="Les groupes WhatsApp futur proche — 12 groupes thématiques avec des échanges quotidiens"
-                    className="rounded-2xl w-full shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-[1.02]"
+                    className="w-full relative z-10 transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="lazy"
                   />
-                  {/* Floating badge */}
-                  <div
-                    className="absolute -bottom-3 -right-3 px-4 py-2 rounded-full text-xs font-grotesk font-semibold shadow-lg z-20"
-                    style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
-                  >
-                    850+ actifs
-                  </div>
-                  <div
-                    className="absolute -top-2 -left-2 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold shadow-lg z-20"
-                    style={{ background: "hsl(228 56% 10%)", color: "white", border: "1px solid hsl(228 30% 22%)" }}
-                  >
-                    12 groupes
-                  </div>
                 </div>
                 {/* Caption */}
                 <p
-                  className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[11px] text-center leading-relaxed whitespace-nowrap font-mono"
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[11px] text-center leading-relaxed whitespace-nowrap font-mono"
                   style={{ color: "hsl(228 15% 50%)" }}
                 >
                   Groupes triés par thématique — on s'y retrouve facilement.
