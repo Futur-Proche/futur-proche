@@ -6,7 +6,7 @@ import { MembersCloud } from "@/components/home/MembersCloud";
 import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
-import whatsappGroupsImg from "@/assets/whatsapp-groups.png";
+import whatsappMontageImg from "@/assets/whatsapp-montage.jpg";
 import formatAfterworkImg from "@/assets/format-afterwork.jpg";
 import formatPodcastImg from "@/assets/format-podcast.jpg";
 import formatJobsImg from "@/assets/format-jobs.jpg";
