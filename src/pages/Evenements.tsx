@@ -96,6 +96,19 @@ const Evenements = () => {
     },
   });
 
+  const { data: pastEventsData } = useQuery({
+    queryKey: ["past-events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("statut", "past")
+        .order("date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
   /* Carousel state */
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = carouselImages.length;
