@@ -24,6 +24,7 @@ import ambianceGroupeImg from "@/assets/ambiance-groupe.jpg";
 import terrasseGroupeImg from "@/assets/terrasse-groupe.jpg";
 import conferencePublicImg from "@/assets/conference-public-nombreux.jpg";
 import selfieFpImg from "@/assets/selfie-fp.jpg";
+import networkingEchanges3Img from "@/assets/networking-echanges-3.jpg";
 
 /* ───────── TYPES ───────── */
 
