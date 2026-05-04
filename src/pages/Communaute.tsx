@@ -272,11 +272,9 @@ const Communaute = () => {
                 </div>
               ))}
             </div>
-                </p>
-              </div>
-            </div>
           </div>
         </section>
+
 
         {/* ── SECTION 3 — Les formats with images ── */}
         <section className="section-navy relative">
