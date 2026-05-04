@@ -167,22 +167,21 @@ const Communaute = () => {
 
             {/* Two-column layout: visual left, text right */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16">
-              {/* Left: WhatsApp screenshot with effects */}
+               {/* Left: WhatsApp montage with effects */}
               <div className="flex justify-center relative">
-                {/* Glow behind phone */}
+                {/* Glow behind montage */}
                 <div
                   className="absolute inset-0 blur-3xl opacity-20 rounded-full"
                   style={{ background: "radial-gradient(circle, hsl(186 79% 47%), transparent 70%)" }}
                 />
-                <div className="relative w-full max-w-[280px] group">
-                  {/* Phone frame effect */}
+                <div className="relative w-full max-w-md group">
                   <div
                     className="absolute -inset-3 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                     style={{ background: "linear-gradient(135deg, hsl(186 79% 47% / 0.15), transparent, hsl(186 79% 47% / 0.1))" }}
                   />
                   <img
-                    src={whatsappGroupsImg}
-                    alt="Les groupes WhatsApp futur proche — triés par thématique"
+                    src={whatsappMontageImg}
+                    alt="Les groupes WhatsApp futur proche — 12 groupes thématiques avec des échanges quotidiens"
                     className="rounded-2xl w-full shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="lazy"
                   />
@@ -193,7 +192,6 @@ const Communaute = () => {
                   >
                     850+ actifs
                   </div>
-                  {/* Floating message count badge */}
                   <div
                     className="absolute -top-2 -left-2 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold shadow-lg z-20"
                     style={{ background: "hsl(228 56% 10%)", color: "white", border: "1px solid hsl(228 30% 22%)" }}
@@ -207,7 +205,6 @@ const Communaute = () => {
                   style={{ color: "hsl(228 15% 50%)" }}
                 >
                   Groupes triés par thématique — on s'y retrouve facilement.
-                </p>
               </div>
 
               {/* Right: description text */}
