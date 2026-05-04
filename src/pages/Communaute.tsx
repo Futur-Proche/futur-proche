@@ -551,42 +551,41 @@ const MembersCloudInline = () => {
       const { data } = await supabase
         .from("profiles")
         .select("id, prenom, nom, photo_url")
-        .limit(20);
+        .limit(30);
       return data ?? [];
     },
   });
 
-  const placeholders = Array.from({ length: 16 }, (_, i) => ({
+  const placeholders = Array.from({ length: 24 }, (_, i) => ({
     id: `ph-${i}`,
-    prenom: ["A", "C", "E", "G", "I", "K", "M", "O"][i % 8],
-    nom: ["B", "D", "F", "H", "J", "L", "N", "P"][i % 8],
+    prenom: ["A", "C", "E", "G", "I", "K", "M", "O", "Q", "S", "U", "W"][i % 12],
+    nom: ["B", "D", "F", "H", "J", "L", "N", "P", "R", "T", "V", "X"][i % 12],
     photo_url: null as string | null,
   }));
 
   const displayMembers = members?.length ? members : placeholders;
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center">
+    <div className="flex gap-3 flex-nowrap">
       {displayMembers.map((m) => (
-        <div key={m.id} className="relative group">
+        <div key={m.id} className="relative group flex-shrink-0">
           {m.photo_url ? (
             <img
               src={m.photo_url}
               alt={`${m.prenom} ${m.nom}`}
-              className="w-11 h-11 rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
+              className="w-12 h-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
               style={{ border: "2px solid hsl(228 30% 22%)" }}
             />
           ) : (
             <div
-              className="w-11 h-11 rounded-full flex items-center justify-center text-[10px] font-mono font-medium"
+              className="w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-mono font-medium transition-all duration-300 group-hover:border-primary"
               style={{
                 border: "1px solid hsl(228 30% 22%)",
                 background: "hsl(228 40% 16%)",
                 color: "hsl(186 79% 47%)",
               }}
             >
-              {m.prenom[0]}
-              {m.nom[0]}
+              {m.prenom[0]}{m.nom[0]}
             </div>
           )}
           <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-white text-[9px] px-2 py-0.5 rounded shadow text-[hsl(228_56%_10%)] font-medium z-10">
