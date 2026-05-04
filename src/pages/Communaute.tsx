@@ -209,7 +209,7 @@ const Communaute = () => {
                   {[
                     { val: "500+", label: "messages / semaine" },
                     { val: "12", label: "groupes thématiques" },
-                    { val: "24h", label: "délai de réponse moyen" },
+                    { val: "8min", label: "délai de réponse moyen" },
                   ].map((s) => (
                     <div
                       key={s.label}
