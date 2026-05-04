@@ -115,104 +115,166 @@ const Communaute = () => {
           </div>
         </section>
 
-        {/* ── Members Cloud — sous le hero ── */}
-        <section className="section-navy relative pb-20 md:pb-28">
-          <div className="container relative z-10 mx-auto px-6 lg:px-12">
-            <div
-              className="rounded-2xl p-6 md:p-8 max-w-3xl mx-auto"
-              style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
-            >
-              <h3 className="text-sm font-grotesk font-semibold text-white mb-4 text-center">
+        {/* ── Members Cloud — section à part ── */}
+        <section className="relative overflow-hidden" style={{ background: "hsl(228 56% 10%)" }}>
+          {/* Decorative gradient line */}
+          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, hsl(186 79% 47% / 0.4), transparent)" }} />
+          <div className="container relative z-10 mx-auto px-6 lg:px-12 py-16 md:py-20">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-grotesk font-bold text-white tracking-tight">
                 Ils sont déjà{" "}
                 <span className="font-serif-accent text-primary">Futuristes.</span>
-              </h3>
-              <MembersCloudInline />
+              </h2>
+              <p className="text-sm text-white/40 mt-2 font-mono uppercase tracking-widest">
+                850+ leaders Marketing / Comm
+              </p>
+            </div>
+
+            {/* Scrolling marquee-style members */}
+            <div className="relative">
+              {/* Left/right fade */}
+              <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none" style={{ background: "linear-gradient(to right, hsl(228 56% 10%), transparent)" }} />
+              <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none" style={{ background: "linear-gradient(to left, hsl(228 56% 10%), transparent)" }} />
+              <div className="overflow-hidden">
+                <div className="flex gap-3 animate-[marquee_40s_linear_infinite] w-max">
+                  <MembersCloudInline />
+                  <MembersCloudInline />
+                </div>
+              </div>
             </div>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, hsl(186 79% 47% / 0.2), transparent)" }} />
         </section>
 
         {/* ── SECTION 2 — Le quotidien + WhatsApp visual ── */}
-        <section className="section-cream">
-          <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-              {/* Left: texte */}
-              <div className="lg:col-span-3">
-                <span className="section-label">— Le quotidien chez futur proche</span>
-                <h2
-                  className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
-                  style={{ color: "hsl(228 56% 10%)" }}
-                >
-                  Ce qui se passe chaque semaine
-                </h2>
-                <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
+        <section className="section-cream relative overflow-hidden">
+          {/* Decorative background circles */}
+          <div className="absolute -top-32 -left-32 w-64 h-64 rounded-full opacity-[0.04] pointer-events-none" style={{ background: "hsl(186 79% 47%)" }} />
+          <div className="absolute -bottom-24 -right-24 w-48 h-48 rounded-full opacity-[0.03] pointer-events-none" style={{ background: "hsl(228 56% 10%)" }} />
 
+          <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28 relative z-10">
+            {/* Header — centered */}
+            <div className="text-center mb-14">
+              <span className="section-label">— Le quotidien chez futur proche</span>
+              <h2
+                className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
+                style={{ color: "hsl(228 56% 10%)" }}
+              >
+                Ce qui se passe chaque semaine
+              </h2>
+              <div className="w-16 h-[3px] bg-primary mx-auto rounded-full" />
+            </div>
+
+            {/* Two-column layout: visual left, text right */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16">
+              {/* Left: WhatsApp screenshot with effects */}
+              <div className="flex justify-center relative">
+                {/* Glow behind phone */}
+                <div
+                  className="absolute inset-0 blur-3xl opacity-20 rounded-full"
+                  style={{ background: "radial-gradient(circle, hsl(186 79% 47%), transparent 70%)" }}
+                />
+                <div className="relative w-full max-w-[280px] group">
+                  {/* Phone frame effect */}
+                  <div
+                    className="absolute -inset-3 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                    style={{ background: "linear-gradient(135deg, hsl(186 79% 47% / 0.15), transparent, hsl(186 79% 47% / 0.1))" }}
+                  />
+                  <img
+                    src={whatsappGroupsImg}
+                    alt="Les groupes WhatsApp futur proche — triés par thématique"
+                    className="rounded-2xl w-full shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-[1.02]"
+                    loading="lazy"
+                  />
+                  {/* Floating badge */}
+                  <div
+                    className="absolute -bottom-3 -right-3 px-4 py-2 rounded-full text-xs font-grotesk font-semibold shadow-lg z-20"
+                    style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
+                  >
+                    850+ actifs
+                  </div>
+                  {/* Floating message count badge */}
+                  <div
+                    className="absolute -top-2 -left-2 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold shadow-lg z-20"
+                    style={{ background: "hsl(228 56% 10%)", color: "white", border: "1px solid hsl(228 30% 22%)" }}
+                  >
+                    12 groupes
+                  </div>
+                </div>
+                {/* Caption */}
                 <p
-                  className="text-base md:text-lg leading-relaxed max-w-3xl mb-10"
+                  className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[11px] text-center leading-relaxed whitespace-nowrap font-mono"
+                  style={{ color: "hsl(228 15% 50%)" }}
+                >
+                  Groupes triés par thématique — on s'y retrouve facilement.
+                </p>
+              </div>
+
+              {/* Right: description text */}
+              <div>
+                <p
+                  className="text-base md:text-lg leading-relaxed mb-8"
                   style={{ color: "hsl(228 15% 35%)" }}
                 >
                   La communauté vit sur WhatsApp, tous les jours, toute l'année. Des centaines de messages par semaine. Des Futuristes qui partagent leurs arbitrages en cours, leurs doutes, leurs trouvailles, leurs idées. Des réponses concrètes, sourcées, sans détour.
                 </p>
 
-                <h3
-                  className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5"
-                  style={{ color: "hsl(186 60% 32%)" }}
-                >
-                  Exemples de sujets réels
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                  {sujets.map((s, i) => (
+                {/* Inline stats */}
+                <div className="flex flex-wrap gap-4 mb-8">
+                  {[
+                    { val: "500+", label: "messages / semaine" },
+                    { val: "12", label: "groupes thématiques" },
+                    { val: "24h", label: "délai de réponse moyen" },
+                  ].map((s) => (
                     <div
-                      key={i}
-                      className="bg-white rounded-xl p-5 card-lift"
-                      style={{ border: "1px solid hsl(228 10% 85%)" }}
+                      key={s.label}
+                      className="flex-1 min-w-[120px] rounded-xl p-4 text-center"
+                      style={{ background: "hsl(228 56% 10% / 0.06)", border: "1px solid hsl(228 10% 85%)" }}
                     >
-                      <span
-                        className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-2"
-                        style={{ color: "hsl(186 60% 32%)" }}
-                      >
-                        #{String(i + 1).padStart(2, "0")}
-                      </span>
-                      <p
-                        className="text-sm leading-relaxed font-medium"
-                        style={{ color: "hsl(228 56% 10%)" }}
-                      >
-                        {s}
-                      </p>
+                      <span className="text-xl font-grotesk font-bold block" style={{ color: "hsl(186 60% 32%)" }}>{s.val}</span>
+                      <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "hsl(228 15% 50%)" }}>{s.label}</span>
                     </div>
                   ))}
                 </div>
 
-                <p className="text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 15% 45%)" }}>
-                  Pas des discussions théoriques, des décisions qui se prennent, en live. Des réponses de pros qui ont déjà été confrontés au même choix, aux mêmes freins.
-                </p>
-              </div>
-
-              {/* Right: WhatsApp screenshot */}
-              <div className="lg:col-span-2 flex flex-col items-center gap-4 pt-8">
-                <div className="relative w-full max-w-[300px]">
-                  <img
-                    src={whatsappGroupsImg}
-                    alt="Les groupes WhatsApp futur proche — triés par thématique"
-                    className="rounded-2xl w-full shadow-2xl"
-                    loading="lazy"
-                  />
-                  <div
-                    className="absolute -bottom-3 -right-3 px-4 py-2 rounded-full text-xs font-grotesk font-semibold shadow-lg"
-                    style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
-                  >
-                    850+ actifs
-                  </div>
-                </div>
-                <p
-                  className="text-xs text-center leading-relaxed mt-2 max-w-[280px]"
-                  style={{ color: "hsl(228 15% 50%)" }}
-                >
-                  Le groupe WhatsApp est organisé par thématique pour s'y retrouver facilement dans les échanges.
+                <p className="text-sm leading-relaxed" style={{ color: "hsl(228 15% 45%)" }}>
+                  Pas des discussions théoriques — des décisions qui se prennent, en live. Des réponses de pros qui ont déjà été confrontés au même choix, aux mêmes freins.
                 </p>
               </div>
             </div>
+
+            {/* Subject cards grid — full width */}
+            <h3
+              className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5"
+              style={{ color: "hsl(186 60% 32%)" }}
+            >
+              Exemples de sujets réels
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sujets.map((s, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl p-5 card-lift group transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  style={{ border: "1px solid hsl(228 10% 85%)" }}
+                >
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-2 transition-colors duration-300 group-hover:text-primary"
+                    style={{ color: "hsl(186 60% 32%)" }}
+                  >
+                    #{String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p
+                    className="text-sm leading-relaxed font-medium"
+                    style={{ color: "hsl(228 56% 10%)" }}
+                  >
+                    {s}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
+
 
         {/* ── SECTION 3 — Les formats with images ── */}
         <section className="section-navy relative">
@@ -489,42 +551,41 @@ const MembersCloudInline = () => {
       const { data } = await supabase
         .from("profiles")
         .select("id, prenom, nom, photo_url")
-        .limit(20);
+        .limit(30);
       return data ?? [];
     },
   });
 
-  const placeholders = Array.from({ length: 16 }, (_, i) => ({
+  const placeholders = Array.from({ length: 24 }, (_, i) => ({
     id: `ph-${i}`,
-    prenom: ["A", "C", "E", "G", "I", "K", "M", "O"][i % 8],
-    nom: ["B", "D", "F", "H", "J", "L", "N", "P"][i % 8],
+    prenom: ["A", "C", "E", "G", "I", "K", "M", "O", "Q", "S", "U", "W"][i % 12],
+    nom: ["B", "D", "F", "H", "J", "L", "N", "P", "R", "T", "V", "X"][i % 12],
     photo_url: null as string | null,
   }));
 
   const displayMembers = members?.length ? members : placeholders;
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center">
+    <div className="flex gap-3 flex-nowrap">
       {displayMembers.map((m) => (
-        <div key={m.id} className="relative group">
+        <div key={m.id} className="relative group flex-shrink-0">
           {m.photo_url ? (
             <img
               src={m.photo_url}
               alt={`${m.prenom} ${m.nom}`}
-              className="w-11 h-11 rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
+              className="w-12 h-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
               style={{ border: "2px solid hsl(228 30% 22%)" }}
             />
           ) : (
             <div
-              className="w-11 h-11 rounded-full flex items-center justify-center text-[10px] font-mono font-medium"
+              className="w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-mono font-medium transition-all duration-300 group-hover:border-primary"
               style={{
                 border: "1px solid hsl(228 30% 22%)",
                 background: "hsl(228 40% 16%)",
                 color: "hsl(186 79% 47%)",
               }}
             >
-              {m.prenom[0]}
-              {m.nom[0]}
+              {m.prenom[0]}{m.nom[0]}
             </div>
           )}
           <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-white text-[9px] px-2 py-0.5 rounded shadow text-[hsl(228_56%_10%)] font-medium z-10">
