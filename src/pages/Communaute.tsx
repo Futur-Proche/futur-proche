@@ -6,7 +6,7 @@ import { MembersCloud } from "@/components/home/MembersCloud";
 import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
-import whatsappCommunityImg from "@/assets/whatsapp-community.jpg";
+import whatsappGroupsImg from "@/assets/whatsapp-groups.png";
 import formatAfterworkImg from "@/assets/format-afterwork.jpg";
 import formatPodcastImg from "@/assets/format-podcast.jpg";
 import formatJobsImg from "@/assets/format-jobs.jpg";
@@ -98,7 +98,7 @@ const Communaute = () => {
       <Navbar />
       <main>
         {/* ── SECTION 1 — Hero ── */}
-        <section className="section-navy relative pt-32 pb-20 md:pt-40 md:pb-28">
+        <section className="section-navy relative pt-32 pb-12 md:pt-40 md:pb-16">
           <div className="dot-grid" />
           <div className="container relative z-10 mx-auto px-6 lg:px-12 max-w-4xl text-center">
             <span className="section-label mb-4 inline-block">— La communauté</span>
@@ -112,6 +112,22 @@ const Communaute = () => {
             <p className="text-base md:text-lg leading-relaxed text-white/60 max-w-3xl mx-auto">
               futur proche rassemble les leaders du Marketing et de la Communication les plus engagés de France. Pas un annuaire, pas un réseau de plus. L'endroit où 800 pairs seniors se posent les vraies questions — et y répondent.
             </p>
+          </div>
+        </section>
+
+        {/* ── Members Cloud — sous le hero ── */}
+        <section className="section-navy relative pb-20 md:pb-28">
+          <div className="container relative z-10 mx-auto px-6 lg:px-12">
+            <div
+              className="rounded-2xl p-6 md:p-8 max-w-3xl mx-auto"
+              style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
+            >
+              <h3 className="text-sm font-grotesk font-semibold text-white mb-4 text-center">
+                Ils sont déjà{" "}
+                <span className="font-serif-accent text-primary">Futuristes.</span>
+              </h3>
+              <MembersCloudInline />
+            </div>
           </div>
         </section>
 
@@ -171,13 +187,12 @@ const Communaute = () => {
                 </p>
               </div>
 
-              {/* Right: WhatsApp mockup + Members Cloud */}
-              <div className="lg:col-span-2 flex flex-col items-center gap-6 pt-8">
-                {/* WhatsApp visual */}
+              {/* Right: WhatsApp screenshot */}
+              <div className="lg:col-span-2 flex flex-col items-center gap-4 pt-8">
                 <div className="relative w-full max-w-[300px]">
                   <img
-                    src={whatsappCommunityImg}
-                    alt="Échanges entre Futuristes sur WhatsApp — questions Marketing concrètes"
+                    src={whatsappGroupsImg}
+                    alt="Les groupes WhatsApp futur proche — triés par thématique"
                     className="rounded-2xl w-full shadow-2xl"
                     loading="lazy"
                   />
@@ -188,18 +203,12 @@ const Communaute = () => {
                     850+ actifs
                   </div>
                 </div>
-
-                {/* Mini Members Cloud */}
-                <div
-                  className="rounded-2xl p-5 w-full"
-                  style={{ background: "hsl(228 56% 10%)" }}
+                <p
+                  className="text-xs text-center leading-relaxed mt-2 max-w-[280px]"
+                  style={{ color: "hsl(228 15% 50%)" }}
                 >
-                  <h3 className="text-sm font-grotesk font-semibold text-white mb-3 text-center">
-                    Ils sont déjà{" "}
-                    <span className="font-serif-accent text-primary">Futuristes.</span>
-                  </h3>
-                  <MembersCloudInline />
-                </div>
+                  Le groupe WhatsApp est organisé par thématique pour s'y retrouver facilement dans les échanges.
+                </p>
               </div>
             </div>
           </div>
@@ -261,7 +270,6 @@ const Communaute = () => {
 
         {/* ── SECTION 4 — Profil des membres (enhanced) ── */}
         <section className="section-cream relative overflow-hidden">
-          {/* Decorative gradient blob */}
           <div
             className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-10 blur-3xl pointer-events-none"
             style={{ background: "hsl(186 79% 47%)" }}
@@ -339,7 +347,7 @@ const Communaute = () => {
               </div>
             </div>
 
-            {/* Ce qui les rassemble — card with accent border */}
+            {/* Ce qui les rassemble */}
             <div
               className="rounded-xl p-7 md:p-10 relative overflow-hidden"
               style={{ background: "hsl(228 56% 10%)" }}
@@ -361,7 +369,6 @@ const Communaute = () => {
         {/* ── SECTION 5 — Comment devenir Futuriste (enhanced) ── */}
         <section className="section-navy relative overflow-hidden">
           <div className="dot-grid" />
-          {/* Decorative accent */}
           <div
             className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full opacity-5 blur-3xl pointer-events-none"
             style={{ background: "hsl(186 79% 47%)" }}
@@ -381,7 +388,6 @@ const Communaute = () => {
 
             {/* Timeline-style steps */}
             <div className="relative mb-12">
-              {/* Connecting line */}
               <div className="hidden md:block absolute top-[52px] left-[calc(16.66%+24px)] right-[calc(16.66%+24px)] h-[2px]" style={{ background: "hsl(228 30% 22%)" }} />
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -390,7 +396,6 @@ const Communaute = () => {
                     key={s.tag}
                     className="relative group"
                   >
-                    {/* Step number circle */}
                     <div className="flex justify-center mb-6">
                       <div
                         className="w-14 h-14 rounded-full flex items-center justify-center relative z-10 transition-transform duration-300 group-hover:scale-110"
@@ -403,7 +408,6 @@ const Communaute = () => {
                       </div>
                     </div>
 
-                    {/* Card */}
                     <div
                       className="rounded-xl p-7 text-center transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg"
                       style={{
@@ -421,7 +425,6 @@ const Communaute = () => {
                       <p className="text-sm leading-relaxed text-white/60">{s.desc}</p>
                     </div>
 
-                    {/* Arrow between steps */}
                     {i < steps.length - 1 && (
                       <div className="hidden md:flex absolute top-[52px] -right-4 z-20">
                         <ArrowRight size={16} className="text-white/20" />
