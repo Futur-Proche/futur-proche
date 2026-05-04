@@ -53,12 +53,11 @@ const themes = [
   "Le nouveau modèle des agences marketing / comm",
 ];
 
-const pastEvents = [
-  { num: "#10", theme: "Social Media : ce qui marche encore, ce qui ne marche plus", ville: "Paris", date: "Mars 2026" },
-  { num: "#9", theme: "IA et micro-équipes marketing : faire plus avec moins", ville: "Lyon", date: "Fév. 2026" },
-  { num: "#8", theme: "Community Marketing : construire une audience qui vous appartient", ville: "Paris", date: "Déc. 2025" },
-  { num: "#7", theme: "Faire exploser des champions français à l'international", ville: "Paris (chez Brevo)", date: "Nov. 2025" },
-];
+const formatDate = (d: string) => {
+  const date = new Date(d + "T00:00:00");
+  const months = ["Jan.", "Fév.", "Mars", "Avril", "Mai", "Juin", "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."];
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
+};
 
 const partners = [
   "Brevo", "Le Wagon", "Contentsquare", "Back Market", "Malt",
