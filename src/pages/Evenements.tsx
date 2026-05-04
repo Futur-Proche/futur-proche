@@ -24,6 +24,7 @@ import ambianceGroupeImg from "@/assets/ambiance-groupe.jpg";
 import terrasseGroupeImg from "@/assets/terrasse-groupe.jpg";
 import conferencePublicImg from "@/assets/conference-public-nombreux.jpg";
 import selfieFpImg from "@/assets/selfie-fp.jpg";
+import networkingEchanges3Img from "@/assets/networking-echanges-3.jpg";
 
 /* ───────── TYPES ───────── */
 
@@ -262,17 +263,25 @@ const Evenements = () => {
                 </div>
               </div>
 
-              <div className="rounded-xl p-7 card-lift" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(186 79% 47% / 0.12)" }}>
-                    <Handshake size={20} className="text-primary" />
+              <div className="rounded-xl overflow-hidden card-lift" style={{ border: "1px solid hsl(228 30% 22%)" }}>
+                <img
+                  src={networkingEchanges3Img}
+                  alt="Networking entre leaders Marketing lors d'un événement futur proche"
+                  className="w-full h-48 object-cover"
+                  loading="lazy"
+                />
+                <div className="p-7">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(186 79% 47% / 0.12)" }}>
+                      <Handshake size={20} className="text-primary" />
+                    </div>
+                    <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Annuel</span>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Annuel</span>
+                  <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">The Network Effect</h3>
+                  <p className="text-sm leading-relaxed text-white/60">
+                    futur proche invite d'autres collectifs à croiser leurs regards. Un sujet, plusieurs communautés, une soirée. Une fois par an.
+                  </p>
                 </div>
-                <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">The Network Effect</h3>
-                <p className="text-sm leading-relaxed text-white/60">
-                  futur proche invite d'autres collectifs à croiser leurs regards. Un sujet, plusieurs communautés, une soirée. Une fois par an.
-                </p>
               </div>
             </div>
           </div>

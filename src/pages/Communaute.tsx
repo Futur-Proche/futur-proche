@@ -1,10 +1,19 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MembersCloud } from "@/components/home/MembersCloud";
-import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3 } from "lucide-react";
+import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
+import whatsappCommunityImg from "@/assets/whatsapp-community.jpg";
+import formatAfterworkImg from "@/assets/format-afterwork.jpg";
+import formatPodcastImg from "@/assets/format-podcast.jpg";
+import formatJobsImg from "@/assets/format-jobs.jpg";
+import formatEtudesImg from "@/assets/format-etudes.jpg";
+
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 /* ───────────── DATA ───────────── */
 
@@ -22,33 +31,37 @@ const formats = [
     icon: MessageSquare,
     tag: "01",
     title: "After Proche & dîners",
-    body: "Des afterworks et dîners chaque mois, des speakers haut niveau pour explorer nos problématiques clé ensemble. Paris, Lyon, Bordeaux, Toulouse, Nantes, Lille — et ça se développe. Chaque After Proche explore un sujet stratégique du métier : internationalisation, social media, IA et micro-équipes, community marketing, creator economy, Marketing & ComEx / CoDir etc. Échanges et débats concrets entre pairs, pas de la keynote descendante.",
+    body: "Des afterworks et dîners chaque mois, des speakers haut niveau pour explorer nos problématiques clé ensemble. Paris, Lyon, Bordeaux, Toulouse, Nantes, Lille — et ça se développe.",
+    image: formatAfterworkImg,
   },
   {
     icon: Mic,
     tag: "02",
     title: "Le podcast futur proche",
-    body: "1 h de talk show mensuel pour challenger les a priori, entre leaders Marketing / Comm. 3 invités, 1 problématique terrain, le tout animé par Dominique Trémouille, CMO Part Time & cofounder futur proche. Un élément clé : pas de recettes toutes faites, des convictions forgées au quotidien.",
+    body: "1 h de talk show mensuel pour challenger les a priori, entre leaders Marketing / Comm. 3 invités, 1 problématique terrain, animé par Dominique Trémouille.",
+    image: formatPodcastImg,
   },
   {
     icon: Briefcase,
     tag: "03",
     title: "Jobs, missions et recommandations",
-    body: "Recrutements, missions freelance, recommandations de prestataires et d'outils. Quand un Futuriste cherche un profil ou un partenaire, sa réponse, il la trouve chez futur proche. Le bouche-à-oreille de 850+ leaders qui se font confiance.",
+    body: "Recrutements, missions freelance, recommandations de prestataires et d'outils. Le bouche-à-oreille de 850+ leaders qui se font confiance.",
+    image: formatJobsImg,
   },
   {
     icon: BarChart3,
     tag: "04",
     title: "Études et analyse terrain",
-    body: "Étude de rémunération annuelle (800+ répondants en 2025), synthèses mensuelles des échanges, analyses terrain. Des données quali & quanti exclusives, produites par et pour les membres.",
+    body: "Étude de rémunération annuelle (800+ répondants), synthèses mensuelles, analyses terrain. Des données quali & quanti exclusives.",
+    image: formatEtudesImg,
   },
 ];
 
 const stats = [
-  { label: "Expérience minimum", value: "7 à 8 ans en Marketing / Communication, salarié comme indépendant" },
-  { label: "C-Level", value: "40 % — CMO, VP Marketing, Directeurs" },
-  { label: "Répartition", value: "35 % PME et ETI, 25 % startups et scale-ups, 20 % grands groupes, 20 % indépendants et agences" },
-  { label: "Secteurs", value: "B2B, B2C, Tech, Retail, Services, Industrie, Food, Pharma…" },
+  { label: "Expérience minimum", value: "7 à 8 ans en Marketing / Communication, salarié comme indépendant", highlight: "7-8 ans" },
+  { label: "C-Level", value: "CMO, VP Marketing, Directeurs", highlight: "40 %" },
+  { label: "Répartition", value: "PME/ETI, startups, grands groupes, indépendants et agences", highlight: "4 univers" },
+  { label: "Secteurs", value: "B2B, B2C, Tech, Retail, Services, Industrie, Food, Pharma…", highlight: "10+" },
 ];
 
 const steps = [
@@ -57,314 +70,414 @@ const steps = [
     tag: "01",
     title: "Candidature",
     desc: "Un formulaire rapide (2 minutes). Parcours, poste actuel, motivation.",
+    color: "hsl(186 79% 47%)",
   },
   {
     icon: Eye,
     tag: "02",
     title: "Review",
-    desc: "L'équipe Onboarding examine chaque profil : expérience (7+ ans), poste en cours et passés, personnalité & expériences diverses.",
+    desc: "L'équipe Onboarding examine chaque profil : expérience (7+ ans), poste en cours et passés, personnalité.",
+    color: "hsl(45 100% 60%)",
   },
   {
     icon: Rocket,
     tag: "03",
     title: "Intégration",
-    desc: "Accès à la communauté WhatsApp, séquence d'onboarding, présentation aux membres, invitation aux prochains événements, ressources et opportunités.",
+    desc: "Accès à la communauté WhatsApp, séquence d'onboarding, présentation aux membres, invitation aux prochains événements.",
+    color: "hsl(140 60% 50%)",
   },
 ];
 
 /* ───────────── COMPONENT ───────────── */
 
-const Communaute = () => (
-  <>
-    <Navbar />
-    <main>
-      {/* ── SECTION 1 — Hero ── */}
-      <section className="section-navy relative pt-32 pb-20 md:pt-40 md:pb-28">
-        <div className="dot-grid" />
-        <div className="container relative z-10 mx-auto px-6 lg:px-12 max-w-4xl text-center">
-          <span className="section-label mb-4 inline-block">— La communauté</span>
-          <h1 className="text-3xl md:text-5xl font-grotesk font-bold tracking-tight text-white leading-[1.15] mb-6">
-            850+ leaders Marketing et Comm.{" "}
-            <span className="font-serif-accent text-primary">
-              Une seule communauté
-            </span>{" "}
-            pour trancher sur les sujets qui comptent.
-          </h1>
-          <p className="text-base md:text-lg leading-relaxed text-white/60 max-w-3xl mx-auto">
-            futur proche rassemble les leaders du Marketing et de la Communication les plus engagés de France. Pas un annuaire, pas un réseau de plus. L'endroit où 800 pairs seniors se posent les vraies questions — et y répondent.
-          </p>
-        </div>
-      </section>
+const Communaute = () => {
+  const [hoveredFormat, setHoveredFormat] = useState<string | null>(null);
 
-      {/* ── SECTION 2 — Le quotidien + Members Cloud ── */}
-      <section className="section-cream">
-        <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-            {/* Left: texte */}
-            <div className="lg:col-span-3">
-              <span className="section-label">— Le quotidien chez futur proche</span>
-              <h2
-                className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
-                style={{ color: "hsl(228 56% 10%)" }}
-              >
-                Ce qui se passe chaque semaine
-              </h2>
-              <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
+  return (
+    <>
+      <Navbar />
+      <main>
+        {/* ── SECTION 1 — Hero ── */}
+        <section className="section-navy relative pt-32 pb-20 md:pt-40 md:pb-28">
+          <div className="dot-grid" />
+          <div className="container relative z-10 mx-auto px-6 lg:px-12 max-w-4xl text-center">
+            <span className="section-label mb-4 inline-block">— La communauté</span>
+            <h1 className="text-3xl md:text-5xl font-grotesk font-bold tracking-tight text-white leading-[1.15] mb-6">
+              850+ leaders Marketing et Comm.{" "}
+              <span className="font-serif-accent text-primary">
+                Une seule communauté
+              </span>{" "}
+              pour trancher sur les sujets qui comptent.
+            </h1>
+            <p className="text-base md:text-lg leading-relaxed text-white/60 max-w-3xl mx-auto">
+              futur proche rassemble les leaders du Marketing et de la Communication les plus engagés de France. Pas un annuaire, pas un réseau de plus. L'endroit où 800 pairs seniors se posent les vraies questions — et y répondent.
+            </p>
+          </div>
+        </section>
 
-              <p
-                className="text-base md:text-lg leading-relaxed max-w-3xl mb-10"
-                style={{ color: "hsl(228 15% 35%)" }}
-              >
-                La communauté vit sur WhatsApp, tous les jours, toute l'année. Des centaines de messages par semaine. Des Futuristes qui partagent leurs arbitrages en cours, leurs doutes, leurs trouvailles, leurs idées. Des réponses concrètes, sourcées, sans détour.
-              </p>
+        {/* ── SECTION 2 — Le quotidien + WhatsApp visual ── */}
+        <section className="section-cream">
+          <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+              {/* Left: texte */}
+              <div className="lg:col-span-3">
+                <span className="section-label">— Le quotidien chez futur proche</span>
+                <h2
+                  className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
+                  style={{ color: "hsl(228 56% 10%)" }}
+                >
+                  Ce qui se passe chaque semaine
+                </h2>
+                <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
 
-              <h3
-                className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5"
-                style={{ color: "hsl(186 60% 32%)" }}
-              >
-                Exemples de sujets réels
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                {sujets.map((s, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-xl p-5 card-lift"
-                    style={{ border: "1px solid hsl(228 10% 85%)" }}
-                  >
-                    <span
-                      className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-2"
-                      style={{ color: "hsl(186 60% 32%)" }}
-                    >
-                      #{String(i + 1).padStart(2, "0")}
-                    </span>
-                    <p
-                      className="text-sm leading-relaxed font-medium"
-                      style={{ color: "hsl(228 56% 10%)" }}
-                    >
-                      {s}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <p className="text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 15% 45%)" }}>
-                Pas des discussions théoriques, des décisions qui se prennent, en live. Des réponses de pros qui ont déjà été confrontés au même choix, aux mêmes freins.
-              </p>
-            </div>
-
-            {/* Right: Members Cloud inline */}
-            <div className="lg:col-span-2 flex flex-col items-center justify-start pt-8">
-              <div
-                className="rounded-2xl p-6 w-full"
-                style={{ background: "hsl(228 56% 10%)" }}
-              >
-                <h3 className="text-lg font-grotesk font-semibold text-white mb-2 text-center">
-                  Ils sont déjà{" "}
-                  <span className="font-serif-accent text-primary">Futuristes.</span>
-                </h3>
-                <p className="text-xs text-white/50 text-center mb-5">
-                  850+ leaders Marketing / Comm qui échangent chaque jour.
+                <p
+                  className="text-base md:text-lg leading-relaxed max-w-3xl mb-10"
+                  style={{ color: "hsl(228 15% 35%)" }}
+                >
+                  La communauté vit sur WhatsApp, tous les jours, toute l'année. Des centaines de messages par semaine. Des Futuristes qui partagent leurs arbitrages en cours, leurs doutes, leurs trouvailles, leurs idées. Des réponses concrètes, sourcées, sans détour.
                 </p>
-                <MembersCloudInline />
+
+                <h3
+                  className="font-mono text-[11px] uppercase tracking-[1.5px] mb-5"
+                  style={{ color: "hsl(186 60% 32%)" }}
+                >
+                  Exemples de sujets réels
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                  {sujets.map((s, i) => (
+                    <div
+                      key={i}
+                      className="bg-white rounded-xl p-5 card-lift"
+                      style={{ border: "1px solid hsl(228 10% 85%)" }}
+                    >
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-2"
+                        style={{ color: "hsl(186 60% 32%)" }}
+                      >
+                        #{String(i + 1).padStart(2, "0")}
+                      </span>
+                      <p
+                        className="text-sm leading-relaxed font-medium"
+                        style={{ color: "hsl(228 56% 10%)" }}
+                      >
+                        {s}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 15% 45%)" }}>
+                  Pas des discussions théoriques, des décisions qui se prennent, en live. Des réponses de pros qui ont déjà été confrontés au même choix, aux mêmes freins.
+                </p>
+              </div>
+
+              {/* Right: WhatsApp mockup + Members Cloud */}
+              <div className="lg:col-span-2 flex flex-col items-center gap-6 pt-8">
+                {/* WhatsApp visual */}
+                <div className="relative w-full max-w-[300px]">
+                  <img
+                    src={whatsappCommunityImg}
+                    alt="Échanges entre Futuristes sur WhatsApp — questions Marketing concrètes"
+                    className="rounded-2xl w-full shadow-2xl"
+                    loading="lazy"
+                  />
+                  <div
+                    className="absolute -bottom-3 -right-3 px-4 py-2 rounded-full text-xs font-grotesk font-semibold shadow-lg"
+                    style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
+                  >
+                    850+ actifs
+                  </div>
+                </div>
+
+                {/* Mini Members Cloud */}
+                <div
+                  className="rounded-2xl p-5 w-full"
+                  style={{ background: "hsl(228 56% 10%)" }}
+                >
+                  <h3 className="text-sm font-grotesk font-semibold text-white mb-3 text-center">
+                    Ils sont déjà{" "}
+                    <span className="font-serif-accent text-primary">Futuristes.</span>
+                  </h3>
+                  <MembersCloudInline />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── SECTION 3 — Les formats ── */}
-      <section className="section-navy relative">
-        <div className="dot-grid" />
-        <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span className="section-label">Les formats</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10 text-white">
-            Une commu, plusieurs formats.
-          </h2>
+        {/* ── SECTION 3 — Les formats with images ── */}
+        <section className="section-navy relative">
+          <div className="dot-grid" />
+          <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="section-label">Les formats</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10 text-white">
+              Une commu, plusieurs formats.
+            </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {formats.map((f) => (
-              <div
-                key={f.tag}
-                className="rounded-xl p-7 flex flex-col card-lift"
-                style={{
-                  background: "hsl(228 40% 14%)",
-                  border: "1px solid hsl(228 30% 22%)",
-                }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: "hsl(186 79% 47% / 0.12)" }}
-                  >
-                    <f.icon size={20} className="text-primary" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {formats.map((f) => (
+                <div
+                  key={f.tag}
+                  className="rounded-xl overflow-hidden card-lift group transition-all duration-500"
+                  style={{
+                    background: "hsl(228 40% 14%)",
+                    border: hoveredFormat === f.tag ? "1px solid hsl(186 79% 47% / 0.5)" : "1px solid hsl(228 30% 22%)",
+                  }}
+                  onMouseEnter={() => setHoveredFormat(f.tag)}
+                  onMouseLeave={() => setHoveredFormat(null)}
+                >
+                  {/* Image */}
+                  <div className="h-40 overflow-hidden">
+                    <img
+                      src={f.image}
+                      alt={f.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      loading="lazy"
+                    />
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">
-                    {f.tag}
-                  </span>
+                  <div className="p-7">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300"
+                        style={{ background: hoveredFormat === f.tag ? "hsl(186 79% 47% / 0.2)" : "hsl(186 79% 47% / 0.12)" }}
+                      >
+                        <f.icon size={20} className="text-primary" />
+                      </div>
+                      <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">
+                        {f.tag}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">{f.title}</h3>
+                    <p className="text-sm leading-relaxed text-white/60">{f.body}</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">{f.title}</h3>
-                <p className="text-sm leading-relaxed text-white/60">{f.body}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── SECTION 4 — Qui sont les Futuristes ? ── */}
-      <section className="section-cream">
-        <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-          <span className="section-label">— Qui sont les Futuristes ?</span>
-          <h2
-            className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
-            style={{ color: "hsl(228 56% 10%)" }}
-          >
-            Le profil des membres
-          </h2>
-          <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
+        {/* ── SECTION 4 — Profil des membres (enhanced) ── */}
+        <section className="section-cream relative overflow-hidden">
+          {/* Decorative gradient blob */}
+          <div
+            className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-10 blur-3xl pointer-events-none"
+            style={{ background: "hsl(186 79% 47%)" }}
+          />
+          <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28 relative z-10">
+            <span className="section-label">— Qui sont les Futuristes ?</span>
+            <h2
+              className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
+              style={{ color: "hsl(228 56% 10%)" }}
+            >
+              Le profil des membres
+            </h2>
+            <div className="w-16 h-[3px] bg-primary mb-8 rounded-full" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
-            <div>
-              <p
-                className="text-base md:text-lg leading-relaxed mb-10"
-                style={{ color: "hsl(228 15% 35%)" }}
-              >
-                Pas de profil type unique. Le Marketing est riche et diversifié, futur proche est un miroir de ça. Ce qui rassemble les Futuristes, c'est le niveau d'expérience en Marketing / Comm et l'envie de la mettre au service des autres.
-              </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+              <div>
+                <p
+                  className="text-base md:text-lg leading-relaxed mb-10"
+                  style={{ color: "hsl(228 15% 35%)" }}
+                >
+                  Pas de profil type unique. Le Marketing est riche et diversifié, futur proche est un miroir de ça. Ce qui rassemble les Futuristes, c'est le niveau d'expérience et l'envie de la mettre au service des autres.
+                </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {stats.map((s) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {stats.map((s, i) => (
+                    <div
+                      key={s.label}
+                      className="bg-white rounded-xl p-6 group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                      style={{ border: "1px solid hsl(228 10% 85%)" }}
+                    >
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[1.5px] block mb-2"
+                        style={{ color: "hsl(186 60% 32%)" }}
+                      >
+                        {s.label}
+                      </span>
+                      <span
+                        className="text-2xl font-grotesk font-bold block mb-1"
+                        style={{ color: "hsl(228 56% 10%)" }}
+                      >
+                        {s.highlight}
+                      </span>
+                      <p
+                        className="text-xs leading-relaxed"
+                        style={{ color: "hsl(228 15% 50%)" }}
+                      >
+                        {s.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Group photo with overlay */}
+              <div className="flex items-center relative">
+                <div className="relative rounded-2xl overflow-hidden w-full">
+                  <img
+                    src={groupeAfterProcheImg}
+                    alt="Groupe de Futuristes lors d'un After Proche"
+                    className="w-full h-full object-cover max-h-[420px]"
+                    loading="lazy"
+                  />
                   <div
-                    key={s.label}
-                    className="bg-white rounded-xl p-6"
-                    style={{ border: "1px solid hsl(228 10% 85%)" }}
+                    className="absolute bottom-0 left-0 right-0 p-6"
+                    style={{ background: "linear-gradient(to top, hsl(228 56% 10% / 0.85), transparent)" }}
                   >
-                    <span
-                      className="font-mono text-[10px] uppercase tracking-[1.5px] block mb-2"
-                      style={{ color: "hsl(186 60% 32%)" }}
-                    >
-                      {s.label}
-                    </span>
-                    <p
-                      className="text-sm leading-relaxed font-medium"
-                      style={{ color: "hsl(228 56% 10%)" }}
-                    >
-                      {s.value}
+                    <p className="text-white font-grotesk font-semibold text-sm">
+                      After Proche — Paris
                     </p>
+                    <p className="text-white/50 text-xs font-mono">
+                      850+ leaders Marketing / Comm
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Ce qui les rassemble — card with accent border */}
+            <div
+              className="rounded-xl p-7 md:p-10 relative overflow-hidden"
+              style={{ background: "hsl(228 56% 10%)" }}
+            >
+              <div
+                className="absolute top-0 left-0 w-1 h-full"
+                style={{ background: "hsl(186 79% 47%)" }}
+              />
+              <h3 className="text-lg font-grotesk font-semibold text-white mb-3 pl-4">
+                Ce qui les rassemble
+              </h3>
+              <p className="text-sm md:text-base leading-relaxed text-white/70 max-w-3xl pl-4">
+                La conviction que le Marketing est un métier de terrain, pas de théorie. Et que les meilleures décisions se prennent quand on peut les confronter à des pairs qui comprennent le contexte, qui sont déjà passés par là.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION 5 — Comment devenir Futuriste (enhanced) ── */}
+        <section className="section-navy relative overflow-hidden">
+          <div className="dot-grid" />
+          {/* Decorative accent */}
+          <div
+            className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full opacity-5 blur-3xl pointer-events-none"
+            style={{ background: "hsl(186 79% 47%)" }}
+          />
+          <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="section-label">Rejoindre</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-4 text-white">
+              Comment devenir{" "}
+              <span className="font-serif-accent text-primary">Futuriste</span> ?
+            </h2>
+            <p className="text-white/50 text-sm mb-12 max-w-2xl">
+              Un process simple en 3 étapes. Candidature ouverte à tous les leaders Marketing / Comm avec 7+ ans d'expérience.
+            </p>
+
+            {/* Timeline-style steps */}
+            <div className="relative mb-12">
+              {/* Connecting line */}
+              <div className="hidden md:block absolute top-[52px] left-[calc(16.66%+24px)] right-[calc(16.66%+24px)] h-[2px]" style={{ background: "hsl(228 30% 22%)" }} />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {steps.map((s, i) => (
+                  <div
+                    key={s.tag}
+                    className="relative group"
+                  >
+                    {/* Step number circle */}
+                    <div className="flex justify-center mb-6">
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center relative z-10 transition-transform duration-300 group-hover:scale-110"
+                        style={{
+                          background: `${s.color}20`,
+                          border: `2px solid ${s.color}`,
+                        }}
+                      >
+                        <s.icon size={22} style={{ color: s.color }} />
+                      </div>
+                    </div>
+
+                    {/* Card */}
+                    <div
+                      className="rounded-xl p-7 text-center transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg"
+                      style={{
+                        background: "hsl(228 40% 14%)",
+                        border: "1px solid hsl(228 30% 22%)",
+                      }}
+                    >
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[1.2px] block mb-3"
+                        style={{ color: s.color }}
+                      >
+                        Étape {s.tag}
+                      </span>
+                      <h3 className="text-lg font-grotesk font-semibold mb-3 text-white">{s.title}</h3>
+                      <p className="text-sm leading-relaxed text-white/60">{s.desc}</p>
+                    </div>
+
+                    {/* Arrow between steps */}
+                    {i < steps.length - 1 && (
+                      <div className="hidden md:flex absolute top-[52px] -right-4 z-20">
+                        <ArrowRight size={16} className="text-white/20" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Group photo */}
-            <div className="flex items-center">
-              <img
-                src={groupeAfterProcheImg}
-                alt="Groupe de Futuristes lors d'un After Proche"
-                className="rounded-2xl object-cover w-full h-full max-h-[400px]"
-              />
+            {/* Why selection */}
+            <div
+              className="rounded-xl p-7 md:p-10 relative overflow-hidden"
+              style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
+            >
+              <div className="flex items-start gap-4">
+                <CheckCircle2 size={24} className="text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="text-lg font-grotesk font-semibold text-white mb-3">
+                    Pourquoi un process de sélection ?
+                  </h3>
+                  <p className="text-sm md:text-base leading-relaxed text-white/70 max-w-3xl">
+                    Parce que la valeur de futur proche repose sur la qualité de chaque membre. On ne cherche pas à grossir sans boussole, on cherche à s'assurer que la communauté gagne en valeur à chaque nouveau Futuriste onboardé.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* Ce qui les rassemble */}
-          <div
-            className="rounded-xl p-7 md:p-10"
-            style={{ background: "hsl(228 56% 10%)" }}
-          >
-            <h3 className="text-lg font-grotesk font-semibold text-white mb-3">
-              Ce qui les rassemble
-            </h3>
-            <p className="text-sm md:text-base leading-relaxed text-white/70 max-w-3xl">
-              La conviction que le Marketing est un métier de terrain, pas de théorie. Et que les meilleures décisions se prennent quand on peut les confronter à des pairs qui comprennent le contexte, qui sont déjà passés par là.
-            </p>
+        {/* ── SECTION 6 — CTA ── */}
+        <section className="relative overflow-hidden gradient-mesh-bg">
+          <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28 text-center relative z-10">
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight text-white mb-8">
+              Candidature en 2 minutes.{" "}
+              <span className="font-serif-accent text-primary">Réponse sous 48 h.</span>
+            </h2>
+            <Link
+              to="/candidater"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-full font-grotesk font-semibold text-base transition-all duration-300 hover:scale-105"
+              style={{
+                background: "hsl(186 79% 47%)",
+                color: "hsl(228 56% 10%)",
+              }}
+            >
+              Devenir Futuriste →
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+};
 
-      {/* ── SECTION 5 — Comment devenir Futuriste ── */}
-      <section className="section-navy relative">
-        <div className="dot-grid" />
-        <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span className="section-label">Rejoindre</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10 text-white">
-            Comment devenir{" "}
-            <span className="font-serif-accent text-primary">Futuriste</span> ?
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {steps.map((s) => (
-              <div
-                key={s.tag}
-                className="rounded-xl p-7 flex flex-col card-lift"
-                style={{
-                  background: "hsl(228 40% 14%)",
-                  border: "1px solid hsl(228 30% 22%)",
-                }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: "hsl(186 79% 47% / 0.12)" }}
-                  >
-                    <s.icon size={20} className="text-primary" />
-                  </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">
-                    {s.tag}
-                  </span>
-                </div>
-                <h3 className="text-lg font-grotesk font-semibold mb-2 text-white">{s.title}</h3>
-                <p className="text-sm leading-relaxed text-white/60">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div
-            className="rounded-xl p-7 md:p-10"
-            style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
-          >
-            <h3 className="text-lg font-grotesk font-semibold text-white mb-3">
-              Pourquoi un process de sélection ?
-            </h3>
-            <p className="text-sm md:text-base leading-relaxed text-white/70 max-w-3xl">
-              Parce que la valeur de futur proche repose sur la qualité de chaque membre. On ne cherche pas à grossir sans boussole, on cherche à s'assurer que la communauté gagne en valeur à chaque nouveau Futuriste onboardé.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 6 — CTA ── */}
-      <section className="relative overflow-hidden gradient-mesh-bg">
-        <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28 text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight text-white mb-8">
-            Candidature en 2 minutes.{" "}
-            <span className="font-serif-accent text-primary">Réponse sous 48 h.</span>
-          </h2>
-          <Link
-            to="/candidater"
-            className="inline-flex items-center justify-center px-8 py-4 rounded-full font-grotesk font-semibold text-base transition-all duration-300 hover:scale-105"
-            style={{
-              background: "hsl(186 79% 47%)",
-              color: "hsl(228 56% 10%)",
-            }}
-          >
-            Devenir Futuriste →
-          </Link>
-        </div>
-      </section>
-    </main>
-    <Footer />
-  </>
-);
-
-/* ── Inline Members Cloud (reuses the query from MembersCloud) ── */
-
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+/* ── Inline Members Cloud ── */
 
 const MembersCloudInline = () => {
   const { data: members } = useQuery({
@@ -403,13 +516,17 @@ const MembersCloudInline = () => {
               className="w-11 h-11 rounded-full flex items-center justify-center text-[10px] font-mono font-medium"
               style={{
                 border: "1px solid hsl(228 30% 22%)",
-                background: "hsl(228 40% 14%)",
-                color: "hsl(228 15% 55%)",
+                background: "hsl(228 40% 16%)",
+                color: "hsl(186 79% 47%)",
               }}
             >
-              {m.prenom[0]}{m.nom[0]}
+              {m.prenom[0]}
+              {m.nom[0]}
             </div>
           )}
+          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-white text-[9px] px-2 py-0.5 rounded shadow text-[hsl(228_56%_10%)] font-medium z-10">
+            {m.prenom} {m.nom}
+          </div>
         </div>
       ))}
     </div>
