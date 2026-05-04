@@ -1,130 +1,53 @@
 
-# Plan — Admin, Espace Membre et Gestion d'Événements
+## Plan : Alimenter le site avec les podcasts et événements passés
 
-## Prérequis
+### 1. Podcasts — Page Ressources (`/ressources`)
 
-**Lovable Cloud (Supabase)** doit être activé sur le projet. Il n'y a actuellement aucune intégration Supabase. On commencera par activer Lovable Cloud, puis on construira tout dessus.
+Remplacer le placeholder "Embed player / carrousel des 3 derniers épisodes" par un vrai carrousel des derniers épisodes du podcast, avec pour chaque épisode :
+- Titre, durée, date de publication, image cover (depuis Ausha)
+- Lien Ausha pour l'écoute
 
----
+Mettre à jour les liens plateforme (actuellement `href="#"`) avec les vraies URLs :
+- **Spotify** : `https://open.spotify.com/show/4Fzm7K5joIHBDiUgjz66vn`
+- **Apple Podcasts** : `https://podcasts.apple.com/au/podcast/futur-proche/id1778946164`
+- **YouTube** : `https://www.youtube.com/@futurproche-marketing`
 
-## 1. Base de données (migrations Supabase)
+Ajouter un lien **Ausha** : `https://podcast.ausha.co/futur-proche`
 
-### Tables principales
+Le carrousel affichera les 6 derniers épisodes (hors teasers) avec leur cover, titre, durée et un bouton "Écouter". Données en dur dans le composant (pas en DB pour l'instant, car contenu éditorial statique).
 
-- **profiles** — id (FK auth.users), prenom, nom, poste, entreprise, secteur, email, telephone, linkedin, photo_url, bio, ville, statut (`pending` | `approved` | `rejected`), created_at
-- **user_roles** — id, user_id (FK auth.users), role (`admin` | `member`). RLS via fonction `has_role()` security definer.
-- **candidatures** — id, prenom, nom, poste, entreprise, secteur, email, telephone, linkedin, cooptation, statut (`pending` | `approved` | `rejected`), created_at, reviewed_by, reviewed_at
-- **events** — id, titre, slug, description, format (`after_proche` | `diner` | `workshop` | `autre`), date, heure, ville, lieu, capacite, prix (nullable, pour Stripe), image_url, statut (`draft` | `published` | `past`), speakers (jsonb), created_at
-- **event_registrations** — id, event_id, user_id, statut (`registered` | `paid` | `cancelled`), stripe_payment_id (nullable), created_at
-- **resources** — id, titre, description, type (`etude` | `synthese` | `podcast` | `newsletter` | `autre`), url, file_url, access (`public` | `members`), published_at, created_at
+Episodes inclus (Saison 2 + fin Saison 1) :
+1. Communauté : side project ou game changer ? (1h10, 20 avril 2026)
+2. Sans Brand, c'est déjà la fin (53min, 19 mars 2026)
+3. Outbound : strat' premium ou spam organisé ? (1h10, 17 fév. 2026)
+4. Impact & business : et si agir rapportait gros ? (1h14, 20 jan. 2026)
+5. SEO / GEO : la fin d'une ère ? (1h07, 30 nov. 2025)
+6. L'international, c'est pas si loin ! (1h03, 16 oct. 2025)
 
-### RLS Policies
-- Profiles : les membres voient les profils `approved`, chacun peut éditer le sien
-- Candidatures : insert public (formulaire), select/update admin only
-- Events : select public pour `published`/`past`, insert/update/delete admin only
-- Resources : select selon `access` (public ou authenticated), insert/update/delete admin only
+Mettre à jour le compteur : **23 épisodes** (au lieu de 20).
 
-### Storage Buckets
-- `avatars` — photos de profil membres
-- `event-images` — visuels événements
-- `resources` — fichiers ressources
+### 2. Événements passés — Base de données
 
----
+Insérer 3 événements passés dans la table `events` via l'outil d'insertion :
 
-## 2. Authentification
+| Titre | Format | Date | Heure | Ville | Lieu | Statut |
+|-------|--------|------|-------|-------|------|--------|
+| A.P #Bordeaux - Au-delà du bullshit : le Marketing qui marche vraiment | after_proche | 2025-11-25 | 18:30 | Bordeaux | 84 Rue Camille Godard | past |
+| AP#9 - C'est la faute de l'algo (w/ Agorapulse) | after_proche | 2025-10-14 | 18:30 | Paris | Agorapulse | past |
+| A.P #10 - Community Building : l'amour dure 3 mois ? | after_proche | 2025-12-03 | 18:30 | Paris | Le Wagon | past |
 
-- Login par email + mot de passe (Supabase Auth)
-- Page `/login` pour les membres
-- Trigger DB : quand une candidature est approuvée, un compte auth est créé et un profil `approved` est inséré
-- Contexte React `AuthProvider` avec `onAuthStateChange` + `getSession`
-- Route guard `ProtectedRoute` pour `/espace-membre/*` et `/admin/*`
+### 3. Événements passés — Affichage sur `/evenements`
 
----
+Mettre à jour le tableau `pastEvents` en dur dans `Evenements.tsx` pour refléter les vrais événements (ou mieux : remplacer par un fetch dynamique depuis la table `events` filtrée sur `statut = 'past'`). La page fait déjà un fetch des events publiés ; il suffira d'ajouter les events "past" dans la requête si ce n'est pas déjà le cas.
 
-## 3. Formulaire de candidature (refonte)
+### Fichiers modifiés
 
-- Le formulaire `/candidater` existant sera connecté à Supabase (insert dans `candidatures`)
-- Validation Zod côté client
-- Confirmation visuelle après soumission
+- `src/pages/Ressources.tsx` — carrousel podcast + vrais liens plateforme
+- `src/pages/Evenements.tsx` — ajustement mineur si nécessaire pour afficher les past events
+- Insertion de 3 lignes dans la table `events` (via outil DB)
 
----
+### Détails techniques
 
-## 4. Espace Admin (`/admin/*`)
-
-Accessible uniquement aux users avec le rôle `admin`.
-
-### Pages admin :
-- **`/admin/candidatures`** — Liste des candidatures entrantes, filtrage par statut, actions approuver/rejeter. L'approbation crée automatiquement le compte membre.
-- **`/admin/membres`** — Annuaire complet des membres avec recherche, filtre par ville/secteur/poste. Actions : modifier, suspendre.
-- **`/admin/evenements`** — CRUD événements. Formulaire avec champs : titre, format, date, ville, lieu, capacité, prix, description, speakers, image. Template visuel inspiré du screen (mesh aurora, date encadrée cyan, speakers en grille).
-- **`/admin/ressources`** — CRUD ressources (études, synthèses, podcasts). Upload de fichiers, gestion de la visibilité (public/membres).
-- **`/admin/dashboard`** — Vue d'ensemble : nombre de membres, candidatures en attente, prochain événement, stats.
-
-### Layout admin
-- Sidebar avec navigation (Dashboard, Candidatures, Membres, Événements, Ressources)
-- Design Navy sombre cohérent avec la charte
-
----
-
-## 5. Espace Membre (`/espace-membre/*`)
-
-Accessible aux users authentifiés avec rôle `member` ou `admin`.
-
-### Pages :
-- **`/espace-membre`** — Dashboard personnel : prochain événement, dernières ressources
-- **`/espace-membre/profil`** — Édition du profil (photo, bio, poste, entreprise, ville, LinkedIn). Upload photo vers bucket `avatars`.
-- **`/espace-membre/annuaire`** — Annuaire des membres approuvés. Grille de cards avec photo, nom, poste, entreprise. Recherche + filtres (ville, secteur).
-- **`/espace-membre/evenements`** — Événements à venir (inscription) + événements passés. Card visuelle style event poster (inspiré du screen : mesh aurora, date encadrée, speakers).
-- **`/espace-membre/ressources`** — Accès aux ressources membres (études, synthèses mensuelles)
-
----
-
-## 6. Lien Annuaire / MembersCloud (Homepage)
-
-- Le composant `MembersCloud` sur la homepage sera connecté à Supabase
-- Query les profils `approved` avec `photo_url` renseigné
-- Affiche les vraies photos en cercles (fallback sur initiales si pas de photo)
-- Mélange aléatoire, limité à ~24-30 profils
-
----
-
-## 7. Gestion des événements et billetterie
-
-- Les événements gratuits : inscription directe (insert dans `event_registrations`)
-- Les événements payants : le champ `prix` est renseigné, un bouton "Réserver" est prévu pour intégrer Stripe Checkout plus tard
-- Pour l'instant, on prépare l'UI et la structure DB. L'intégration Stripe (Lovable Payments) sera activée dans un second temps comme demandé.
-- Templates visuels d'événements inspirés du screen : fond mesh aurora bleu/violet, date encadrée en cyan, titre bold + sous-titre italic, speakers en row
-
----
-
-## 8. Routing
-
-Nouvelles routes :
-```
-/login
-/admin                → AdminDashboard
-/admin/candidatures   → AdminCandidatures
-/admin/membres        → AdminMembres
-/admin/evenements     → AdminEvenements
-/admin/ressources     → AdminRessources
-/espace-membre        → MembreDashboard
-/espace-membre/profil → MembreProfil
-/espace-membre/annuaire → MembreAnnuaire
-/espace-membre/evenements → MembreEvenements
-/espace-membre/ressources → MembreRessources
-```
-
----
-
-## Ordre d'implémentation
-
-1. Activer Lovable Cloud (Supabase)
-2. Créer les migrations (tables, RLS, fonctions, triggers, storage)
-3. Créer AuthProvider + pages login
-4. Connecter le formulaire de candidature
-5. Construire l'espace admin (layout + 5 pages)
-6. Construire l'espace membre (layout + 5 pages)
-7. Connecter MembersCloud à la DB
-8. Préparer la structure billetterie (UI prête pour Stripe)
-
-C'est un gros chantier (~20+ fichiers). Je procéderai par blocs logiques.
+- Les images cover des podcasts seront chargées depuis les URLs Ausha (CDN externe, pas d'upload nécessaire)
+- Les événements passés utilisent le statut `past` déjà prévu dans le schéma (`event_status` enum)
+- La RLS autorise déjà la lecture des events `past` par les anonymes

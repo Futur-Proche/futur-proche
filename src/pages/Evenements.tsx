@@ -53,12 +53,11 @@ const themes = [
   "Le nouveau modèle des agences marketing / comm",
 ];
 
-const pastEvents = [
-  { num: "#10", theme: "Social Media : ce qui marche encore, ce qui ne marche plus", ville: "Paris", date: "Mars 2026" },
-  { num: "#9", theme: "IA et micro-équipes marketing : faire plus avec moins", ville: "Lyon", date: "Fév. 2026" },
-  { num: "#8", theme: "Community Marketing : construire une audience qui vous appartient", ville: "Paris", date: "Déc. 2025" },
-  { num: "#7", theme: "Faire exploser des champions français à l'international", ville: "Paris (chez Brevo)", date: "Nov. 2025" },
-];
+const formatDate = (d: string) => {
+  const date = new Date(d + "T00:00:00");
+  const months = ["Jan.", "Fév.", "Mars", "Avril", "Mai", "Juin", "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."];
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
+};
 
 const partners = [
   "Brevo", "Le Wagon", "Contentsquare", "Back Market", "Malt",
@@ -92,6 +91,19 @@ const Evenements = () => {
         .select("*")
         .eq("statut", "published")
         .order("date", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: pastEventsData } = useQuery({
+    queryKey: ["past-events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("statut", "past")
+        .order("date", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -397,16 +409,16 @@ const Evenements = () => {
             </div>
 
             <div className="space-y-0">
-              {pastEvents.map((ev) => (
+              {(pastEventsData ?? []).map((ev, i) => (
                 <div
-                  key={ev.num}
+                  key={ev.id}
                   className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 py-4 border-b"
                   style={{ borderColor: "hsl(228 30% 22%)" }}
                 >
-                  <span className="md:col-span-1 font-mono text-xs text-primary">{ev.num}</span>
-                  <span className="md:col-span-6 text-sm text-white/80 font-medium">{ev.theme}</span>
+                  <span className="md:col-span-1 font-mono text-xs text-primary">#{(pastEventsData?.length ?? 0) - i}</span>
+                  <span className="md:col-span-6 text-sm text-white/80 font-medium">{ev.titre}</span>
                   <span className="md:col-span-3 text-sm text-white/50">{ev.ville}</span>
-                  <span className="md:col-span-2 text-sm text-white/40 font-mono">{ev.date}</span>
+                  <span className="md:col-span-2 text-sm text-white/40 font-mono">{formatDate(ev.date)}</span>
                 </div>
               ))}
             </div>
