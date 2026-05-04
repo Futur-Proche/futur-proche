@@ -409,16 +409,16 @@ const Evenements = () => {
             </div>
 
             <div className="space-y-0">
-              {pastEvents.map((ev) => (
+              {(pastEventsData ?? []).map((ev, i) => (
                 <div
-                  key={ev.num}
+                  key={ev.id}
                   className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 py-4 border-b"
                   style={{ borderColor: "hsl(228 30% 22%)" }}
                 >
-                  <span className="md:col-span-1 font-mono text-xs text-primary">{ev.num}</span>
-                  <span className="md:col-span-6 text-sm text-white/80 font-medium">{ev.theme}</span>
+                  <span className="md:col-span-1 font-mono text-xs text-primary">#{(pastEventsData?.length ?? 0) - i}</span>
+                  <span className="md:col-span-6 text-sm text-white/80 font-medium">{ev.titre}</span>
                   <span className="md:col-span-3 text-sm text-white/50">{ev.ville}</span>
-                  <span className="md:col-span-2 text-sm text-white/40 font-mono">{ev.date}</span>
+                  <span className="md:col-span-2 text-sm text-white/40 font-mono">{formatDate(ev.date)}</span>
                 </div>
               ))}
             </div>
