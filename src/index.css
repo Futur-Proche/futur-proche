@@ -117,6 +117,11 @@
   90% { transform: translate(-1%, 7%); }
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 @layer components {
   .font-serif-accent {
     font-family: var(--font-serif);
