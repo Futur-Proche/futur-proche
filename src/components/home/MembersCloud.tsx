@@ -8,6 +8,7 @@ export const MembersCloud = () => {
       const { data } = await supabase
         .from("profiles")
         .select("id, prenom, nom, photo_url")
+        .not("photo_url", "is", null)
         .limit(30);
       return data ?? [];
     },
