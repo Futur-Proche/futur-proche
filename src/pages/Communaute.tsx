@@ -1,10 +1,11 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useInViewReveal } from "@/hooks/useInViewReveal";
 import { useStaggeredReveal } from "@/hooks/useStaggeredReveal";
 import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ScrollyFormats } from "@/components/shared/ScrollyFormats";
 
 import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
 import whatsappMontageImg from "@/assets/whatsapp-montage.png";
@@ -251,8 +252,19 @@ const Communaute = () => {
           </div>
         </section>
 
-        {/* ── SECTION 3 — Les formats (sticky-scroll) ── */}
-        <FormatsScroller />
+        {/* ── SECTION 3 — Les formats (scrollytelling Sadewa) ── */}
+        <ScrollyFormats
+          label="Les formats"
+          heading="Une commu, plusieurs formats."
+          steps={formats.map((f) => ({
+            tag: f.tag,
+            title: f.title,
+            desc: f.body,
+            image: f.image,
+            icon: f.icon,
+          }))}
+          variant="navy"
+        />
 
         {/* ── SECTION 4 — Profil des membres ── */}
         <section className="section-cream relative overflow-hidden">
@@ -481,158 +493,6 @@ const FlipStatCard = ({
   );
 };
 
-/* ── Formats sticky scroller (inspired by home FormatsSection) ── */
-
-const FormatsScroller = () => {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    cardRefs.current.forEach((el, idx) => {
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveIdx(idx);
-        },
-        { threshold: 0.6, rootMargin: "-20% 0px -30% 0px" }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach((o) => o.disconnect());
-  }, []);
-
-  return (
-    <section className="section-navy relative">
-      <div className="dot-grid" />
-      <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="w-2 h-2 rounded-full bg-primary" />
-          <span className="section-label">Les formats</span>
-        </div>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10 text-white">
-          Une commu, plusieurs formats.
-        </h2>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16 items-start">
-          {/* Scrollable text blocks */}
-          <div className="flex flex-col gap-16 lg:gap-32 lg:py-[15vh] order-2 lg:order-1">
-            {formats.map((f, idx) => (
-              <FormatBlock
-                key={f.tag}
-                ref={(el) => (cardRefs.current[idx] = el)}
-                format={f}
-              />
-            ))}
-          </div>
-
-          {/* Sticky media (desktop) */}
-          <div className="hidden lg:block lg:sticky lg:top-28 lg:self-start order-1 lg:order-2">
-            <div className="flex items-center justify-between mb-3">
-              <span className="font-mono text-[11px] tracking-[1.5px] text-primary">
-                {String(activeIdx + 1).padStart(2, "0")} / {String(formats.length).padStart(2, "0")}
-              </span>
-              <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-white/40">
-                {formats[activeIdx].title}
-              </span>
-            </div>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-lg" style={{ border: "1px solid hsl(228 30% 22%)", background: "hsl(228 40% 14%)" }}>
-              {formats.map((f, i) => (
-                <img
-                  key={f.tag}
-                  src={f.image}
-                  alt={f.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{
-                    opacity: i === activeIdx ? 1 : 0,
-                    transform: i === activeIdx ? "scale(1)" : "scale(1.04)",
-                    transition: "opacity 700ms ease-out, transform 1200ms ease-out",
-                  }}
-                  loading={i === 0 ? "eager" : "lazy"}
-                />
-              ))}
-              {/* Cyan corner accent */}
-              <div className="absolute top-3 left-3 w-8 h-8 border-l-2 border-t-2 border-primary opacity-60" />
-              <div className="absolute bottom-3 right-3 w-8 h-8 border-r-2 border-b-2 border-primary opacity-60" />
-            </div>
-            <div className="flex items-center gap-1.5 mt-4">
-              {formats.map((_, i) => (
-                <span
-                  key={i}
-                  className="block h-[3px] rounded-full transition-all duration-500"
-                  style={{
-                    width: i === activeIdx ? 32 : 14,
-                    background: i === activeIdx ? "hsl(186 79% 47%)" : "hsl(228 30% 30%)",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const FormatBlock = forwardRef<HTMLDivElement, { format: typeof formats[number] }>(
-  ({ format: f }, ref) => {
-    const [revealed, setRevealed] = useState(false);
-    const localRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const el = localRef.current;
-      if (!el) return;
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-        setRevealed(true);
-        return;
-      }
-      const obs = new IntersectionObserver(
-        ([e]) => {
-          if (e.isIntersecting) {
-            setRevealed(true);
-            obs.unobserve(el);
-          }
-        },
-        { threshold: 0.25 }
-      );
-      obs.observe(el);
-      return () => obs.disconnect();
-    }, []);
-
-    const Icon = f.icon;
-
-    return (
-      <div
-        ref={(node) => {
-          localRef.current = node;
-          if (typeof ref === "function") ref(node);
-          else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-        }}
-        className="transition-all duration-700"
-        style={{
-          opacity: revealed ? 1 : 0,
-          transform: revealed ? "translateY(0)" : "translateY(32px)",
-        }}
-      >
-        {/* Mobile inline image */}
-        <div className="lg:hidden mb-6 aspect-[4/3] overflow-hidden rounded-lg" style={{ border: "1px solid hsl(228 30% 22%)" }}>
-          <img src={f.image} alt={f.title} className="w-full h-full object-cover" loading="lazy" />
-        </div>
-
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(186 79% 47% / 0.12)" }}>
-            <Icon size={20} className="text-primary" />
-          </div>
-          <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">{f.tag}</span>
-        </div>
-        <h3 className="text-2xl md:text-3xl font-grotesk font-semibold mb-3 text-white">{f.title}</h3>
-        <p className="text-sm md:text-base leading-relaxed text-white/65">{f.body}</p>
-      </div>
-    );
-  }
-);
-FormatBlock.displayName = "FormatBlock";
 
 /* ── Inline Members Cloud ── */
 
