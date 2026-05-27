@@ -21,7 +21,7 @@ const formats = [
     tag: "03_Podcast",
     title: "Conversations sans filtre",
     desc: "Des épisodes longs avec des leaders Marketing / Comm qui acceptent de raconter leurs vraies décisions — celles qui ont marché, celles qui ont raté, et ce qu'ils en retiennent.",
-    image: networkingEchanges,
+    image: formatPodcast,
   },
   {
     tag: "04_Jobs",
