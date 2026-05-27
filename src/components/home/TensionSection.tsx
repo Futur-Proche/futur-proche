@@ -35,13 +35,14 @@ const painPoints = [
 ];
 
 export const TensionSection = () => {
+  const desktopBreakpoint = 980;
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [pickedIdx, setPickedIdx] = useState<number | null>(null);
 
   useEffect(() => {
     const updateActiveCard = () => {
-      if (window.innerWidth < 1024) return;
+      if (window.innerWidth < desktopBreakpoint) return;
 
       const viewportCenter = window.innerHeight * 0.5;
       let closestIdx = 0;
@@ -90,7 +91,7 @@ export const TensionSection = () => {
         style={{ background: "hsl(186 79% 47%)" }}
       />
 
-      <div className="hidden lg:block">
+      <div className="hidden min-[980px]:block">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-16 xl:gap-20">
             <div className="relative">
@@ -121,7 +122,7 @@ export const TensionSection = () => {
         </div>
       </div>
 
-      <div className="lg:hidden container mx-auto px-6 py-20">
+      <div className="min-[980px]:hidden container mx-auto px-6 py-20">
         <LeftColumn activeIdx={displayedIdx} compact />
         <div className="mt-12 space-y-4">
           {painPoints.map((p, idx) => {
