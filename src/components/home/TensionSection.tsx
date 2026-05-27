@@ -181,14 +181,16 @@ const DesktopStack = ({
   displayedIdx: number;
   onSelect: (idx: number) => void;
 }) => {
-  const collapsedHeight = 58;
-  const expandedHeight = 240;
-  const futurePeek = 18;
+  const collapsedHeight = 78;
+  const expandedHeight = 280;
+  const futurePeek = 24;
+  const totalHeight =
+    (painPoints.length - 1) * collapsedHeight + expandedHeight + 40;
 
   return (
     <div
       className="relative w-full"
-      style={{ height: "min(560px, calc(100vh - 10rem))", minHeight: 500 }}
+      style={{ height: totalHeight }}
     >
       {painPoints.map((point, idx) => {
         const isActive = idx === displayedIdx;
