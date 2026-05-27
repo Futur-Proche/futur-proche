@@ -286,10 +286,6 @@ const ScrollyStepBlock = forwardRef<HTMLDivElement, StepProps>(
         </div>
       </div>
     );
-  };
-  Comp.displayName = "ScrollyStepBlock";
-  // forwardRef wrapper
-  return require("react").forwardRef(Comp) as unknown as (
-    p: StepProps & { ref?: React.Ref<HTMLDivElement> }
-  ) => JSX.Element;
-})();
+  }
+);
+ScrollyStepBlock.displayName = "ScrollyStepBlock";
