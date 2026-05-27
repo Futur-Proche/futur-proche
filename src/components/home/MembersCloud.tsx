@@ -80,6 +80,13 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
     offX: number;
     offY: number;
   }>({ id: null, lastX: 0, lastY: 0, offX: 0, offY: 0 });
+  const downRef = useRef<{ id: string | null; x: number; y: number; moved: boolean }>({
+    id: null,
+    x: 0,
+    y: 0,
+    moved: false,
+  });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const rafRef = useRef<number | null>(null);
   const sizeRef = useRef({ w: 0, h: 0 });
   const [, force] = useState(0);
