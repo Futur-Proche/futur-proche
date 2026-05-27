@@ -84,65 +84,75 @@ const ProfilCol = ({
   active: boolean;
 }) => (
   <div
-    className="group relative overflow-hidden transition-all duration-500 ease-out hover:scale-[1.02]"
+    className="group relative overflow-hidden aspect-[3/4] cursor-default transition-all duration-500 ease-out"
     style={{
+      background:
+        "linear-gradient(160deg, hsl(228 40% 14%) 0%, hsl(228 56% 10%) 100%)",
+      border: "1px solid hsl(228 30% 22%)",
       transitionDelay: `${idx * 140}ms`,
     }}
   >
-    {/* Visual top block */}
+    {/* clip-path mask reveal at mount */}
     <div
-      className="relative aspect-[4/5] overflow-hidden mb-6"
+      className="absolute inset-0 bg-[hsl(228_56%_10%)] transition-all duration-[1100ms] ease-[cubic-bezier(0.7,0,0.2,1)] z-20 pointer-events-none"
       style={{
-        background:
-          idx % 2 === 0
-            ? "linear-gradient(135deg, hsl(186 79% 47% / 0.18), hsl(228 40% 14%))"
-            : "linear-gradient(135deg, hsl(228 40% 14%), hsl(186 79% 47% / 0.12))",
-        border: "1px solid hsl(228 30% 22%)",
+        clipPath: active ? "inset(0 0 100% 0)" : "inset(0 0 0 0)",
+        transitionDelay: `${idx * 140}ms`,
       }}
-    >
-      {/* clip-path mask reveal */}
-      <div
-        className="absolute inset-0 bg-[hsl(228_56%_10%)] transition-all duration-[1100ms] ease-[cubic-bezier(0.7,0,0.2,1)]"
-        style={{
-          clipPath: active ? "inset(0 0 100% 0)" : "inset(0 0 0 0)",
-          transitionDelay: `${idx * 140}ms`,
-        }}
-      />
-      {/* big number watermark */}
-      <span
-        className="absolute -bottom-6 -right-2 font-grotesk font-bold text-white/10 leading-none select-none"
-        style={{ fontSize: "12rem" }}
-      >
-        {p.tag}
-      </span>
-      {/* dot grid texture */}
-      <div className="absolute inset-0 opacity-30 dot-grid" />
-    </div>
+    />
 
-    {/* line that stretches */}
-    <div className="h-px bg-white/10 mb-5 overflow-hidden">
-      <div
-        className="h-full bg-primary transition-all duration-[900ms] ease-out"
-        style={{
-          width: active ? "100%" : "0%",
-          transitionDelay: `${idx * 140 + 400}ms`,
-        }}
-      />
-    </div>
+    {/* hover background tint */}
+    <div className="absolute inset-0 bg-[hsl(186_79%_47%/0.08)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-    <div
-      className="transition-all duration-700 ease-out"
-      style={{
-        opacity: active ? 1 : 0,
-        transform: active ? "translateY(0)" : "translateY(20px)",
-        transitionDelay: `${idx * 140 + 250}ms`,
-      }}
+    {/* vertical cyan bar — appears on hover */}
+    <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-500 ease-out" />
+
+    {/* dot grid texture */}
+    <div className="absolute inset-0 opacity-25 dot-grid pointer-events-none" />
+
+    {/* big number watermark */}
+    <span
+      className="absolute -bottom-10 -right-4 font-grotesk font-bold text-white/[0.07] group-hover:text-white/[0.12] leading-none select-none transition-colors duration-500"
+      style={{ fontSize: "16rem" }}
     >
-      <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-primary">{p.tag}</span>
-      <h3 className="text-xl md:text-2xl font-grotesk font-semibold text-white mt-3 mb-2 tracking-tight">
-        {p.title}
-      </h3>
-      <p className="text-sm text-white/55 leading-relaxed">{p.desc}</p>
+      {p.tag}
+    </span>
+
+    {/* Content */}
+    <div className="relative z-10 h-full flex flex-col justify-between p-8 md:p-10">
+      <div>
+        <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-primary">
+          {p.tag}
+        </span>
+        {/* cyan line that stretches at reveal */}
+        <div className="h-px bg-white/10 mt-3 mb-6 overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all duration-[900ms] ease-out"
+            style={{
+              width: active ? "100%" : "0%",
+              transitionDelay: `${idx * 140 + 400}ms`,
+            }}
+          />
+        </div>
+        <h3 className="text-2xl md:text-3xl font-grotesk font-semibold text-white tracking-tight">
+          {p.title}
+        </h3>
+      </div>
+
+      {/* description — hidden by default, revealed on hover (desktop) / always on mobile */}
+      <div className="flex items-end justify-between gap-4">
+        <p
+          className="text-sm text-white/65 leading-relaxed max-w-[85%] transition-all duration-500 ease-out md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0"
+        >
+          {p.desc}
+        </p>
+        <span
+          className="font-grotesk text-2xl text-primary shrink-0 transition-all duration-500 md:opacity-0 md:translate-x-[-6px] md:group-hover:opacity-100 md:group-hover:translate-x-0"
+          aria-hidden
+        >
+          →
+        </span>
+      </div>
     </div>
   </div>
 );
