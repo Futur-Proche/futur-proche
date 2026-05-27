@@ -15,7 +15,7 @@ const formats = [
     tag: "02_Events",
     title: "After Proche",
     desc: "Des rencontres physiques resserrées (40-80 personnes) où l'on parle vraiment. Format speaker + tables rondes + apéro long. Pas de stand, pas de goodies.",
-    image: groupeAfterProche,
+    image: eventTalk,
   },
   {
     tag: "03_Podcast",
