@@ -1,14 +1,40 @@
+import { useState } from "react";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useStaggeredReveal } from "@/hooks/useStaggeredReveal";
-import speakerEvent from "@/assets/speaker-event.jpg";
-import eventCommunity from "@/assets/event-community.jpg";
-import dinerCommunaute from "@/assets/diner-communaute.jpg";
 
 const stats = [
-  { value: 850, suffix: "+", label: "FUTURISTES", sub: "B2B • B2C • Startups", fill: 0.92 },
-  { value: 7, suffix: "+", label: "ANNÉES_XP_MIN", sub: "Seniors confirmés", fill: 0.55 },
-  { value: 40, suffix: "%", label: "C_LEVEL", sub: "CMO • VP • Head of", fill: 0.4 },
-  { value: 15, suffix: "+", label: "AFTER_PROCHE", sub: "Paris • Lyon • Bordeaux", fill: 0.75 },
+  {
+    value: 850,
+    suffix: "+",
+    label: "FUTURISTES",
+    sub: "B2B • B2C • Startups",
+    fill: 0.92,
+    back: "Une communauté en croissance constante, sélectionnée à l'entrée pour garantir la qualité des échanges.",
+  },
+  {
+    value: 7,
+    suffix: "+",
+    label: "ANNÉES_XP_MIN",
+    sub: "Seniors confirmés",
+    fill: 0.55,
+    back: "Le seuil pour des conversations entre pairs, pas entre niveaux. On parle vrais sujets, vrais arbitrages.",
+  },
+  {
+    value: 40,
+    suffix: "%",
+    label: "C_LEVEL",
+    sub: "CMO • VP • Head of",
+    fill: 0.4,
+    back: "Une vraie densité de décideurs autour de la table. Vos pairs prennent les mêmes décisions que vous.",
+  },
+  {
+    value: 15,
+    suffix: "+",
+    label: "AFTER_PROCHE",
+    sub: "Paris • Lyon • Bordeaux",
+    fill: 0.75,
+    back: "Des After Proche dans toutes les grandes places françaises. Format speaker + tables rondes + apéro long.",
+  },
 ];
 
 const profils = [
@@ -16,19 +42,34 @@ const profils = [
     tag: "01",
     title: "Direction Marketing",
     desc: "CMO, VP Marketing, Head of Growth — qui pilotent budgets et équipes.",
-    image: speakerEvent,
+    details: [
+      "Pilotage de budgets 7 chiffres et arbitrages d'allocation",
+      "Recrutement et structuration d'équipes seniors",
+      "Choix d'outils, d'agences, de partenaires stratégiques",
+      "Reporting et défense du marketing au COMEX",
+    ],
   },
   {
     tag: "02",
     title: "Direction Communication",
     desc: "Dircom, Head of Brand, Comm Corporate — au croisement image et stratégie.",
-    image: eventCommunity,
+    details: [
+      "Positionnement de marque et narratif corporate",
+      "Gestion de crise et communication sensible",
+      "Influence, RP et relations institutionnelles",
+      "Alignement entre marque employeur et marque produit",
+    ],
   },
   {
     tag: "03",
     title: "Founders & C-Level",
     desc: "Fondateurs et dirigeants qui portent eux-mêmes la marque.",
-    image: dinerCommunaute,
+    details: [
+      "Construction d'une voix de marque incarnée par le dirigeant",
+      "Choix de premier CMO et structuration de la fonction",
+      "Arbitrages entre acquisition, marque et produit",
+      "Préparation de levée, M&A ou repositionnement",
+    ],
   },
 ];
 
@@ -42,78 +83,107 @@ const StatCell = ({
   index: number;
 }) => {
   const { value: animated, ref } = useCountUp(stat.value);
+  const [flipped, setFlipped] = useState(false);
+
   return (
     <div
-      className="relative p-8 md:p-12 transition-all duration-700 ease-out"
-      style={{
-        opacity: active ? 1 : 0,
-        transform: active ? "translateY(0)" : "translateY(30px)",
-        transitionDelay: `${index * 120}ms`,
-      }}
+      className="relative h-full"
+      style={{ perspective: "1400px" }}
+      onMouseEnter={() => setFlipped(true)}
+      onMouseLeave={() => setFlipped(false)}
+      onClick={() => setFlipped((v) => !v)}
     >
-      <div className="flex items-center justify-between mb-6">
-        <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-white/40">
-          {stat.label}
-        </span>
-        <span className="font-mono text-[10px] text-white/30">0{index + 1}</span>
-      </div>
-
-      <div ref={ref as React.RefObject<HTMLDivElement>} className="flex items-end gap-1 mb-6">
-        <span className="text-6xl md:text-8xl font-grotesk font-bold text-white leading-[0.85] tabular-nums">
-          {animated}
-        </span>
-        <span className="text-3xl md:text-5xl font-grotesk font-bold text-primary leading-none pb-1">
-          {stat.suffix}
-        </span>
-      </div>
-
-      {/* progress bar */}
-      <div className="h-px w-full bg-white/10 mb-3 overflow-hidden">
+      <div
+        className="relative w-full h-full"
+        style={{
+          transformStyle: "preserve-3d",
+          transition: "transform 700ms cubic-bezier(0.7,0,0.2,1), opacity 700ms ease-out",
+          transform: `${active ? "translateY(0)" : "translateY(30px)"} rotateY(${flipped ? 180 : 0}deg)`,
+          opacity: active ? 1 : 0,
+          transitionDelay: `${index * 120}ms`,
+          minHeight: "320px",
+        }}
+      >
+        {/* FRONT */}
         <div
-          className="h-full bg-primary transition-all duration-[1600ms] ease-out"
-          style={{ width: active ? `${stat.fill * 100}%` : "0%", transitionDelay: `${index * 120 + 200}ms` }}
-        />
-      </div>
+          className="absolute inset-0 p-8 md:p-12"
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-white/40">
+              {stat.label}
+            </span>
+            <span className="font-mono text-[10px] text-white/30">0{index + 1}</span>
+          </div>
 
-      <span className="font-mono text-[11px] tracking-[1px] text-white/60">{stat.sub}</span>
+          <div ref={ref as React.RefObject<HTMLDivElement>} className="flex items-end gap-1 mb-6">
+            <span className="text-6xl md:text-8xl font-grotesk font-bold text-white leading-[0.85] tabular-nums">
+              {animated}
+            </span>
+            <span className="text-3xl md:text-5xl font-grotesk font-bold text-primary leading-none pb-1">
+              {stat.suffix}
+            </span>
+          </div>
+
+          <div className="h-px w-full bg-white/10 mb-3 overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-[1600ms] ease-out"
+              style={{ width: active ? `${stat.fill * 100}%` : "0%", transitionDelay: `${index * 120 + 200}ms` }}
+            />
+          </div>
+
+          <span className="font-mono text-[11px] tracking-[1px] text-white/60">{stat.sub}</span>
+        </div>
+
+        {/* BACK */}
+        <div
+          className="absolute inset-0 p-8 md:p-12 flex flex-col justify-between"
+          style={{
+            backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            background: "hsl(228 50% 12%)",
+            borderLeft: "3px solid hsl(186 79% 47%)",
+          }}
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-primary">
+            — {stat.label}
+          </span>
+          <p className="text-base md:text-lg leading-relaxed text-white/90 font-grotesk">
+            {stat.back}
+          </p>
+          <span className="font-mono text-[10px] text-white/30">0{index + 1}</span>
+        </div>
+      </div>
     </div>
   );
 };
 
-const ProfilCol = ({
+const ProfilCard = ({
   p,
   idx,
   active,
+  open,
+  onToggle,
 }: {
   p: typeof profils[number];
   idx: number;
   active: boolean;
+  open: boolean;
+  onToggle: () => void;
 }) => (
-  <div
-    className="group relative overflow-hidden aspect-[3/4] cursor-default transition-all duration-500 ease-out"
+  <button
+    type="button"
+    onClick={onToggle}
+    aria-expanded={open}
+    className="group relative text-left w-full overflow-hidden transition-all duration-500 ease-out"
     style={{
-      background: "hsl(228 56% 10%)",
-      border: "1px solid hsl(228 30% 22%)",
+      background: open ? "hsl(228 50% 12%)" : "hsl(228 56% 10%)",
+      border: `1px solid ${open ? "hsl(186 79% 47% / 0.5)" : "hsl(228 30% 22%)"}`,
       transitionDelay: `${idx * 140}ms`,
+      opacity: active ? 1 : 0,
+      transform: active ? "translateY(0)" : "translateY(24px)",
     }}
   >
-    {/* Background image */}
-    <img
-      src={p.image}
-      alt=""
-      aria-hidden
-      className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-85 group-hover:scale-105 transition-all duration-[900ms] ease-out"
-    />
-
-    {/* Dark gradient overlay for readability */}
-    <div
-      className="absolute inset-0 transition-opacity duration-500 pointer-events-none"
-      style={{
-        background:
-          "linear-gradient(180deg, hsl(228 56% 10% / 0.35) 0%, hsl(228 56% 10% / 0.75) 55%, hsl(228 56% 10% / 0.95) 100%)",
-      }}
-    />
-
     {/* clip-path mask reveal at mount */}
     <div
       className="absolute inset-0 bg-[hsl(228_56%_10%)] transition-all duration-[1100ms] ease-[cubic-bezier(0.7,0,0.2,1)] z-20 pointer-events-none"
@@ -123,66 +193,70 @@ const ProfilCol = ({
       }}
     />
 
-    {/* hover cyan tint */}
-    <div className="absolute inset-0 bg-[hsl(186_79%_47%/0.12)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+    {/* vertical cyan bar */}
+    <div
+      className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary origin-bottom transition-transform duration-500 ease-out z-10"
+      style={{ transform: open ? "scaleY(1)" : "scaleY(0)" }}
+    />
 
-    {/* vertical cyan bar — appears on hover */}
-    <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-500 ease-out z-10" />
-
-    {/* dot grid texture */}
-    <div className="absolute inset-0 opacity-20 dot-grid pointer-events-none" />
-
-
-    {/* big number watermark */}
-    <span
-      className="absolute -bottom-10 -right-4 font-grotesk font-bold text-white/[0.07] group-hover:text-white/[0.12] leading-none select-none transition-colors duration-500"
-      style={{ fontSize: "16rem" }}
-    >
-      {p.tag}
-    </span>
-
-    {/* Content */}
-    <div className="relative z-10 h-full flex flex-col justify-between p-8 md:p-10">
-      <div>
+    <div className="relative z-10 p-7 md:p-8">
+      <div className="flex items-start justify-between gap-4 mb-4">
         <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-primary">
           {p.tag}
         </span>
-        {/* cyan line that stretches at reveal */}
-        <div className="h-px bg-white/10 mt-3 mb-6 overflow-hidden">
-          <div
-            className="h-full bg-primary transition-all duration-[900ms] ease-out"
-            style={{
-              width: active ? "100%" : "0%",
-              transitionDelay: `${idx * 140 + 400}ms`,
-            }}
-          />
-        </div>
-        <h3 className="text-2xl md:text-3xl font-grotesk font-semibold text-white tracking-tight">
-          {p.title}
-        </h3>
-      </div>
-
-      {/* description — hidden by default, revealed on hover (desktop) / always on mobile */}
-      <div className="flex items-end justify-between gap-4">
-        <p
-          className="text-sm text-white/65 leading-relaxed max-w-[85%] transition-all duration-500 ease-out md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0"
-        >
-          {p.desc}
-        </p>
         <span
-          className="font-grotesk text-2xl text-primary shrink-0 transition-all duration-500 md:opacity-0 md:translate-x-[-6px] md:group-hover:opacity-100 md:group-hover:translate-x-0"
+          className="font-grotesk text-2xl text-primary leading-none transition-transform duration-500"
+          style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
           aria-hidden
         >
-          →
+          +
         </span>
       </div>
+
+      <div className="h-px bg-white/10 mb-5 overflow-hidden">
+        <div
+          className="h-full bg-primary transition-all duration-[900ms] ease-out"
+          style={{
+            width: open ? "100%" : active ? "40%" : "0%",
+            transitionDelay: `${idx * 140 + 400}ms`,
+          }}
+        />
+      </div>
+
+      <h3 className="text-xl md:text-2xl font-grotesk font-semibold text-white tracking-tight mb-3">
+        {p.title}
+      </h3>
+      <p className="text-sm text-white/65 leading-relaxed">{p.desc}</p>
+
+      {/* expandable details */}
+      <div
+        className="grid transition-all duration-500 ease-out"
+        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          <div className="pt-5 mt-5 border-t border-white/10">
+            <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-white/40 mb-3 block">
+              — Sujets typiques
+            </span>
+            <ul className="space-y-2">
+              {p.details.map((d) => (
+                <li key={d} className="text-sm text-white/80 leading-relaxed flex gap-2">
+                  <span className="text-primary mt-1.5 shrink-0">·</span>
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </button>
 );
 
 export const KeyElementsSection = () => {
   const statsReveal = useStaggeredReveal<HTMLDivElement>(stats.length, 0, 0.25);
   const profilsReveal = useStaggeredReveal<HTMLDivElement>(profils.length, 0, 0.25);
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
     <section className="section-navy relative">
@@ -195,9 +269,9 @@ export const KeyElementsSection = () => {
 
         <p className="text-white/50 text-base max-w-2xl mb-12 leading-relaxed">
           B2B, B2C, startups, grands groupes, indépendants — tous secteurs réunis autour d'un même niveau d'exigence.
+          <span className="block mt-1 text-white/30 text-sm font-mono">Survolez chaque carte pour en savoir plus.</span>
         </p>
 
-        {/* 2x2 cadran grid */}
         <div
           ref={statsReveal.ref}
           className="grid grid-cols-1 md:grid-cols-2 border-t border-l"
@@ -214,7 +288,6 @@ export const KeyElementsSection = () => {
           ))}
         </div>
 
-        {/* Demarcation + Profils types — style Hydra */}
         <div className="mt-24 md:mt-32">
           <div className="h-px w-full bg-white/10 mb-16 md:mb-20" />
         </div>
@@ -224,17 +297,24 @@ export const KeyElementsSection = () => {
             — Trois profils, une même exigence
           </span>
           <p
-            className="font-serif italic text-xl md:text-2xl text-white/80 mb-12 max-w-2xl leading-snug"
+            className="font-serif italic text-xl md:text-2xl text-white/80 mb-4 max-w-2xl leading-snug"
           >
             À qui s'adresse vraiment Futur Proche.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          <p className="text-white/40 text-sm font-mono mb-12">Cliquez sur un profil pour le découvrir.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
             {profils.map((p, i) => (
-              <ProfilCol key={p.tag} p={p} idx={i} active={profilsReveal.revealed[i]} />
+              <ProfilCard
+                key={p.tag}
+                p={p}
+                idx={i}
+                active={profilsReveal.revealed[i]}
+                open={openIdx === i}
+                onToggle={() => setOpenIdx(openIdx === i ? null : i)}
+              />
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );
