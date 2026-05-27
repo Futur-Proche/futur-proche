@@ -95,13 +95,13 @@ export const TensionSection = () => {
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-16 xl:gap-20">
             <div className="relative">
-              <div className="sticky top-24 flex h-[calc(100vh-6rem)] items-center">
+              <div className="sticky top-20 flex min-h-[calc(100vh-5rem)] items-start pt-10">
                 <LeftColumn activeIdx={displayedIdx} />
               </div>
             </div>
 
             <div className="relative">
-              <div className="sticky top-24 flex h-[calc(100vh-6rem)] items-center">
+              <div className="sticky top-20 flex min-h-[calc(100vh-5rem)] items-start pt-10">
                 <DesktopStack displayedIdx={displayedIdx} onSelect={setPickedIdx} />
               </div>
 
@@ -113,7 +113,7 @@ export const TensionSection = () => {
                       stepRefs.current[idx] = el;
                     }}
                     data-index={idx}
-                    className={idx === painPoints.length - 1 ? "h-[82vh]" : "h-[78vh]"}
+                    className={idx === painPoints.length - 1 ? "h-[65vh]" : "h-[62vh]"}
                   />
                 ))}
               </div>
