@@ -1,55 +1,60 @@
+# Animations dynamiques — 4 sections home
 
-# Plan — Rendre la home plus dynamique
+Inspiré de Bima ("Is this you?") et Hydra ("Our Numbers" / "Industries We Serve"). Toutes les animations restent en IntersectionObserver natif + CSS, sans nouvelle dépendance. `prefers-reduced-motion` respecté partout.
 
-Trois expérimentations structurelles, chacune mappée à une section existante. Le but : tester les patterns d'animation sur le contenu réel et juger ensuite ce qu'on garde.
+---
 
-## 1. Sticky split scroll (inspi Sadewa "Our Approach") → `FormatsSection`
+## 1. `TensionSection` — "Vous connaissez sûrement ça" (style Bima)
 
-Section dense, parfaite candidate.
+Remplacer la grille 3 cartes hover par une **liste verticale qui se révèle progressivement au scroll**, façon Bima.
 
-- Colonne gauche **sticky** (top ~120px) : kicker "Une commu, plusieurs formats", titre, paragraphe d'intro, petite ligne décorative.
-- Colonne droite **scrollable** : les 4 formats (WhatsApp / After Proche / Podcast / Jobs) empilés en grandes cartes plein-largeur, chacune ~80vh. Chaque carte fait fondre/translate à l'arrivée dans le viewport (IntersectionObserver, classe `animate-fade-in` existante).
-- Le titre gauche met en surbrillance dynamiquement le format actif (petit indicateur "01/04 → 04/04" qui s'incrémente au scroll).
-- La grille photos reste en bas, inchangée.
+- Format : liste numérotée pleine largeur (max-w-4xl centré), chaque item = ligne avec un numéro géant à gauche (font-grotesk, ~6rem, couleur cream/15 ou cyan/20), titre + texte à droite, fin séparateur fin.
+- Apparition : chaque ligne fade + translate-y(40px) + blur(6px → 0) avec stagger ~150ms, threshold 0.2.
+- Hover : ligne entière s'illumine légèrement (background cyan/3, num passe en cyan plein).
+- **Étendre de 3 à 6 pain points** (j'en ajoute 3 cohérents avec le positionnement Marketing/Comm senior, ex. : "Des prestataires qui se ressemblent tous", "Des KPIs qu'on ne peut pas comparer", "Une carrière qu'on construit en silence").
+- CTA bas conservé tel quel.
 
-Layout :
-```text
-┌─────────────────┬──────────────────┐
-│ STICKY          │ 01_WhatsApp      │
-│ Une commu,      │ ─────────────    │
-│ plusieurs       │ 02_After Proche  │
-│ formats.        │ ─────────────    │
-│ [01 ● ○ ○ ○]    │ 03_Podcast       │
-│                 │ ─────────────    │
-│                 │ 04_Jobs          │
-└─────────────────┴──────────────────┘
-```
+## 2. `KeyElementsSection` — Bloc chiffres (style Hydra "Our Numbers")
 
-## 2. Reveal au scroll progressif (inspi Bima "Is This You ?") → `ForYouSection`
+Refondre le bloc 4 stats :
 
-Section à fort impact émotionnel — un reveal séquentiel renforce le punch.
+- Layout : grille 2×2 sur desktop avec **grosses séparations verticales/horizontales** type "cadran" (lignes 1px white/10 entre cellules), padding généreux.
+- Chaque cellule : label mono en haut à gauche, **chiffre XXL** (text-7xl/8xl) qui s'anime (count-up actuel), petit sous-label en bas, et **petit graphique décoratif** (barre horizontale qui se remplit, ou arc / progress ring fin en SVG) qui s'active en parallèle du compteur.
+- Au scroll dans la section : révélation séquentielle cellule par cellule (~200ms stagger).
+- Garder le titre "Les chiffres qui comptent" + intro.
 
-- Le titre "C'est pour vous si..." reste tel quel.
-- Les items des deux colonnes (OUI / NON) apparaissent **un par un** au scroll, avec un léger décalage : fade + translate-y de 20px + très subtil flou qui se résout (`blur(8px)` → `blur(0)`).
-- Stagger : 80-120ms entre items. Déclenchement via IntersectionObserver (threshold 0.3) sur chaque `<li>`.
-- L'effet est doux, pas démo — on garde la lisibilité d'une page corporate sérieuse.
+## 3. `KeyElementsSection` — "Trois profils, une même exigence" (style Hydra "Industries We Serve")
 
-## 3. Compteurs + colonnes animées (inspi Hydra "Our Numbers" + "Industries We Serve") → `KeyElementsSection`
+Remplacer la cascade simple par l'animation Hydra :
 
-Cette section a déjà des compteurs (`useCountUp`). On enrichit :
+- 3 colonnes pleine hauteur avec **image / illustration** en haut (placeholder neutre cream/cyan abstrait, ou icône grand format type AtomIcon variant), titre + desc en bas.
+- Au scroll : chaque colonne **slide depuis le bas avec un masque** (clip-path qui se rétracte vers le haut), stagger 120ms, threshold 0.3.
+- Hover : la colonne active s'élargit légèrement (scale 1.02) et l'image gagne en saturation/contraste.
+- Numéros (01/02/03) en mono small au-dessus, ligne fine cyan qui s'étire au reveal.
 
-- **Numbers** : encadrer chaque stat d'une fine ligne verticale qui se "dessine" de haut en bas au moment où le compteur démarre. Ajouter un label secondaire qui apparaît après le compteur (ex. petit tag mono "B2B • B2C • Startups").
-- **Effet 3 colonnes Hydra-like** : optionnellement, sous les 4 stats, ajouter une bande de 3 colonnes "Profils types" (Direction Marketing / Direction Comm / Founders & C-Level) qui se révèlent en cascade horizontale. ⚠️ Réservé à des intitulés courts à faible enjeu SEO (comme tu l'as noté).
-- Si la bande 3 colonnes alourdit, on la met dans une variante et on tranche après preview.
+## 4. `TestimonialsSection` — "La parole à ceux qui en sont" (effet nuage)
+
+Remplacer la grille statique par un **effet d'apparition en nuage** :
+
+- Layout masonry-like (colonnes de hauteurs variables via CSS columns count-3 sur desktop, count-2 tablet, count-1 mobile).
+- Au scroll : chaque carte témoignage apparaît avec position aléatoire-déterministe (translate-x ±20px + translate-y 30px + scale 0.92 + opacity 0 → final), stagger ~80ms, threshold 0.15.
+- Légère rotation alternée (-1°/+1°/-0.5°…) pour casser la rigidité, façon post-its / nuage d'avis.
+- Hover : carte remonte légèrement (translateY -4px) et bord cyan léger.
+- Garder les 6 témoignages existants.
+
+---
 
 ## Détails techniques
 
-- Toutes les animations s'appuient sur **IntersectionObserver natif** (déjà utilisé dans `useCountUp`). Pas de dépendance ajoutée (pas de Framer Motion, pas de GSAP) — on reste léger.
-- Création d'un petit hook réutilisable `useInViewReveal()` qui retourne un `ref` et une classe `is-revealed` à toggle.
-- Sticky CSS pur (`position: sticky`) pour Sadewa — supporté partout, zéro JS.
-- Respect de `prefers-reduced-motion` : si activé, on désactive les translate/blur et on affiche tout immédiatement.
-- Tokens couleurs / typo inchangés (Space Grotesk, navy, cream, cyan).
+- Réutiliser `useInViewReveal` (hook existant) pour les reveals simples ; créer une variante `useStaggeredReveal(count, delay)` qui renvoie un tableau de booleans pour les listes/grilles à stagger.
+- Pas de Framer Motion / GSAP — uniquement classes Tailwind + style inline transition-duration/delay + IntersectionObserver.
+- Tokens conservés (navy / cream / cyan, Space Grotesk, JetBrains Mono).
+- Tous les composants restent en `.tsx` autonomes ; aucun changement à `Index.tsx` ni à la DB.
+- Accessibilité : `prefers-reduced-motion` désactive transforms/blur et révèle directement.
 
-## Livraison
+## Fichiers touchés
 
-J'implémente les 3 essais d'un coup pour que tu puisses les voir en contexte et trancher quoi garder / quoi affiner.
+- `src/components/home/TensionSection.tsx` (refonte)
+- `src/components/home/KeyElementsSection.tsx` (refonte chiffres + profils)
+- `src/components/home/TestimonialsSection.tsx` (refonte grille → nuage)
+- `src/hooks/useStaggeredReveal.ts` (nouveau, optionnel)
