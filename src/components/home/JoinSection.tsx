@@ -65,13 +65,13 @@ export const JoinSection = () => {
 
         {/* Why — discrete callout */}
         <div
-          className="rounded-lg px-5 py-4 md:px-6 md:py-5 border-dashed"
+          className="mx-auto max-w-3xl rounded-lg px-5 py-4 md:px-6 md:py-5"
           style={{
             background: "hsl(228 24% 96%)",
             border: "1px dashed hsl(228 15% 80%)",
           }}
         >
-          <p className="text-xs md:text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 12% 50%)" }}>
+          <p className="text-xs md:text-sm leading-relaxed text-center md:text-left" style={{ color: "hsl(228 12% 50%)" }}>
             <span className="font-grotesk font-semibold" style={{ color: "hsl(228 12% 38%)" }}>
               Pourquoi un process de sélection ?
             </span>{" "}
