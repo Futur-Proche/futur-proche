@@ -27,7 +27,7 @@ const formats = [
     tag: "04_Jobs",
     title: "Opportunités",
     desc: "Postes, freelances, mandats d'advisory — circulés en circuit fermé. Les meilleures opportunités ne passent jamais par LinkedIn ; elles passent ici.",
-    image: formatJobs,
+    image: ambianceGroupe,
   },
 ];
 
