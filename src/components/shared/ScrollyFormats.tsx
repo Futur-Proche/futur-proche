@@ -134,7 +134,14 @@ export const ScrollyFormats = ({
   };
 
   return (
-    <section className={`${tokens.section} relative`}>
+    <section
+      className={`${tokens.section} relative`}
+      style={
+        isCream
+          ? undefined
+          : { background: "hsl(228 56% 10%)", color: "hsl(40 33% 94%)" }
+      }
+    >
       {!isCream && <div className="dot-grid" />}
 
       {/* En-tête */}
