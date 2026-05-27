@@ -92,12 +92,28 @@ const ProfilCol = ({
   <div
     className="group relative overflow-hidden aspect-[3/4] cursor-default transition-all duration-500 ease-out"
     style={{
-      background:
-        "linear-gradient(160deg, hsl(228 40% 14%) 0%, hsl(228 56% 10%) 100%)",
+      background: "hsl(228 56% 10%)",
       border: "1px solid hsl(228 30% 22%)",
       transitionDelay: `${idx * 140}ms`,
     }}
   >
+    {/* Background image */}
+    <img
+      src={p.image}
+      alt=""
+      aria-hidden
+      className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-85 group-hover:scale-105 transition-all duration-[900ms] ease-out"
+    />
+
+    {/* Dark gradient overlay for readability */}
+    <div
+      className="absolute inset-0 transition-opacity duration-500 pointer-events-none"
+      style={{
+        background:
+          "linear-gradient(180deg, hsl(228 56% 10% / 0.35) 0%, hsl(228 56% 10% / 0.75) 55%, hsl(228 56% 10% / 0.95) 100%)",
+      }}
+    />
+
     {/* clip-path mask reveal at mount */}
     <div
       className="absolute inset-0 bg-[hsl(228_56%_10%)] transition-all duration-[1100ms] ease-[cubic-bezier(0.7,0,0.2,1)] z-20 pointer-events-none"
@@ -107,14 +123,15 @@ const ProfilCol = ({
       }}
     />
 
-    {/* hover background tint */}
-    <div className="absolute inset-0 bg-[hsl(186_79%_47%/0.08)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    {/* hover cyan tint */}
+    <div className="absolute inset-0 bg-[hsl(186_79%_47%/0.12)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
     {/* vertical cyan bar — appears on hover */}
-    <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-500 ease-out" />
+    <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-500 ease-out z-10" />
 
     {/* dot grid texture */}
-    <div className="absolute inset-0 opacity-25 dot-grid pointer-events-none" />
+    <div className="absolute inset-0 opacity-20 dot-grid pointer-events-none" />
+
 
     {/* big number watermark */}
     <span
@@ -197,17 +214,27 @@ export const KeyElementsSection = () => {
           ))}
         </div>
 
-        {/* Profils types — style Hydra */}
-        <div ref={profilsReveal.ref} className="mt-24 md:mt-32">
-          <span className="font-mono text-[11px] uppercase tracking-[1.5px] text-white/40 mb-10 block">
+        {/* Demarcation + Profils types — style Hydra */}
+        <div className="mt-24 md:mt-32">
+          <div className="h-px w-full bg-white/10 mb-16 md:mb-20" />
+        </div>
+
+        <div ref={profilsReveal.ref}>
+          <span className="font-mono text-xs uppercase tracking-[1.8px] text-primary mb-3 block">
             — Trois profils, une même exigence
           </span>
+          <p
+            className="font-serif italic text-xl md:text-2xl text-white/80 mb-12 max-w-2xl leading-snug"
+          >
+            À qui s'adresse vraiment Futur Proche.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
             {profils.map((p, i) => (
               <ProfilCol key={p.tag} p={p} idx={i} active={profilsReveal.revealed[i]} />
             ))}
           </div>
         </div>
+
       </div>
     </section>
   );
