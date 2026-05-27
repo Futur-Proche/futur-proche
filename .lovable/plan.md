@@ -1,68 +1,52 @@
-## Objectif
+## Compris — passer en "pinned scroll"
 
-Remplacer le pattern actuel "média sticky + textes empilés à droite" par un **pattern Sadewa** : chaque format occupe sa **propre section pleine hauteur** (≈100vh), centrée, avec un grand numéro `/01`, une image hero centrale et un titre + description à droite. On scrolle → la section suivante prend toute la place. Une seule image visible à la fois, pas d'empilement.
+Aujourd'hui chaque étape est sa propre section de hauteur écran : on scrolle et on découvre la suivante en dessous. Toi tu veux que **la section reste collée à l'écran** et qu'à chaque cran de scroll, l'image + texte du point 1 soient **remplacés sur place** par ceux du point 2, puis 3, puis 4. Une fois le 4 affiché, le scroll reprend normalement.
 
-Concerne deux endroits :
-- Home → `src/components/home/FormatsSection.tsx`
-- Communauté → bloc `FormatsScroller` dans `src/pages/Communaute.tsx`
+C'est le pattern Sadewa / Apple : "pin + step".
 
-## Structure d'une "étape" Sadewa
+## Comment je l'implémente
+
+Composant `ScrollyFormats` revu :
 
 ```text
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│   /01        [   IMAGE     ]      Discover         │
-│   (gros)     [   centrale  ]      Texte court…     │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-   ← min-h-screen, contenu centré verticalement →
+<section style="height: N * 100vh">   ← réserve la "longueur de scroll"
+  <div class="sticky top-0 h-screen"> ← reste collé tant qu'on est dans la section
+     ┌─────────────────────────────┐
+     │ /0X    [ IMAGE ]   Titre    │  ← un seul slide visible, crossfade
+     │                   Texte     │
+     └─────────────────────────────┘
+     • • • •  ← progress dots
+  </div>
+</section>
 ```
 
-- Layout : `grid lg:grid-cols-[auto_1fr_1.2fr]` → numéro / image / texte.
-- Numéro façon Sadewa : très gros (`text-7xl md:text-8xl`), gris clair, avec un slash cyan en accent (cohérent avec notre identité navy/cyan, pas de vert).
-- Image : `aspect-square` ou `4/5`, max ~420px, centrée, ombre douce.
-- Texte : titre `text-4xl md:text-5xl`, description courte en muted.
-- Mobile : stack vertical (numéro → image → texte), `min-h-[80vh]`.
+- `N = steps.length` (donc 4 × 100vh de hauteur réservée).
+- Un seul "slide" rendu en absolu, on calcule `activeIdx` à partir du scroll :
+  `progress = (window.scrollY - sectionTop) / (sectionHeight - viewportHeight)` → mappé sur `[0..N-1]`.
+- Transition entre slides : crossfade image + texte (opacity + petit translateY) ≈ 500 ms. Pas de scroll-jacking, on suit le scroll réel.
+- Le numéro `/01 → /02 → …` change avec l'index actif.
+- Petits dots cliquables (déjà en place) pour sauter à une étape via `window.scrollTo` calculé.
 
-## Animation à l'entrée de chaque section
+## En-tête
 
-Chaque étape devient visible quand elle entre dans le viewport (IntersectionObserver, threshold ~0.4) :
-- numéro : fade + slide depuis la gauche (translateX -20px → 0)
-- image : fade + scale (0.92 → 1) + léger float continu
-- texte : fade + slide depuis le bas (translateY 24px → 0), stagger 120ms entre titre/description
+Le label + h2 + intro restent **au-dessus** de la zone pinned, dans le flux normal. Quand on arrive à la section, on lit le titre, puis ça se "fixe" et on parcourt les 4 formats.
 
-Respecte `prefers-reduced-motion`.
+## Mobile
 
-## Indicateur de progression (optionnel mais Sadewa-like)
+Pas de pin sur mobile (trop fragile, gestes scroll capricieux) : fallback en stack vertical simple (1 par 1, plein écran chacun). Détection via `matchMedia("(min-width: 1024px)")`.
 
-Petite barre verticale fixe à droite (desktop only) avec un point par étape ; le point actif passe en cyan. Permet de voir "où on en est" dans la séquence. Cliquable pour sauter à une étape (`scrollIntoView({ behavior: "smooth" })`).
+## Reduced motion
 
-## Composants
+Si `prefers-reduced-motion: reduce` → on désactive le pin et on tombe sur le stack vertical avec fade simple.
 
-Créer un composant réutilisable `src/components/shared/ScrollyFormats.tsx` :
+## Fichiers à modifier
 
-```tsx
-type Step = { tag: string; title: string; desc: string; image: string };
-<ScrollyFormats steps={steps} accentLabel="Une commu, plusieurs formats" heading="..." intro="..." />
-```
-
-- Gère lui-même les sections `min-h-screen`, l'observer d'index actif, l'indicateur latéral.
-- Utilisé par `FormatsSection` (home) et par la page Communauté à la place du `FormatsScroller` actuel.
-
-## Contenu
-
-On garde **strictement** les textes / images / tags existants des deux pages. Aucune modif de copy.
+- ✏️ `src/components/shared/ScrollyFormats.tsx` — refonte complète (pin + scroll-driven index).
+- Aucune autre modif : `FormatsSection.tsx` (home) et `Communaute.tsx` consomment déjà le composant.
 
 ## Détails techniques
 
-- Tokens : navy `hsl(228 56% 10%)`, cyan `hsl(186 79% 47%)`, cream `section-cream`. Pas de vert Sadewa.
-- Le bloc reste dans une `section-cream` (home) / fond cohérent (communauté).
-- En-tête de section (label + h2 + intro) conservé, affiché **une seule fois** avant la première étape.
-- Padding inter-étape : `py-24 md:py-32` pour laisser respirer, mais `min-h-screen` garantit le "une à une".
-- IntersectionObserver avec `rootMargin: "-40% 0px -40% 0px"` pour activer l'étape vraiment centrée.
-
-## Fichiers modifiés
-
-- ➕ `src/components/shared/ScrollyFormats.tsx` (nouveau)
-- ✏️ `src/components/home/FormatsSection.tsx` (utilise le nouveau composant)
-- ✏️ `src/pages/Communaute.tsx` (remplace `FormatsScroller` par `ScrollyFormats`)
+- `useEffect` avec `scroll` listener throttle via `requestAnimationFrame`.
+- Hauteur du pin : `${steps.length * 100}vh`. Première étape visible au top, dernière maintenue ~jusqu'à la sortie.
+- Un léger "dwell" en début/fin pour que l'étape 1 et 4 aient le temps d'exister → on map progress sur `steps.length` segments égaux avec `Math.round`.
+- Indicateur de progression vertical : déjà présent, conservé, devient cliquable pour aller à l'offset correspondant.
