@@ -144,27 +144,6 @@ export const ScrollyFormats = ({
     >
       {!isCream && <div className="dot-grid" />}
 
-      {/* En-tête */}
-      <div className="container relative z-10 mx-auto px-6 lg:px-12 pt-20 md:pt-28 pb-6 md:pb-10">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="w-2 h-2 rounded-full" style={{ background: accent }} />
-            <span className="section-label">{label}</span>
-          </div>
-          <h2
-            className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-4"
-            style={{ color: tokens.headingColor }}
-          >
-            {heading}
-          </h2>
-          {intro && (
-            <p className="text-base leading-relaxed" style={{ color: tokens.introColor }}>
-              {intro}
-            </p>
-          )}
-        </div>
-      </div>
-
       {pinned ? (
         <>
           {/* Indicateur latéral cliquable */}
@@ -195,27 +174,54 @@ export const ScrollyFormats = ({
             style={{ height: `${steps.length * 100}vh` }}
             className="relative"
           >
-            <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-              <div className="container mx-auto px-6 lg:px-12 w-full">
-                <div className="relative">
-                  {steps.map((step, i) => (
-                    <Slide
-                      key={step.tag + i}
-                      step={step}
-                      index={i}
-                      active={i === activeIdx}
-                      tokens={tokens}
-                      accent={accent}
-                    />
-                  ))}
-                  {/* Spacer pour donner la hauteur naturelle au conteneur */}
-                  <div aria-hidden className="invisible">
-                    <SlideContent
-                      step={steps[0]}
-                      index={0}
-                      tokens={tokens}
-                      accent={accent}
-                    />
+            <div className="sticky top-0 h-screen flex flex-col overflow-hidden">
+              {/* En-tête sticky — visible pendant tout le pin */}
+              <div className="container mx-auto px-6 lg:px-12 pt-24 md:pt-28 pb-4 md:pb-6 shrink-0">
+                <div className="max-w-2xl">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2 h-2 rounded-full" style={{ background: accent }} />
+                    <span className="section-label">{label}</span>
+                  </div>
+                  <h2
+                    className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-3"
+                    style={{ color: tokens.headingColor }}
+                  >
+                    {heading}
+                  </h2>
+                  {intro && (
+                    <p
+                      className="text-sm md:text-base leading-relaxed"
+                      style={{ color: tokens.introColor }}
+                    >
+                      {intro}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Slide actif */}
+              <div className="flex-1 flex items-center">
+                <div className="container mx-auto px-6 lg:px-12 w-full">
+                  <div className="relative">
+                    {steps.map((step, i) => (
+                      <Slide
+                        key={step.tag + i}
+                        step={step}
+                        index={i}
+                        active={i === activeIdx}
+                        tokens={tokens}
+                        accent={accent}
+                      />
+                    ))}
+                    {/* Spacer pour donner la hauteur naturelle au conteneur */}
+                    <div aria-hidden className="invisible">
+                      <SlideContent
+                        step={steps[0]}
+                        index={0}
+                        tokens={tokens}
+                        accent={accent}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -223,8 +229,25 @@ export const ScrollyFormats = ({
           </div>
         </>
       ) : (
-        // Mobile / reduced motion : stack vertical simple
-        <div className="container mx-auto px-6 lg:px-12 pb-20">
+        // Mobile / reduced motion : stack vertical simple avec header en haut
+        <div className="container mx-auto px-6 lg:px-12 pt-20 pb-20">
+          <div className="max-w-2xl mb-12">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full" style={{ background: accent }} />
+              <span className="section-label">{label}</span>
+            </div>
+            <h2
+              className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-3"
+              style={{ color: tokens.headingColor }}
+            >
+              {heading}
+            </h2>
+            {intro && (
+              <p className="text-base leading-relaxed" style={{ color: tokens.introColor }}>
+                {intro}
+              </p>
+            )}
+          </div>
           <div className="flex flex-col gap-20">
             {steps.map((step, i) => (
               <div key={step.tag + i}>
