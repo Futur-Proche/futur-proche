@@ -102,6 +102,23 @@ export const TensionSection = () => {
               </div>
             </div>
 
+            {/* CTA — déplacé sous l'image, ancré dans le sticky */}
+            <div className="max-w-sm mb-6">
+              <p
+                className="text-sm font-grotesk font-medium mb-3"
+                style={{ color: "hsl(228 56% 10%)" }}
+              >
+                futur proche existe pour ces moments-là.
+              </p>
+              <Link
+                to="/communaute"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-grotesk font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
+              >
+                Découvrir la communauté →
+              </Link>
+            </div>
+
             {/* Progress indicator */}
             <div className="flex items-center gap-3">
               <span
@@ -125,73 +142,55 @@ export const TensionSection = () => {
             </div>
           </div>
 
-          {/* Stacking cards right */}
+          {/* Stacking cards right — each card wrapped in a tall rail so stacking is visible */}
           <div className="relative">
             {painPoints.map((p, idx) => {
-              const topPx = 112 + idx * 14; // base 7rem (112px) + small offset per card
-              const isLast = idx === painPoints.length - 1;
+              const topPx = 112 + idx * 16;
               return (
                 <div
                   key={p.num}
-                  ref={(el) => (cardRefs.current[idx] = el)}
-                  className="lg:sticky"
-                  style={{
-                    top: `${topPx}px`,
-                    marginBottom: isLast ? 0 : "2.5rem",
-                  }}
+                  className="relative lg:min-h-[70vh]"
                 >
                   <div
-                    className="bg-white rounded-xl p-7 md:p-10 transition-shadow duration-500"
-                    style={{
-                      border: "1px solid hsl(228 10% 85%)",
-                      boxShadow: "0 20px 40px -25px hsl(228 56% 10% / 0.25)",
-                    }}
+                    ref={(el) => (cardRefs.current[idx] = el)}
+                    className="lg:sticky"
+                    style={{ top: `${topPx}px` }}
                   >
-                    <div className="flex items-baseline gap-4 mb-4">
-                      <span
-                        className="font-grotesk font-bold leading-none text-5xl md:text-6xl tabular-nums"
-                        style={{ color: "hsl(228 56% 10% / 0.15)" }}
-                      >
-                        {p.num}
-                      </span>
-                      <span
-                        className="font-mono text-[10px] uppercase tracking-[1.5px]"
-                        style={{ color: "hsl(186 60% 32%)" }}
-                      >
-                        Pain point
-                      </span>
-                    </div>
-                    <h3
-                      className="text-xl md:text-2xl font-grotesk font-semibold mb-3 tracking-tight"
-                      style={{ color: "hsl(228 56% 10%)" }}
+                    <div
+                      className="bg-white rounded-xl p-7 md:p-10 transition-shadow duration-500"
+                      style={{
+                        border: "1px solid hsl(228 10% 85%)",
+                        boxShadow: "0 20px 40px -25px hsl(228 56% 10% / 0.25)",
+                      }}
                     >
-                      {p.title}
-                    </h3>
-                    <p className="text-base leading-relaxed" style={{ color: "hsl(228 15% 40%)" }}>
-                      {p.text}
-                    </p>
+                      <div className="flex items-baseline gap-4 mb-4">
+                        <span
+                          className="font-grotesk font-bold leading-none text-5xl md:text-6xl tabular-nums"
+                          style={{ color: "hsl(228 56% 10% / 0.15)" }}
+                        >
+                          {p.num}
+                        </span>
+                        <span
+                          className="font-mono text-[10px] uppercase tracking-[1.5px]"
+                          style={{ color: "hsl(186 60% 32%)" }}
+                        >
+                          Pain point
+                        </span>
+                      </div>
+                      <h3
+                        className="text-xl md:text-2xl font-grotesk font-semibold mb-3 tracking-tight"
+                        style={{ color: "hsl(228 56% 10%)" }}
+                      >
+                        {p.title}
+                      </h3>
+                      <p className="text-base leading-relaxed" style={{ color: "hsl(228 15% 40%)" }}>
+                        {p.text}
+                      </p>
+                    </div>
                   </div>
                 </div>
               );
             })}
-            {/* Spacer to allow last card to be reached / unstack */}
-            <div className="h-[40vh] hidden lg:block" />
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="mt-16 pt-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
-            <p className="text-base font-grotesk font-medium" style={{ color: "hsl(228 56% 10%)" }}>
-              futur proche existe pour ces moments-là.
-            </p>
-            <Link
-              to="/communaute"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-grotesk font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
-            >
-              Découvrir la communauté →
-            </Link>
           </div>
         </div>
       </div>

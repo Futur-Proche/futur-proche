@@ -1,5 +1,8 @@
 import { useCountUp } from "@/hooks/useCountUp";
 import { useStaggeredReveal } from "@/hooks/useStaggeredReveal";
+import speakerEvent from "@/assets/speaker-event.jpg";
+import eventCommunity from "@/assets/event-community.jpg";
+import dinerCommunaute from "@/assets/diner-communaute.jpg";
 
 const stats = [
   { value: 850, suffix: "+", label: "FUTURISTES", sub: "B2B • B2C • Startups", fill: 0.92 },
@@ -13,16 +16,19 @@ const profils = [
     tag: "01",
     title: "Direction Marketing",
     desc: "CMO, VP Marketing, Head of Growth — qui pilotent budgets et équipes.",
+    image: speakerEvent,
   },
   {
     tag: "02",
     title: "Direction Communication",
     desc: "Dircom, Head of Brand, Comm Corporate — au croisement image et stratégie.",
+    image: eventCommunity,
   },
   {
     tag: "03",
     title: "Founders & C-Level",
     desc: "Fondateurs et dirigeants qui portent eux-mêmes la marque.",
+    image: dinerCommunaute,
   },
 ];
 

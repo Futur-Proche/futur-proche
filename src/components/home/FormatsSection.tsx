@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import communityGroup from "@/assets/community-group.jpg";
 import eventTalk from "@/assets/event-talk.jpg";
 import networkingEchanges from "@/assets/networking-echanges.jpg";
+import ambianceGroupe from "@/assets/ambiance-groupe.jpg";
 
 const formats = [
   {
@@ -75,6 +76,24 @@ export const FormatsSection = () => {
             <p className="text-base max-w-md mb-8 leading-relaxed" style={{ color: "hsl(228 15% 50%)" }}>
               Quatre canaux complémentaires pour des Futuristes connectés au quotidien et aux moments forts.
             </p>
+
+            {/* Illustration */}
+            <div className="max-w-sm mb-8">
+              <span className="font-mono text-[10px] uppercase tracking-[1.5px] block mb-2" style={{ color: "hsl(228 15% 50%)" }}>
+                — En coulisses
+              </span>
+              <div
+                className="aspect-[4/5] overflow-hidden rounded-lg"
+                style={{ border: "1px solid hsl(228 10% 85%)" }}
+              >
+                <img
+                  src={ambianceGroupe}
+                  alt="Ambiance de la communauté futur proche"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
 
             {/* Progress indicator */}
             <div className="flex items-center gap-3">
