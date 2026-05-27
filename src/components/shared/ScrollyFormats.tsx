@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState, type ElementType } from "react";
 
 export type ScrollyStep = {
   tag: string;
