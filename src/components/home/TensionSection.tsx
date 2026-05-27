@@ -35,162 +35,92 @@ const painPoints = [
 ];
 
 export const TensionSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
+  const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [pickedIdx, setPickedIdx] = useState<number | null>(null);
 
-  // Scroll-driven active index (desktop only — uses sticky stage)
   useEffect(() => {
-    const onScroll = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // Section is taller than viewport; map scroll progress to step index
-      const total = rect.height - vh;
-      const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      const progress = total > 0 ? scrolled / total : 0;
-      // 6 steps -> indexes 0..5
-      const idx = Math.min(
-        painPoints.length - 1,
-        Math.floor(progress * painPoints.length)
-      );
-      setActiveIdx(idx);
-      // Reset manual pick when user scrolls
-      setPickedIdx(null);
+    const updateActiveCard = () => {
+      if (window.innerWidth < 1024) return;
+
+      const viewportCenter = window.innerHeight * 0.5;
+      let closestIdx = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      stepRefs.current.forEach((step, idx) => {
+        if (!step) return;
+        const rect = step.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(cardCenter - viewportCenter);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIdx = idx;
+        }
+      });
+
+      setActiveIdx(closestIdx);
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+
+    updateActiveCard();
+    window.addEventListener("scroll", updateActiveCard, { passive: true });
+    window.addEventListener("resize", updateActiveCard);
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", updateActiveCard);
+      window.removeEventListener("resize", updateActiveCard);
     };
   }, []);
+
+  useEffect(() => {
+    if (pickedIdx === null) return;
+
+    const releaseSelection = () => setPickedIdx(null);
+    window.addEventListener("scroll", releaseSelection, { passive: true });
+
+    return () => window.removeEventListener("scroll", releaseSelection);
+  }, [pickedIdx]);
 
   const displayedIdx = pickedIdx ?? activeIdx;
 
   return (
-    <section
-      ref={sectionRef}
-      className="section-cream relative overflow-hidden"
-      style={{ minHeight: "100vh" }}
-    >
+    <section className="section-cream relative overflow-hidden">
       <div
         className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-[0.04] blur-3xl pointer-events-none"
         style={{ background: "hsl(186 79% 47%)" }}
       />
 
-      {/* Desktop: pinned stage — height drives scroll-progress */}
-      <div className="hidden lg:block" style={{ height: `${painPoints.length * 90}vh` }}>
-        <div className="sticky top-0 h-screen flex items-center">
-          <div className="container mx-auto px-6 lg:px-12 w-full">
-            <div className="grid grid-cols-[1fr_1.2fr] gap-20 items-center">
-              {/* LEFT — fixed column */}
-              <LeftColumn activeIdx={displayedIdx} />
+      <div className="hidden lg:block">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-16 xl:gap-20">
+            <div className="relative">
+              <div className="sticky top-24 flex h-[calc(100vh-6rem)] items-center">
+                <LeftColumn activeIdx={displayedIdx} />
+              </div>
+            </div>
 
-              {/* RIGHT — stacking cards */}
-              <div className="relative h-[560px]">
-                {painPoints.map((p, idx) => {
-                  const isActive = idx === displayedIdx;
-                  const isPast = idx < displayedIdx;
-                  const isFuture = idx > displayedIdx;
+            <div className="relative">
+              <div className="sticky top-24 flex h-[calc(100vh-6rem)] items-center">
+                <DesktopStack displayedIdx={displayedIdx} onSelect={setPickedIdx} />
+              </div>
 
-                  // Position math:
-                  // - Past cards: stacked above with growing offset upward, only header visible
-                  // - Active card: anchored, full content
-                  // - Future cards: peek behind active with header visible, slight offset down
-                  const offsetFromActive = idx - displayedIdx;
-
-                  let translateY = 0;
-                  let zIndex = painPoints.length - Math.abs(offsetFromActive);
-                  let scale = 1;
-                  let opacity = 1;
-
-                  if (isActive) {
-                    translateY = 0;
-                    zIndex = painPoints.length + 10;
-                    scale = 1;
-                  } else if (isPast) {
-                    // stacked above
-                    translateY = -90 - (displayedIdx - idx - 1) * 14;
-                    scale = 1 - (displayedIdx - idx) * 0.015;
-                    opacity = 1;
-                  } else if (isFuture) {
-                    // peek below from behind
-                    translateY = 14 * (idx - displayedIdx);
-                    scale = 1 - (idx - displayedIdx) * 0.02;
-                    opacity = 1;
-                  }
-
-                  return (
-                    <button
-                      key={p.num}
-                      type="button"
-                      onClick={() => setPickedIdx(idx)}
-                      className="absolute left-0 right-0 top-0 text-left rounded-2xl transition-all duration-500 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                      style={{
-                        transform: `translateY(${translateY}px) scale(${scale})`,
-                        transformOrigin: "center top",
-                        zIndex,
-                        opacity,
-                        background: "hsl(0 0% 100%)",
-                        border: "1px solid hsl(228 10% 88%)",
-                        boxShadow: isActive
-                          ? "0 30px 60px -30px hsl(228 56% 10% / 0.25), 0 10px 20px -10px hsl(228 56% 10% / 0.10)"
-                          : "0 10px 30px -20px hsl(228 56% 10% / 0.18)",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <div className="p-8 md:p-10">
-                        <div className="flex items-baseline gap-5">
-                          <span
-                            className="font-grotesk font-bold leading-none text-5xl md:text-6xl tabular-nums"
-                            style={{ color: "hsl(228 56% 10% / 0.15)" }}
-                          >
-                            {p.num}
-                          </span>
-                          <span
-                            className="font-mono text-[10px] uppercase tracking-[1.5px]"
-                            style={{ color: "hsl(186 60% 32%)" }}
-                          >
-                            Pain point
-                          </span>
-                        </div>
-
-                        {/* Body — only visible on active card */}
-                        <div
-                          className="overflow-hidden transition-all duration-500 ease-out"
-                          style={{
-                            maxHeight: isActive ? 400 : 0,
-                            opacity: isActive ? 1 : 0,
-                            marginTop: isActive ? 24 : 0,
-                          }}
-                        >
-                          <h3
-                            className="text-xl md:text-2xl font-grotesk font-semibold mb-3 tracking-tight"
-                            style={{ color: "hsl(228 56% 10%)" }}
-                          >
-                            {p.title}
-                          </h3>
-                          <p
-                            className="text-base leading-relaxed max-w-[52ch]"
-                            style={{ color: "hsl(228 15% 40%)" }}
-                          >
-                            {p.text}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
+              <div aria-hidden="true" className="pointer-events-none">
+                {painPoints.map((point, idx) => (
+                  <div
+                    key={point.num}
+                    ref={(el) => {
+                      stepRefs.current[idx] = el;
+                    }}
+                    data-index={idx}
+                    className={idx === painPoints.length - 1 ? "h-[82vh]" : "h-[78vh]"}
+                  />
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile / tablet — accordion fallback */}
       <div className="lg:hidden container mx-auto px-6 py-20">
         <LeftColumn activeIdx={displayedIdx} compact />
         <div className="mt-12 space-y-4">
@@ -215,12 +145,12 @@ export const TensionSection = () => {
                   >
                     {p.num}
                   </span>
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-[1.5px]"
-                    style={{ color: "hsl(186 60% 32%)" }}
+                  <p
+                    className="font-grotesk text-base font-semibold leading-snug tracking-tight"
+                    style={{ color: "hsl(228 56% 10%)" }}
                   >
-                    Pain point
-                  </span>
+                    {p.title}
+                  </p>
                 </div>
                 <div
                   className="overflow-hidden transition-all duration-300"
@@ -230,12 +160,6 @@ export const TensionSection = () => {
                     marginTop: open ? 16 : 0,
                   }}
                 >
-                  <h3
-                    className="text-lg font-grotesk font-semibold mb-2 tracking-tight"
-                    style={{ color: "hsl(228 56% 10%)" }}
-                  >
-                    {p.title}
-                  </h3>
                   <p className="text-sm leading-relaxed" style={{ color: "hsl(228 15% 40%)" }}>
                     {p.text}
                   </p>
@@ -249,7 +173,101 @@ export const TensionSection = () => {
   );
 };
 
-// ---- Sub-component: left column (shared desktop/mobile) ----
+const DesktopStack = ({
+  displayedIdx,
+  onSelect,
+}: {
+  displayedIdx: number;
+  onSelect: (idx: number) => void;
+}) => {
+  const collapsedHeight = 58;
+  const expandedHeight = 240;
+  const futurePeek = 18;
+
+  return (
+    <div
+      className="relative w-full"
+      style={{ height: "min(560px, calc(100vh - 10rem))", minHeight: 500 }}
+    >
+      {painPoints.map((point, idx) => {
+        const isActive = idx === displayedIdx;
+        const isPast = idx < displayedIdx;
+        const top = isPast
+          ? idx * collapsedHeight
+          : isActive
+            ? idx * collapsedHeight
+            : displayedIdx * collapsedHeight + expandedHeight + (idx - displayedIdx - 1) * futurePeek;
+
+        const scale = isPast ? 1 : isActive ? 1 : 1 - Math.min(idx - displayedIdx, 3) * 0.02;
+        const opacity = isPast ? 1 : isActive ? 1 : Math.max(0.5, 1 - (idx - displayedIdx) * 0.12);
+        const zIndex = isActive ? painPoints.length + 10 : isPast ? painPoints.length + idx : painPoints.length - idx;
+
+        return (
+          <button
+            key={point.num}
+            type="button"
+            aria-expanded={isActive}
+            onClick={() => onSelect(idx)}
+            className="absolute inset-x-0 overflow-hidden rounded-[22px] text-left transition-all duration-500 ease-out motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            style={{
+              top,
+              height: isActive ? expandedHeight : collapsedHeight,
+              transform: `scale(${scale})`,
+              transformOrigin: "center top",
+              opacity,
+              zIndex,
+              background: "hsl(0 0% 100%)",
+              border: "1px solid hsl(228 10% 88%)",
+              boxShadow: isActive
+                ? "0 32px 60px -34px hsl(228 56% 10% / 0.22), 0 18px 36px -28px hsl(228 56% 10% / 0.14)"
+                : "0 14px 26px -22px hsl(228 56% 10% / 0.18)",
+            }}
+          >
+            <div className="flex h-full flex-col px-8 py-6">
+              <div className="flex items-start gap-5">
+                <span
+                  className="font-grotesk text-5xl font-bold leading-none tabular-nums"
+                  style={{ color: "hsl(228 56% 10% / 0.14)" }}
+                >
+                  {point.num}
+                </span>
+
+                <div className="min-w-0 pt-1.5">
+                  <p
+                    className="font-grotesk font-semibold leading-tight tracking-tight transition-all duration-500 motion-reduce:transition-none"
+                    style={{
+                      color: "hsl(228 56% 10%)",
+                      fontSize: isActive ? "1.5rem" : "1rem",
+                    }}
+                  >
+                    {point.title}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className="overflow-hidden transition-all duration-500 ease-out motion-reduce:transition-none"
+                style={{
+                  maxHeight: isActive ? 220 : 0,
+                  opacity: isActive ? 1 : 0,
+                  marginTop: isActive ? 18 : 0,
+                }}
+              >
+                <p
+                  className="max-w-[46ch] text-base leading-relaxed"
+                  style={{ color: "hsl(228 15% 40%)" }}
+                >
+                  {point.text}
+                </p>
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
 const LeftColumn = ({ activeIdx, compact = false }: { activeIdx: number; compact?: boolean }) => {
   return (
     <div>
@@ -287,7 +305,7 @@ const LeftColumn = ({ activeIdx, compact = false }: { activeIdx: number; compact
           </span>
           <div className="absolute bottom-6 left-6 right-6">
             <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-primary">
-              Pain point en focus
+              En focus
             </span>
             <p className="font-grotesk text-white text-base mt-2 leading-snug transition-opacity duration-300">
               {painPoints[activeIdx].title}
