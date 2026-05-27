@@ -49,7 +49,7 @@ export const ScrollyFormats = ({
             dotInactive: "hsl(228 15% 75%)",
           }
         : {
-            section: "section-navy",
+            section: "",
             headingColor: "#ffffff",
             introColor: "rgba(255,255,255,0.65)",
             number: "rgba(255,255,255,0.08)",
