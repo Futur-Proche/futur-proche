@@ -9,7 +9,7 @@ const formats = [
     tag: "01_WhatsApp",
     title: "Échanges quotidiens",
     desc: "Un fil vivant où l'on partage les vrais arbitrages : choix d'outil, négociation d'agence, recadrage d'équipe. Pas de posture, pas de pitch — juste des pairs qui répondent vite et bien.",
-    image: whatsappMontage,
+    image: communityGroup,
   },
   {
     tag: "02_Events",
