@@ -143,10 +143,10 @@ const RevealCard = forwardRef<
   HTMLDivElement,
   { tag: string; title: string; desc: string; detail: string }
 >(({ tag, title, desc, detail }, ref) => {
-  const [revealed, setRevealed] = useStateReveal(false);
-  const localRef = useRefReveal<HTMLDivElement>(null);
+  const [revealed, setRevealed] = useState(false);
+  const localRef = useRef<HTMLDivElement>(null);
 
-  useEffectReveal(() => {
+  useEffect(() => {
     const el = localRef.current;
     if (!el) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
