@@ -290,49 +290,79 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {bubblesRef.current.map((b) => (
-        <div
-          key={b.id}
-          onPointerDown={(e) => handlePointerDown(e, b.id)}
-          className="absolute select-none cursor-grab active:cursor-grabbing"
-          style={{
-            left: b.x - b.r,
-            top: b.y - b.r,
-            width: b.r * 2,
-            height: b.r * 2,
-            willChange: "transform",
-            transition: dragRef.current.id === b.id ? "none" : "box-shadow 200ms",
-            boxShadow:
-              dragRef.current.id === b.id
-                ? "0 0 30px hsl(186 79% 47% / 0.5)"
-                : "0 4px 12px hsl(228 56% 5% / 0.5)",
-            borderRadius: "50%",
-          }}
-        >
-          {b.member.photo_url ? (
-            <img
-              src={b.member.photo_url}
-              alt={`${b.member.prenom} ${b.member.nom}`}
-              draggable={false}
-              className="w-full h-full rounded-full object-cover pointer-events-none"
-              style={{ border: "2px solid hsl(228 30% 28%)" }}
-            />
-          ) : (
-            <div
-              className="w-full h-full rounded-full flex items-center justify-center font-mono font-medium pointer-events-none"
-              style={{
-                border: "1px solid hsl(228 30% 28%)",
-                background: "hsl(228 40% 14%)",
-                color: "hsl(228 15% 65%)",
-                fontSize: b.r * 0.45,
-              }}
-            >
-              {b.member.prenom[0]}
-              {b.member.nom[0]}
-            </div>
-          )}
-        </div>
-      ))}
+      {bubblesRef.current.map((b) => {
+        const isSelected = selectedId === b.id;
+        const isDragging = dragRef.current.id === b.id;
+        return (
+          <div
+            key={b.id}
+            onPointerDown={(e) => handlePointerDown(e, b.id)}
+            className="absolute select-none cursor-grab active:cursor-grabbing"
+            style={{
+              left: b.x - b.r,
+              top: b.y - b.r,
+              width: b.r * 2,
+              height: b.r * 2,
+              willChange: "transform",
+              transition: isDragging ? "none" : "box-shadow 200ms",
+              boxShadow:
+                isDragging || isSelected
+                  ? "0 0 30px hsl(186 79% 47% / 0.6)"
+                  : "0 4px 12px hsl(228 56% 5% / 0.5)",
+              borderRadius: "50%",
+              zIndex: isSelected ? 20 : isDragging ? 15 : 1,
+            }}
+          >
+            {b.member.photo_url ? (
+              <img
+                src={b.member.photo_url}
+                alt={`${b.member.prenom} ${b.member.nom}`}
+                draggable={false}
+                className="w-full h-full rounded-full object-cover pointer-events-none"
+                style={{
+                  border: isSelected
+                    ? "2px solid hsl(186 79% 47%)"
+                    : "2px solid hsl(228 30% 28%)",
+                }}
+              />
+            ) : (
+              <div
+                className="w-full h-full rounded-full flex items-center justify-center font-mono font-medium pointer-events-none"
+                style={{
+                  border: isSelected
+                    ? "1px solid hsl(186 79% 47%)"
+                    : "1px solid hsl(228 30% 28%)",
+                  background: "hsl(228 40% 14%)",
+                  color: "hsl(228 15% 65%)",
+                  fontSize: b.r * 0.45,
+                }}
+              >
+                {b.member.prenom[0]}
+                {b.member.nom[0]}
+              </div>
+            )}
+            {isSelected && (
+              <div
+                className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none font-mono"
+                style={{
+                  top: "100%",
+                  marginTop: 8,
+                  padding: "4px 10px",
+                  borderRadius: 999,
+                  background: "hsl(228 56% 8%)",
+                  border: "1px solid hsl(186 79% 47% / 0.5)",
+                  color: "hsl(0 0% 100%)",
+                  fontSize: 12,
+                  letterSpacing: "0.02em",
+                  boxShadow: "0 4px 12px hsl(228 56% 5% / 0.6)",
+                }}
+              >
+                {b.member.prenom} {b.member.nom?.[0]?.toUpperCase()}.
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
