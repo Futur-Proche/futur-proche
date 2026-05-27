@@ -251,8 +251,19 @@ const Communaute = () => {
           </div>
         </section>
 
-        {/* ── SECTION 3 — Les formats (sticky-scroll) ── */}
-        <FormatsScroller />
+        {/* ── SECTION 3 — Les formats (scrollytelling Sadewa) ── */}
+        <ScrollyFormats
+          label="Les formats"
+          heading="Une commu, plusieurs formats."
+          steps={formats.map((f) => ({
+            tag: f.tag,
+            title: f.title,
+            desc: f.body,
+            image: f.image,
+            icon: f.icon,
+          }))}
+          variant="navy"
+        />
 
         {/* ── SECTION 4 — Profil des membres ── */}
         <section className="section-cream relative overflow-hidden">
