@@ -226,8 +226,6 @@ export const ScrollyFormats = ({
                 </div>
               </div>
             </div>
-              </div>
-            </div>
           </div>
         </>
       ) : (
