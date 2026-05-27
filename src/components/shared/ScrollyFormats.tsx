@@ -164,6 +164,11 @@ type StepProps = {
 
 const ScrollyStepBlock = forwardRef<HTMLDivElement, StepProps>(
   ({ index, step, tokens, variant }, ref) => {
+    const localRef = useRef<HTMLDivElement>(null);
+    const [revealed, setRevealed] = useState(false);
+    const Icon = step.icon;
+
+    useEffect(() => {
       const el = localRef.current;
       if (!el) return;
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
