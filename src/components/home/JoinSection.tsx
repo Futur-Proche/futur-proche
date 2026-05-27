@@ -63,16 +63,19 @@ export const JoinSection = () => {
           ))}
         </div>
 
-        {/* Why */}
+        {/* Why — discrete callout */}
         <div
-          className="rounded-xl p-7 md:p-10 mb-10"
-          style={{ background: "hsl(228 56% 10%)" }}
+          className="rounded-lg px-5 py-4 md:px-6 md:py-5 border-dashed"
+          style={{
+            background: "hsl(228 24% 96%)",
+            border: "1px dashed hsl(228 15% 80%)",
+          }}
         >
-          <h3 className="text-lg font-grotesk font-semibold text-white mb-3">
-            Pourquoi un process de sélection ?
-          </h3>
-          <p className="text-sm md:text-base leading-relaxed text-white/70 max-w-3xl">
-            Parce que la valeur de futur proche repose sur la qualité de chaque membre. On ne cherche pas à grossir sans boussole, on cherche à s'assurer que la communauté gagne en valeur à chaque nouveau Futuriste onboardé.
+          <p className="text-xs md:text-sm leading-relaxed max-w-3xl" style={{ color: "hsl(228 12% 50%)" }}>
+            <span className="font-grotesk font-semibold" style={{ color: "hsl(228 12% 38%)" }}>
+              Pourquoi un process de sélection ?
+            </span>{" "}
+            Parce que la valeur de Futur Proche repose sur la qualité de chaque membre. On ne cherche pas à grossir sans boussole — on s'assure que la communauté gagne en valeur à chaque nouveau Futuriste.
           </p>
         </div>
       </div>
