@@ -229,8 +229,25 @@ export const ScrollyFormats = ({
           </div>
         </>
       ) : (
-        // Mobile / reduced motion : stack vertical simple
-        <div className="container mx-auto px-6 lg:px-12 pb-20">
+        // Mobile / reduced motion : stack vertical simple avec header en haut
+        <div className="container mx-auto px-6 lg:px-12 pt-20 pb-20">
+          <div className="max-w-2xl mb-12">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full" style={{ background: accent }} />
+              <span className="section-label">{label}</span>
+            </div>
+            <h2
+              className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-3"
+              style={{ color: tokens.headingColor }}
+            >
+              {heading}
+            </h2>
+            {intro && (
+              <p className="text-base leading-relaxed" style={{ color: tokens.introColor }}>
+                {intro}
+              </p>
+            )}
+          </div>
           <div className="flex flex-col gap-20">
             {steps.map((step, i) => (
               <div key={step.tag + i}>
