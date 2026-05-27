@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { useInViewReveal } from "@/hooks/useInViewReveal";
 import { useStaggeredReveal } from "@/hooks/useStaggeredReveal";
 import { ClipboardList, Eye, Rocket, MessageSquare, Mic, Briefcase, BarChart3, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ScrollyFormats } from "@/components/shared/ScrollyFormats";
 
 import groupeAfterProcheImg from "@/assets/groupe-after-proche.jpg";
 import whatsappMontageImg from "@/assets/whatsapp-montage.png";
