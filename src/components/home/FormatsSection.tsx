@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import communityGroup from "@/assets/community-group.jpg";
 import eventTalk from "@/assets/event-talk.jpg";
 import networkingEchanges from "@/assets/networking-echanges.jpg";
@@ -138,9 +138,6 @@ export const FormatsSection = () => {
     </section>
   );
 };
-
-// Inline reveal card with ref forwarding
-import { forwardRef, useEffect as useEffectReveal, useRef as useRefReveal, useState as useStateReveal } from "react";
 
 const RevealCard = forwardRef<
   HTMLDivElement,
