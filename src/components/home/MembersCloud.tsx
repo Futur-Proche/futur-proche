@@ -230,6 +230,7 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
       offX: px - b.x,
       offY: py - b.y,
     };
+    downRef.current = { id, x: px, y: py, moved: false };
     b.vx = 0;
     b.vy = 0;
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -243,6 +244,12 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
     const py = e.clientY - rect.top;
     const b = bubblesRef.current.find((x) => x.id === drag.id);
     if (!b) return;
+    const down = downRef.current;
+    if (!down.moved) {
+      const dx = px - down.x;
+      const dy = py - down.y;
+      if (dx * dx + dy * dy > 25) down.moved = true;
+    }
     const nx = px - drag.offX;
     const ny = py - drag.offY;
     b.vx = (nx - b.x) * 0.5;
@@ -255,6 +262,11 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
+    const down = downRef.current;
+    if (down.id && !down.moved) {
+      setSelectedId((prev) => (prev === down.id ? null : down.id));
+    }
+    downRef.current = { id: null, x: 0, y: 0, moved: false };
     dragRef.current.id = null;
     try {
       (e.target as HTMLElement).releasePointerCapture(e.pointerId);
