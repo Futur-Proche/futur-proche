@@ -19,6 +19,8 @@ const Index = () => (
       <HeroSection />
       {/* 2. Cream — Constat */}
       <TensionSection />
+      {/* 2b. Navy — Vidéo de présentation */}
+      <VideoSection />
       {/* 3. Navy — Stats */}
       <KeyElementsSection />
       {/* 4. Cream — Formats + Photos */}
