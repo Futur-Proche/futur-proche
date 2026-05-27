@@ -1,77 +1,68 @@
-# Refonte des interactions UI homepage
+## Objectif
 
-5 sections retravaillées, uniquement présentation/animation. Aucune logique métier ni backend touché.
+Remplacer le pattern actuel "média sticky + textes empilés à droite" par un **pattern Sadewa** : chaque format occupe sa **propre section pleine hauteur** (≈100vh), centrée, avec un grand numéro `/01`, une image hero centrale et un titre + description à droite. On scrolle → la section suivante prend toute la place. Une seule image visible à la fois, pas d'empilement.
 
-## 1. `KeyElementsSection.tsx` — Cartes profils (Direction Marketing / Comm / Founders)
+Concerne deux endroits :
+- Home → `src/components/home/FormatsSection.tsx`
+- Communauté → bloc `FormatsScroller` dans `src/pages/Communaute.tsx`
 
-Refonte des 3 cartes "À qui s'adresse vraiment Futur Proche" :
+## Structure d'une "étape" Sadewa
 
-- Suppression complète des images (`speakerEvent`, `eventCommunity`, `dinerCommunaute`) et du watermark numérique géant.
-- Format compact : carte plate navy avec bord cyan fin, hauteur naturelle (plus d'`aspect-[3/4]`).
-- Ajout d'une 3e propriété `details` par profil (3-4 puces concrètes : enjeux, sujets typiques, type de pair attendu — texte court, ton vouvoiement).
-- État `openIdx` local : clic sur la carte → expand inline (height auto via `grid-rows-[0fr]` → `grid-rows-[1fr]` trick pour transition smooth). Une seule carte ouverte à la fois.
-- Indicateur visuel : `+` qui tourne en `×` au clic, ligne cyan qui s'étend.
-- Garde l'animation clip-path de reveal au scroll initial.
+```text
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│   /01        [   IMAGE     ]      Discover         │
+│   (gros)     [   centrale  ]      Texte court…     │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+   ← min-h-screen, contenu centré verticalement →
+```
 
-## 2. `FormatsSection.tsx` — Scroll storytelling type Sadewa "Our approach"
+- Layout : `grid lg:grid-cols-[auto_1fr_1.2fr]` → numéro / image / texte.
+- Numéro façon Sadewa : très gros (`text-7xl md:text-8xl`), gris clair, avec un slash cyan en accent (cohérent avec notre identité navy/cyan, pas de vert).
+- Image : `aspect-square` ou `4/5`, max ~420px, centrée, ombre douce.
+- Texte : titre `text-4xl md:text-5xl`, description courte en muted.
+- Mobile : stack vertical (numéro → image → texte), `min-h-[80vh]`.
 
-Pattern Sadewa : sticky media à gauche qui change quand on scrolle les blocs texte à droite.
+## Animation à l'entrée de chaque section
 
-- Conserver la structure 2 colonnes mais **inverser le sticky** : la colonne média (image) devient sticky desktop, les 4 blocs texte défilent.
-- Ajouter une image par format dans le tableau `formats` (réutiliser assets existants : `communityGroup`, `eventTalk`, `networkingEchanges`, `ambianceGroupe`).
-- `IntersectionObserver` déjà en place sur les cartes → driver l'image active. Crossfade entre images (stack absolute + opacity transition 600ms) + petit scale (1.02 → 1) sur la nouvelle image.
-- Tag mono + numéro `01 / 04` au-dessus de l'image, sync avec l'index actif.
-- Mobile : pas de sticky, image inline au-dessus de chaque bloc.
-- Suppression du bloc "En coulisses" séparé (l'image principale fait le travail) et de la bande photos en bas (devient redondante avec le carousel sticky). À confirmer si on garde la bande photos — je la garde par défaut, on peut la retirer après.
+Chaque étape devient visible quand elle entre dans le viewport (IntersectionObserver, threshold ~0.4) :
+- numéro : fade + slide depuis la gauche (translateX -20px → 0)
+- image : fade + scale (0.92 → 1) + léger float continu
+- texte : fade + slide depuis le bas (translateY 24px → 0), stagger 120ms entre titre/description
 
-## 3. `TestimonialsSection.tsx` — Hover spotlight témoignages
+Respecte `prefers-reduced-motion`.
 
-- Au hover sur une carte : `scale(1.04)`, `z-10`, bordure cyan plus vive, ombre cyan diffuse (`box-shadow: 0 0 40px hsl(186 79% 47% / 0.25)`), citation passe en blanc 100% au lieu de 80%, le guillemet géant grossit légèrement.
-- Les **autres** cartes voisines passent à `opacity: 0.45` et `scale(0.98)` via un état `hoveredIdx` sur le container parent — effet "spotlight" qui isole la carte survolée.
-- Transition `400ms ease-out`. Désactivé sur touch (media `hover: hover`).
+## Indicateur de progression (optionnel mais Sadewa-like)
 
-## 4. `MembersCloud.tsx` — Bulles physiques déplaçables
+Petite barre verticale fixe à droite (desktop only) avec un point par étape ; le point actif passe en cyan. Permet de voir "où on en est" dans la séquence. Cliquable pour sauter à une étape (`scrollIntoView({ behavior: "smooth" })`).
 
-Réécriture du rendu des avatars :
+## Composants
 
-- Container `relative` plein largeur, hauteur fixe (≈ 520px desktop, 420px mobile), navy.
-- Positions initiales calculées en cercle/cluster déterministe (rayon variable, jitter pseudo-aléatoire à seed fixe pour éviter changements entre renders).
-- Mini physics simple en vanilla JS dans un `useEffect` + `requestAnimationFrame` :
-  - Chaque bulle a `{x, y, vx, vy, radius}`.
-  - Friction (`v *= 0.96`), répulsion douce entre bulles (séparation si distance < r1+r2), rebond sur les bords du container.
-  - Drift ambiant léger (force aléatoire faible) pour que ça "bouge" en permanence.
-- Interaction : `onMouseDown` sur une bulle → drag (mise à jour `x/y` direct, `vx/vy` = delta du mouvement), `onMouseUp` → relâche avec vélocité → la bulle pousse les autres en s'éloignant. Support touch.
-- Respect `prefers-reduced-motion` : positions statiques fixes, pas d'animation, drag désactivé.
-- Légende mise à jour : "Cliquez et déplacez."
+Créer un composant réutilisable `src/components/shared/ScrollyFormats.tsx` :
 
-Reste à voir si charger 30 avatars en physics est OK perf — `requestAnimationFrame` + ~30 bulles est confortable côté navigateur. Pas de lib externe.
+```tsx
+type Step = { tag: string; title: string; desc: string; image: string };
+<ScrollyFormats steps={steps} accentLabel="Une commu, plusieurs formats" heading="..." intro="..." />
+```
 
-## 5. `KeyElementsSection.tsx` — Flip cards sur les 4 stats
+- Gère lui-même les sections `min-h-screen`, l'observer d'index actif, l'indicateur latéral.
+- Utilisé par `FormatsSection` (home) et par la page Communauté à la place du `FormatsScroller` actuel.
 
-Modification de `StatCell` :
+## Contenu
 
-- Wrapper avec `perspective: 1200px`, inner avec `transform-style: preserve-3d` et `transition: transform 600ms`.
-- Face avant = contenu actuel (gros chiffre + label + progress bar).
-- Face arrière = nouveau texte explicatif court (1-2 phrases) par stat, ex :
-  - `850+` → "Une communauté en croissance constante, sélectionnée à l'entrée."
-  - `7+ ans` → "Le seuil pour des conversations entre pairs, pas entre niveaux."
-  - `40% C-Level` → "Une vraie densité de décideurs autour de la table."
-  - `15+ events` → "Des After Proche dans toutes les grandes places françaises."
-- Hover desktop → flip Y 180°. Mobile : reste sur la face avant (pas de hover) — alternative : tap toggle. Je choisis tap toggle mobile pour que l'info reste accessible.
-- Face arrière : même fond navy, accent cyan sur première lettre ou liseré gauche.
+On garde **strictement** les textes / images / tags existants des deux pages. Aucune modif de copy.
 
 ## Détails techniques
 
-- Tous les composants restent en TSX présent dans `src/components/home/`.
-- Tokens du design system conservés (navy `hsl(228 56% 10%)`, cyan `hsl(186 79% 47%)`, cream, mono/grotesk/serif).
-- Aucune nouvelle dépendance (pas de framer-motion ajouté — tout en CSS transitions + petit RAF pour les bulles).
-- `prefers-reduced-motion` respecté partout (pas de flip, pas de physique, pas de spotlight scale).
+- Tokens : navy `hsl(228 56% 10%)`, cyan `hsl(186 79% 47%)`, cream `section-cream`. Pas de vert Sadewa.
+- Le bloc reste dans une `section-cream` (home) / fond cohérent (communauté).
+- En-tête de section (label + h2 + intro) conservé, affiché **une seule fois** avant la première étape.
+- Padding inter-étape : `py-24 md:py-32` pour laisser respirer, mais `min-h-screen` garantit le "une à une".
+- IntersectionObserver avec `rootMargin: "-40% 0px -40% 0px"` pour activer l'étape vraiment centrée.
 
-## Fichiers touchés
+## Fichiers modifiés
 
-- `src/components/home/KeyElementsSection.tsx` (profils + flip stats)
-- `src/components/home/FormatsSection.tsx` (sticky media)
-- `src/components/home/TestimonialsSection.tsx` (spotlight)
-- `src/components/home/MembersCloud.tsx` (physics)
-
-Pas de migration, pas de nouvelle route, pas de changement Supabase.
+- ➕ `src/components/shared/ScrollyFormats.tsx` (nouveau)
+- ✏️ `src/components/home/FormatsSection.tsx` (utilise le nouveau composant)
+- ✏️ `src/pages/Communaute.tsx` (remplace `FormatsScroller` par `ScrollyFormats`)
