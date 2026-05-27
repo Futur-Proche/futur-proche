@@ -74,7 +74,8 @@ export const JoinSection = () => {
           <p className="text-xs md:text-sm leading-relaxed text-center md:text-left" style={{ color: "hsl(228 12% 50%)" }}>
             <span className="font-grotesk font-semibold" style={{ color: "hsl(228 12% 38%)" }}>
               Pourquoi un process de sélection ?
-            </span>{" "}
+            </span>
+            <br />
             Parce que la valeur de Futur Proche repose sur la qualité de chaque membre. On ne cherche pas à grossir sans boussole — on s'assure que la communauté gagne en valeur à chaque nouveau Futuriste.
           </p>
         </div>
