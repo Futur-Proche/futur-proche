@@ -1,59 +1,77 @@
-## Objectif
+# Refonte des interactions UI homepage
 
-Abandonner le stack vertical actuel de la section « Vous connaissez sûrement ça. » et la remplacer par une composition radiale inspirée de la section « Is This You? » de bima.framer.media : une phrase centrée, autour de laquelle les 6 points apparaissent progressivement au scroll.
+5 sections retravaillées, uniquement présentation/animation. Aucune logique métier ni backend touché.
 
-## Principe d'UX
+## 1. `KeyElementsSection.tsx` — Cartes profils (Direction Marketing / Comm / Founders)
 
-- Section sticky qui occupe ~1 viewport pendant la séquence.
-- Au centre, fixe : un bloc avec le label section + le titre « Vous connaissez sûrement ça. ».
-- Autour de ce centre, 6 cartes-points disposées en couronne (2 à gauche, 2 à droite, 1 en haut, 1 en bas, ou pattern 3 à gauche / 3 à droite selon le rendu).
-- Au scroll, les cartes se révèlent une à une (fade + petit translate vers leur position finale), dans l'ordre 01 → 06.
-- Une fois les 6 cartes affichées, le scroll reprend normalement et la section se relâche.
-- Aucun empilement, aucune carte cliquable à rouvrir : tout reste visible une fois révélé.
+Refonte des 3 cartes "À qui s'adresse vraiment Futur Proche" :
 
-## Layout desktop (≥ 1024px)
+- Suppression complète des images (`speakerEvent`, `eventCommunity`, `dinerCommunaute`) et du watermark numérique géant.
+- Format compact : carte plate navy avec bord cyan fin, hauteur naturelle (plus d'`aspect-[3/4]`).
+- Ajout d'une 3e propriété `details` par profil (3-4 puces concrètes : enjeux, sujets typiques, type de pair attendu — texte court, ton vouvoiement).
+- État `openIdx` local : clic sur la carte → expand inline (height auto via `grid-rows-[0fr]` → `grid-rows-[1fr]` trick pour transition smooth). Une seule carte ouverte à la fois.
+- Indicateur visuel : `+` qui tourne en `×` au clic, ligne cyan qui s'étend.
+- Garde l'animation clip-path de reveal au scroll initial.
 
-```text
-        [ Carte 01 ]                [ Carte 02 ]
+## 2. `FormatsSection.tsx` — Scroll storytelling type Sadewa "Our approach"
 
-[ Carte 03 ]      «  Vous connaissez       [ Carte 04 ]
-                    sûrement ça.  »
+Pattern Sadewa : sticky media à gauche qui change quand on scrolle les blocs texte à droite.
 
-        [ Carte 05 ]                [ Carte 06 ]
-```
+- Conserver la structure 2 colonnes mais **inverser le sticky** : la colonne média (image) devient sticky desktop, les 4 blocs texte défilent.
+- Ajouter une image par format dans le tableau `formats` (réutiliser assets existants : `communityGroup`, `eventTalk`, `networkingEchanges`, `ambianceGroupe`).
+- `IntersectionObserver` déjà en place sur les cartes → driver l'image active. Crossfade entre images (stack absolute + opacity transition 600ms) + petit scale (1.02 → 1) sur la nouvelle image.
+- Tag mono + numéro `01 / 04` au-dessus de l'image, sync avec l'index actif.
+- Mobile : pas de sticky, image inline au-dessus de chaque bloc.
+- Suppression du bloc "En coulisses" séparé (l'image principale fait le travail) et de la bande photos en bas (devient redondante avec le carousel sticky). À confirmer si on garde la bande photos — je la garde par défaut, on peut la retirer après.
 
-- Grille CSS 3 colonnes × 3 rangées, le centre (col 2 / row 2) occupé par le titre.
-- Cartes : fond crème, bordure douce, numéro en mono (01 → 06), titre Space Grotesk semi-bold, texte court Instrument Sans.
-- Liens fins/pointillés très discrets reliant chaque carte au centre (SVG en fond, opacité faible) — option visuelle, activable si ça reste lisible.
+## 3. `TestimonialsSection.tsx` — Hover spotlight témoignages
 
-## Layout tablette (768–1023px)
+- Au hover sur une carte : `scale(1.04)`, `z-10`, bordure cyan plus vive, ombre cyan diffuse (`box-shadow: 0 0 40px hsl(186 79% 47% / 0.25)`), citation passe en blanc 100% au lieu de 80%, le guillemet géant grossit légèrement.
+- Les **autres** cartes voisines passent à `opacity: 0.45` et `scale(0.98)` via un état `hoveredIdx` sur le container parent — effet "spotlight" qui isole la carte survolée.
+- Transition `400ms ease-out`. Désactivé sur touch (media `hover: hover`).
 
-- Grille 2 colonnes, centre déplacé en première ligne pleine largeur, puis 3 rangées de 2 cartes en dessous.
+## 4. `MembersCloud.tsx` — Bulles physiques déplaçables
 
-## Layout mobile (< 768px)
+Réécriture du rendu des avatars :
 
-- Pas de composition radiale : centre en haut, puis liste verticale des 6 cartes qui se révèlent au scroll une par une (fade-in simple via IntersectionObserver).
-- Pas de sticky sur mobile pour éviter les conflits de scroll.
+- Container `relative` plein largeur, hauteur fixe (≈ 520px desktop, 420px mobile), navy.
+- Positions initiales calculées en cercle/cluster déterministe (rayon variable, jitter pseudo-aléatoire à seed fixe pour éviter changements entre renders).
+- Mini physics simple en vanilla JS dans un `useEffect` + `requestAnimationFrame` :
+  - Chaque bulle a `{x, y, vx, vy, radius}`.
+  - Friction (`v *= 0.96`), répulsion douce entre bulles (séparation si distance < r1+r2), rebond sur les bords du container.
+  - Drift ambiant léger (force aléatoire faible) pour que ça "bouge" en permanence.
+- Interaction : `onMouseDown` sur une bulle → drag (mise à jour `x/y` direct, `vx/vy` = delta du mouvement), `onMouseUp` → relâche avec vélocité → la bulle pousse les autres en s'éloignant. Support touch.
+- Respect `prefers-reduced-motion` : positions statiques fixes, pas d'animation, drag désactivé.
+- Légende mise à jour : "Cliquez et déplacez."
 
-## Animation au scroll
+Reste à voir si charger 30 avatars en physics est OK perf — `requestAnimationFrame` + ~30 bulles est confortable côté navigateur. Pas de lib externe.
 
-- Sur desktop, la section est `min-h-[180vh]` avec un wrapper interne sticky `h-screen`.
-- Un seul listener scroll calcule la progression `0 → 1` sur la portion sticky et en déduit `revealedCount` de 0 à 6.
-- Chaque carte a un état `revealed` qui contrôle opacity (0 → 1) et translate (12px vers sa position finale).
-- Ordre de révélation pensé pour équilibrer visuellement la couronne (ex : 01, 02, 03, 04, 05, 06 en diagonale ou en spirale plutôt que strictement 1→6 linéaire).
-- Respect de `prefers-reduced-motion` : affichage immédiat des 6 cartes, sans sticky.
+## 5. `KeyElementsSection.tsx` — Flip cards sur les 4 stats
+
+Modification de `StatCell` :
+
+- Wrapper avec `perspective: 1200px`, inner avec `transform-style: preserve-3d` et `transition: transform 600ms`.
+- Face avant = contenu actuel (gros chiffre + label + progress bar).
+- Face arrière = nouveau texte explicatif court (1-2 phrases) par stat, ex :
+  - `850+` → "Une communauté en croissance constante, sélectionnée à l'entrée."
+  - `7+ ans` → "Le seuil pour des conversations entre pairs, pas entre niveaux."
+  - `40% C-Level` → "Une vraie densité de décideurs autour de la table."
+  - `15+ events` → "Des After Proche dans toutes les grandes places françaises."
+- Hover desktop → flip Y 180°. Mobile : reste sur la face avant (pas de hover) — alternative : tap toggle. Je choisis tap toggle mobile pour que l'info reste accessible.
+- Face arrière : même fond navy, accent cyan sur première lettre ou liseré gauche.
 
 ## Détails techniques
 
-- Fichier touché : `src/components/home/TensionSection.tsx` (réécriture complète du rendu, on garde le tableau `painPoints`).
-- Suppression de toute la logique d'empilement (`collapsedHeight`, `expandedHeight`, `pickedIdx`, `DesktopStack`).
-- Nouvelle structure :
-  - `<section ref={sectionRef} className="relative min-h-[180vh]">`
-  - `<div className="sticky top-0 h-screen flex items-center">`
-  - Grille radiale + centre + 6 `<RadialCard idx={i} revealed={i < revealedCount} />`.
-- Pas de nouvelle dépendance, animations en Tailwind + style inline (`transform`, `opacity`, `transition`).
-- Pas de modification des autres sections (`FormatsSection`, `KeyElementsSection`, etc.).
+- Tous les composants restent en TSX présent dans `src/components/home/`.
+- Tokens du design system conservés (navy `hsl(228 56% 10%)`, cyan `hsl(186 79% 47%)`, cream, mono/grotesk/serif).
+- Aucune nouvelle dépendance (pas de framer-motion ajouté — tout en CSS transitions + petit RAF pour les bulles).
+- `prefers-reduced-motion` respecté partout (pas de flip, pas de physique, pas de spotlight scale).
 
-## Résultat attendu
+## Fichiers touchés
 
-Une section claire, posée et premium, avec un effet narratif fort : la phrase centrale reste ancrée, les 6 tensions du métier viennent l'entourer une à une au scroll, puis la page repart. Plus aucun stack ni interaction cachée à découvrir.
+- `src/components/home/KeyElementsSection.tsx` (profils + flip stats)
+- `src/components/home/FormatsSection.tsx` (sticky media)
+- `src/components/home/TestimonialsSection.tsx` (spotlight)
+- `src/components/home/MembersCloud.tsx` (physics)
+
+Pas de migration, pas de nouvelle route, pas de changement Supabase.

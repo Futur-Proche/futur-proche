@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useStaggeredReveal } from "@/hooks/useStaggeredReveal";
 
 const testimonials = [
@@ -39,7 +40,6 @@ const testimonials = [
   },
 ];
 
-// deterministic "cloud" offsets per card
 const offsets = [
   { x: -16, y: 28, r: -1.2 },
   { x: 14, y: 36, r: 0.8 },
@@ -51,6 +51,7 @@ const offsets = [
 
 export const TestimonialsSection = () => {
   const { ref, revealed } = useStaggeredReveal<HTMLDivElement>(testimonials.length, 90, 0.15);
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <section className="section-navy relative">
@@ -61,28 +62,51 @@ export const TestimonialsSection = () => {
           La parole à ceux qui en sont.
         </h2>
 
-        <div ref={ref} className="columns-1 md:columns-2 lg:columns-3 gap-5 [column-fill:_balance]">
+        <div
+          ref={ref}
+          className="columns-1 md:columns-2 lg:columns-3 gap-5 [column-fill:_balance]"
+          onMouseLeave={() => setHovered(null)}
+        >
           {testimonials.map((t, i) => {
             const on = revealed[i];
             const o = offsets[i % offsets.length];
             const finalRotate = o.r;
+            const isHovered = hovered === i;
+            const isDimmed = hovered !== null && !isHovered;
             return (
               <div
                 key={t.name}
-                className="mb-5 break-inside-avoid rounded-xl p-6 transition-all duration-700 ease-out hover:-translate-y-1 hover:border-primary/40"
+                onMouseEnter={() => setHovered(i)}
+                className="mb-5 break-inside-avoid rounded-xl p-6 cursor-default"
                 style={{
                   background: "hsl(228 40% 14%)",
-                  border: "1px solid hsl(228 30% 22%)",
-                  opacity: on ? 1 : 0,
+                  border: `1px solid ${isHovered ? "hsl(186 79% 47% / 0.55)" : "hsl(228 30% 22%)"}`,
+                  boxShadow: isHovered ? "0 0 48px hsl(186 79% 47% / 0.22)" : "none",
+                  opacity: on ? (isDimmed ? 0.4 : 1) : 0,
                   transform: on
-                    ? `translate(0,0) scale(1) rotate(${finalRotate}deg)`
+                    ? `translate(0,0) scale(${isHovered ? 1.04 : isDimmed ? 0.98 : 1}) rotate(${finalRotate}deg)`
                     : `translate(${o.x}px, ${o.y}px) scale(0.92) rotate(${o.r * 2}deg)`,
+                  transition: "opacity 400ms ease-out, transform 400ms ease-out, box-shadow 400ms ease-out, border-color 400ms ease-out",
+                  position: "relative",
+                  zIndex: isHovered ? 10 : 1,
                 }}
               >
-                <span className="text-3xl font-serif leading-none" style={{ color: "hsl(186 60% 32%)" }}>
+                <span
+                  className="font-serif leading-none transition-all duration-400"
+                  style={{
+                    color: "hsl(186 60% 32%)",
+                    fontSize: isHovered ? "2.5rem" : "1.875rem",
+                    display: "inline-block",
+                  }}
+                >
                   "
                 </span>
-                <p className="text-sm leading-relaxed mt-1 mb-5 text-white/80">{t.quote}</p>
+                <p
+                  className="text-sm leading-relaxed mt-1 mb-5 transition-colors duration-400"
+                  style={{ color: isHovered ? "hsl(0 0% 100%)" : "hsl(0 0% 100% / 0.8)" }}
+                >
+                  {t.quote}
+                </p>
                 <div className="flex items-center gap-3">
                   <div
                     className="w-9 h-9 rounded-full flex items-center justify-center"
