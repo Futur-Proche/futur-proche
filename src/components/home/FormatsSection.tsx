@@ -1,7 +1,7 @@
-import whatsappMontage from "@/assets/whatsapp-montage.jpg";
-import groupeAfterProche from "@/assets/groupe-after-proche.jpg";
-import formatPodcast from "@/assets/format-podcast.jpg";
-import formatJobs from "@/assets/format-jobs.jpg";
+import communityGroup from "@/assets/community-group.jpg";
+import eventTalk from "@/assets/event-talk.jpg";
+import networkingEchanges from "@/assets/networking-echanges.jpg";
+import ambianceGroupe from "@/assets/ambiance-groupe.jpg";
 import { ScrollyFormats } from "@/components/shared/ScrollyFormats";
 
 const formats = [
