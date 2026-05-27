@@ -36,31 +36,25 @@ const painPoints = [
 
 export const TensionSection = () => {
   const desktopBreakpoint = 768;
-  const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
   const [pickedIdx, setPickedIdx] = useState<number | null>(null);
+  const [revealedCount, setRevealedCount] = useState(1);
 
   useEffect(() => {
     const updateActiveCard = () => {
-      if (window.innerWidth < desktopBreakpoint) return;
+      if (window.innerWidth < desktopBreakpoint || !sectionRef.current) {
+        setRevealedCount(painPoints.length);
+        return;
+      }
 
-      const viewportCenter = window.innerHeight * 0.5;
-      let closestIdx = 0;
-      let closestDistance = Number.POSITIVE_INFINITY;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const scrollableDistance = Math.max(rect.height - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / scrollableDistance, 0), 1);
+      const nextIdx = Math.min(painPoints.length - 1, Math.floor(progress * painPoints.length));
 
-      stepRefs.current.forEach((step, idx) => {
-        if (!step) return;
-        const rect = step.getBoundingClientRect();
-        const cardCenter = rect.top + rect.height / 2;
-        const distance = Math.abs(cardCenter - viewportCenter);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestIdx = idx;
-        }
-      });
-
-      setActiveIdx(closestIdx);
+      setActiveIdx(nextIdx);
+      setRevealedCount(Math.max(1, nextIdx + 1));
     };
 
     updateActiveCard();
@@ -82,40 +76,32 @@ export const TensionSection = () => {
     return () => window.removeEventListener("scroll", releaseSelection);
   }, [pickedIdx]);
 
-  const displayedIdx = pickedIdx ?? activeIdx;
+  const displayedIdx = Math.min(pickedIdx ?? activeIdx, revealedCount - 1);
 
   return (
-    <section className="section-cream relative overflow-hidden">
+    <section ref={sectionRef} className="section-cream relative overflow-hidden">
       <div
         className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-[0.04] blur-3xl pointer-events-none"
         style={{ background: "hsl(186 79% 47%)" }}
       />
 
       <div className="hidden md:block">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-16 xl:gap-20">
-            <div className="relative">
-              <div className="sticky top-20 flex min-h-[calc(100vh-5rem)] items-start pt-10">
+        <div
+          className="container mx-auto px-6 lg:px-12"
+          style={{ minHeight: `calc(100vh + ${(painPoints.length - 1) * 56}vh)` }}
+        >
+          <div className="sticky top-0 flex min-h-screen items-center py-20">
+            <div className="grid w-full grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-16 xl:gap-20">
+              <div className="relative">
                 <LeftColumn activeIdx={displayedIdx} />
               </div>
-            </div>
 
-            <div className="relative">
-              <div className="sticky top-20 flex min-h-[calc(100vh-5rem)] items-start pt-10">
-                <DesktopStack displayedIdx={displayedIdx} onSelect={setPickedIdx} />
-              </div>
-
-              <div aria-hidden="true" className="pointer-events-none">
-                {painPoints.map((point, idx) => (
-                  <div
-                    key={point.num}
-                    ref={(el) => {
-                      stepRefs.current[idx] = el;
-                    }}
-                    data-index={idx}
-                    className={idx === painPoints.length - 1 ? "h-[65vh]" : "h-[62vh]"}
-                  />
-                ))}
+              <div className="relative flex items-center">
+                <DesktopStack
+                  displayedIdx={displayedIdx}
+                  revealedCount={revealedCount}
+                  onSelect={setPickedIdx}
+                />
               </div>
             </div>
           </div>
@@ -176,40 +162,65 @@ export const TensionSection = () => {
 
 const DesktopStack = ({
   displayedIdx,
+  revealedCount,
   onSelect,
 }: {
   displayedIdx: number;
+  revealedCount: number;
   onSelect: (idx: number) => void;
 }) => {
-  const collapsedHeight = 78;
-  const expandedHeight = 280;
-  const futurePeek = 24;
-  const totalHeight =
-    (painPoints.length - 1) * collapsedHeight + expandedHeight + 40;
+  const collapsedHeight = 72;
+  const expandedHeight = 252;
+  const futurePeek = 20;
+  const hiddenPeek = 12;
+  const totalHeight = expandedHeight + (painPoints.length - 1) * collapsedHeight + 24;
 
   return (
-    <div
-      className="relative w-full"
-      style={{ height: totalHeight }}
-    >
+    <div className="relative w-full" style={{ height: totalHeight }}>
       {painPoints.map((point, idx) => {
         const isActive = idx === displayedIdx;
+        const isRevealed = idx < revealedCount;
         const isPast = idx < displayedIdx;
-        const top = isPast
-          ? idx * collapsedHeight
-          : isActive
+        const hiddenBaseTop =
+          displayedIdx * collapsedHeight +
+          expandedHeight +
+          Math.max(revealedCount - displayedIdx - 1, 0) * futurePeek;
+        const top = !isRevealed
+          ? hiddenBaseTop + (idx - revealedCount) * hiddenPeek
+          : isPast
             ? idx * collapsedHeight
-            : displayedIdx * collapsedHeight + expandedHeight + (idx - displayedIdx - 1) * futurePeek;
+            : isActive
+              ? idx * collapsedHeight
+              : displayedIdx * collapsedHeight + expandedHeight + (idx - displayedIdx - 1) * futurePeek;
 
-        const scale = isPast ? 1 : isActive ? 1 : 1 - Math.min(idx - displayedIdx, 3) * 0.02;
-        const opacity = isPast ? 1 : isActive ? 1 : Math.max(0.5, 1 - (idx - displayedIdx) * 0.12);
-        const zIndex = isActive ? painPoints.length + 10 : isPast ? painPoints.length + idx : painPoints.length - idx;
+        const scale = !isRevealed
+          ? 0.985
+          : isPast
+            ? 1
+            : isActive
+              ? 1
+              : 1 - Math.min(idx - displayedIdx, 3) * 0.018;
+        const opacity = !isRevealed
+          ? idx === revealedCount
+            ? 0.28
+            : 0
+          : isPast
+            ? 1
+            : isActive
+              ? 1
+              : Math.max(0.58, 1 - (idx - displayedIdx) * 0.1);
+        const zIndex = isActive
+          ? painPoints.length + 12
+          : isPast
+            ? painPoints.length + idx
+            : painPoints.length - idx;
 
         return (
           <button
             key={point.num}
             type="button"
             aria-expanded={isActive}
+            aria-hidden={!isRevealed}
             onClick={() => onSelect(idx)}
             className="absolute inset-x-0 overflow-hidden rounded-[22px] text-left transition-all duration-500 ease-out motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
             style={{
@@ -219,6 +230,7 @@ const DesktopStack = ({
               transformOrigin: "center top",
               opacity,
               zIndex,
+              pointerEvents: isRevealed ? "auto" : "none",
               background: "hsl(0 0% 100%)",
               border: "1px solid hsl(228 10% 88%)",
               boxShadow: isActive
@@ -239,7 +251,7 @@ const DesktopStack = ({
                   <p
                     className="font-grotesk font-semibold leading-tight tracking-tight transition-all duration-500 motion-reduce:transition-none"
                     style={{
-                      color: "hsl(228 56% 10%)",
+                      color: isRevealed ? "hsl(228 56% 10%)" : "hsl(228 15% 40%)",
                       fontSize: isActive ? "1.5rem" : "1rem",
                     }}
                   >
