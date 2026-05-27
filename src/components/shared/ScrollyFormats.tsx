@@ -49,7 +49,7 @@ export const ScrollyFormats = ({
             dotInactive: "hsl(228 15% 75%)",
           }
         : {
-            section: "section-navy",
+            section: "",
             headingColor: "#ffffff",
             introColor: "rgba(255,255,255,0.65)",
             number: "rgba(255,255,255,0.08)",
@@ -134,7 +134,14 @@ export const ScrollyFormats = ({
   };
 
   return (
-    <section className={`${tokens.section} relative`}>
+    <section
+      className={`${tokens.section} relative`}
+      style={
+        isCream
+          ? undefined
+          : { background: "hsl(228 56% 10%)", color: "hsl(40 33% 94%)" }
+      }
+    >
       {!isCream && <div className="dot-grid" />}
 
       {/* En-tête */}
