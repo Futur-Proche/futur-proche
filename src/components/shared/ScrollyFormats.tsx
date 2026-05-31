@@ -146,8 +146,11 @@ export const ScrollyFormats = ({
 
       {pinned ? (
         <>
-          {/* Indicateur latéral cliquable */}
-          <div className="hidden lg:flex fixed right-6 top-1/2 -translate-y-1/2 z-30 flex-col gap-3">
+          {/* Indicateur latéral cliquable — visible uniquement quand la section est pinnée */}
+          <div
+            className="hidden lg:flex fixed right-6 top-1/2 -translate-y-1/2 z-30 flex-col gap-3 transition-opacity duration-300"
+            style={{ opacity: inView ? 1 : 0, pointerEvents: inView ? "auto" : "none" }}
+          >
             {steps.map((_, i) => {
               const active = i === activeIdx;
               return (
@@ -167,6 +170,7 @@ export const ScrollyFormats = ({
               );
             })}
           </div>
+
 
           {/* Zone pinned : hauteur = N × 100vh */}
           <div
