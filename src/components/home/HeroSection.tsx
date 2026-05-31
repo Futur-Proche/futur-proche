@@ -76,7 +76,16 @@ export const HeroSection = () => {
             </h1>
 
             <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
-              850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes : l'espace où se prennent les décisions qui comptent.
+              850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes :{" "}
+              <span
+                className="font-medium text-white"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to top, hsl(186 79% 47% / 0.28) 0%, hsl(186 79% 47% / 0.28) 38%, transparent 38%)",
+                }}
+              >
+                l'espace où se prennent les décisions qui comptent.
+              </span>
             </p>
 
             <div className="flex flex-wrap gap-3 pt-1">

@@ -6,6 +6,7 @@ import { VideoSection } from "@/components/home/VideoSection";
 import { KeyElementsSection } from "@/components/home/KeyElementsSection";
 import { FormatsSection } from "@/components/home/FormatsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+
 import { ForYouSection } from "@/components/home/ForYouSection";
 import { MembersCloud } from "@/components/home/MembersCloud";
 import { JoinSection } from "@/components/home/JoinSection";
@@ -27,7 +28,7 @@ const Index = () => (
       <FormatsSection />
       {/* 5. Navy — Testimonials */}
       <TestimonialsSection />
-      {/* 6. Cream — Pour qui */}
+      {/* 6. Cream — Pour qui (profils + Oui/Non) */}
       <ForYouSection />
       {/* 7. Navy — Members */}
       <MembersCloud />
