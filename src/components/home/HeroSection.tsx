@@ -76,7 +76,10 @@ export const HeroSection = () => {
             </h1>
 
             <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
-              850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes : l'espace où se prennent les décisions qui comptent.
+              850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes :{" "}
+              <mark className="bg-transparent text-white font-medium border-b-2 border-primary/70 px-0.5">
+                l'espace où se prennent les décisions qui comptent.
+              </mark>
             </p>
 
             <div className="flex flex-wrap gap-3 pt-1">
