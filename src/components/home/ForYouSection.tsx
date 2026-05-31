@@ -245,13 +245,13 @@ export const ForYouSection = () => {
           className="text-3xl md:text-4xl lg:text-5xl font-grotesk font-bold tracking-tight mb-3"
           style={{ color: "hsl(228 56% 10%)" }}
         >
-          C'est pour vous si...
+          Votre place est ici si...
         </h2>
         <p
           className="font-serif italic text-xl md:text-2xl max-w-2xl leading-snug mb-12"
           style={{ color: "hsl(228 25% 25%)" }}
         >
-          Trois profils, une même exigence.
+          Trois profils, un même état d'esprit.
         </p>
 
         {/* Profils */}
@@ -273,7 +273,7 @@ export const ForYouSection = () => {
 
         {/* Separator + transition label */}
         <div className="flex items-center gap-4 mt-20 mb-10">
-          <span className="section-label whitespace-nowrap">— Et surtout</span>
+          <span className="section-label whitespace-nowrap">— Et au-delà du profil</span>
           <div className="h-px flex-1" style={{ background: "hsl(228 10% 80%)" }} />
         </div>
 
