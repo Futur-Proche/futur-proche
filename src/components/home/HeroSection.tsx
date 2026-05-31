@@ -77,7 +77,10 @@ export const HeroSection = () => {
 
             <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
               850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes :{" "}
-              <mark className="bg-transparent text-white font-medium border-b-2 border-primary/70 px-0.5">
+              <mark
+                className="font-medium px-1 py-0.5 rounded-sm"
+                style={{ background: "hsl(186 79% 47% / 0.25)", color: "hsl(0 0% 100%)" }}
+              >
                 l'espace où se prennent les décisions qui comptent.
               </mark>
             </p>
