@@ -251,7 +251,7 @@ export const ForYouSection = () => {
           className="font-serif italic text-xl md:text-2xl max-w-2xl leading-snug mb-12"
           style={{ color: "hsl(228 25% 25%)" }}
         >
-          Trois profils, un même état d'esprit.
+          Vous correspondez à ces profils :
         </p>
 
         {/* Profils */}
