@@ -81,6 +81,24 @@ export const ScrollyFormats = ({
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    if (!pinned) return;
+    const el = wrapperRef.current;
+    if (!el) return;
+    const onCheck = () => {
+      const r = el.getBoundingClientRect();
+      setInView(r.top <= 0 && r.bottom >= window.innerHeight);
+    };
+    onCheck();
+    window.addEventListener("scroll", onCheck, { passive: true });
+    window.addEventListener("resize", onCheck);
+    return () => {
+      window.removeEventListener("scroll", onCheck);
+      window.removeEventListener("resize", onCheck);
+    };
+  }, [pinned]);
 
   useEffect(() => {
     if (!pinned) return;
