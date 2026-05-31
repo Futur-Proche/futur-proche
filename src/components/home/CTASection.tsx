@@ -11,7 +11,7 @@ export const CTASection = () => (
 
     <div className="relative z-10 container mx-auto px-6 lg:px-12 py-20 md:py-28 text-center">
       <h2 className="text-3xl md:text-4xl lg:text-5xl font-grotesk font-medium tracking-tight text-white">
-        Votre prochaine{" "}
+        Votre future{" "}
         <span className="font-serif-accent">(bonne)</span>{" "}
         décision commence ici.
       </h2>
