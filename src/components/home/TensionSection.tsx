@@ -276,7 +276,7 @@ export const TensionSection = () => {
             );
           })}
         </div>
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center hidden md:block">
           <Link
             to="/candidater"
             className="inline-flex items-center gap-2 bg-navy text-cream px-6 py-3 rounded-full font-grotesk text-sm font-medium hover:bg-navy/90 transition-colors"

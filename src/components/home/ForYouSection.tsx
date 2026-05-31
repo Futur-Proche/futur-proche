@@ -40,8 +40,8 @@ const profils = [
 ];
 
 const yesItems = [
-  "Vous avez 7+ ans d'expérience en Marketing / Comm",
-  "Vous êtes CMO, VP, Director, Head of, ou senior manager",
+  "Vous avez 7+ ans d'expérience",
+  "Vous aimez jouer collectif et en équipe",
   "Vous préférez les conversations franches aux discours corporate",
   "Vous voulez donner autant que recevoir",
 ];
@@ -251,7 +251,7 @@ export const ForYouSection = () => {
           className="font-serif italic text-xl md:text-2xl max-w-2xl leading-snug mb-12"
           style={{ color: "hsl(228 25% 25%)" }}
         >
-          Vous correspondez à ces profils :
+          Vous vous reconnaissez dans ces profils
         </p>
 
         {/* Profils */}
