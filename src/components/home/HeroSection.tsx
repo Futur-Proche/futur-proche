@@ -77,12 +77,15 @@ export const HeroSection = () => {
 
             <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-lg">
               850+ leaders Marketing / Comm échangent chaque jour sur leurs vrais sujets. Arbitrages, outils, doutes :{" "}
-              <mark
-                className="font-medium px-1 py-0.5 rounded-sm"
-                style={{ background: "hsl(186 79% 47% / 0.25)", color: "hsl(0 0% 100%)" }}
+              <span
+                className="font-medium text-white"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to top, hsl(186 79% 47% / 0.28) 0%, hsl(186 79% 47% / 0.28) 38%, transparent 38%)",
+                }}
               >
                 l'espace où se prennent les décisions qui comptent.
-              </mark>
+              </span>
             </p>
 
             <div className="flex flex-wrap gap-3 pt-1">
