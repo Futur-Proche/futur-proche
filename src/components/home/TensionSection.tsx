@@ -1,138 +1,184 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { AlertCircle, Users, Clock } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const painPoints = [
   {
     num: "01",
-    icon: AlertCircle,
     title: "Un budget à défendre seul.",
     text: "Personne autour de vous pour challenger vos arbitrages. Le ComEx attend des résultats, pas des explications.",
   },
   {
     num: "02",
-    icon: Clock,
     title: "Des décisions qui n'attendent pas.",
-    text: "Changer de CRM, lancer un canal, couper un budget — pas le temps de lancer un appel d'offres ou de mandater un cabinet.",
+    text: "Changer de CRM, lancer un canal, couper un budget — pas le temps d'un appel d'offres ou d'un cabinet.",
   },
   {
     num: "03",
-    icon: Users,
     title: "L'isolement du leader Marketing.",
-    text: "Un doute sur un outil, un prestataire, une stratégie. Des dizaines de contenus en ligne, mais aucune réponse de quelqu'un qui a vécu la même chose.",
+    text: "Un doute sur un outil, un prestataire, une stratégie. Aucune réponse de quelqu'un qui a vécu la même chose.",
+  },
+  {
+    num: "04",
+    title: "Des prestataires qui se ressemblent tous.",
+    text: "Mêmes slides, mêmes promesses. Difficile de séparer le bruit du signal sans retour direct de pairs.",
+  },
+  {
+    num: "05",
+    title: "Des KPIs qu'on ne peut pas comparer.",
+    text: "Vos benchmarks viennent de rapports génériques. Aucune base sectorielle réelle pour vous situer honnêtement.",
+  },
+  {
+    num: "06",
+    title: "Une carrière qu'on construit en silence.",
+    text: "Les bonnes opportunités circulent en off. Sans réseau de pairs au même niveau, vous passez à côté.",
   },
 ];
 
+// Position de chaque carte autour du centre (desktop). Ordre = ordre de révélation au scroll.
+// grid 12 col × 6 row, le centre occupe col 5-8 / row 3-4.
+const desktopSlots = [
+  { col: "1 / span 4", row: "1 / span 2", align: "items-start text-left" },     // 01 haut gauche
+  { col: "9 / span 4", row: "1 / span 2", align: "items-end text-right" },      // 02 haut droite
+  { col: "1 / span 4", row: "3 / span 2", align: "items-start text-left" },     // 03 milieu gauche
+  { col: "9 / span 4", row: "3 / span 2", align: "items-end text-right" },      // 04 milieu droite
+  { col: "1 / span 4", row: "5 / span 2", align: "items-start text-left" },     // 05 bas gauche
+  { col: "9 / span 4", row: "5 / span 2", align: "items-end text-right" },      // 06 bas droite
+];
+
 export const TensionSection = () => {
-  const [hovered, setHovered] = useState<string | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [revealed, setRevealed] = useState(0);
+
+  useEffect(() => {
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setRevealed(painPoints.length);
+      return;
+    }
+
+    const onScroll = () => {
+      const el = sectionRef.current;
+      if (!el) return;
+      if (window.innerWidth < 768) {
+        setRevealed(painPoints.length);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const scrollable = Math.max(rect.height - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / scrollable, 0), 1);
+      // on révèle sur 85% de la course, le dernier 15% laisse respirer avant de sortir
+      const eased = Math.min(progress / 0.85, 1);
+      const n = Math.round(eased * painPoints.length);
+      setRevealed(n);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   return (
-    <section className="section-cream relative overflow-hidden">
-      {/* Decorative elements */}
-      <div
-        className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-[0.04] blur-3xl pointer-events-none"
-        style={{ background: "hsl(186 79% 47%)" }}
-      />
-      <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-        <div className="max-w-3xl mb-12">
-          <span className="section-label">— Le constat</span>
-          <h2
-            className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-4 tracking-tight"
-            style={{ color: "hsl(228 56% 10%)" }}
-          >
-            Vous connaissez sûrement ça.
-          </h2>
-          <div className="w-16 h-[3px] bg-primary mb-6 rounded-full" />
-          <p className="text-base leading-relaxed" style={{ color: "hsl(228 15% 40%)" }}>
-            Plus le poste est senior, plus les décisions sont solitaires. Et plus l'impact d'une mauvaise décision est visible.
-          </p>
-        </div>
+    <section
+      ref={sectionRef}
+      id="tension"
+      className="relative bg-cream text-navy md:min-h-[200vh]"
+    >
+      {/* Sticky scene desktop */}
+      <div className="md:sticky md:top-0 md:h-screen flex items-center">
+        <div className="container mx-auto px-6 py-20 md:py-0 w-full">
+          {/* DESKTOP : couronne radiale */}
+          <div className="hidden md:grid grid-cols-12 grid-rows-6 gap-6 h-[78vh] relative">
+            {/* Centre */}
+            <div className="col-start-5 col-span-4 row-start-3 row-span-2 flex flex-col items-center justify-center text-center">
+              <span className="section-label mb-4">Le constat</span>
+              <h2 className="font-grotesk text-3xl lg:text-5xl font-medium tracking-tight leading-[1.05]">
+                Vous connaissez
+                <br />
+                <em className="font-serif italic font-normal">sûrement ça.</em>
+              </h2>
+              <div className="mt-6 h-px w-16 bg-navy/20" />
+              <p className="mt-4 text-sm text-navy/60 max-w-xs">
+                Six tensions que vivent chaque semaine les leaders Marketing / Comm.
+              </p>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {painPoints.map((p) => {
-            const isHovered = hovered === p.num;
-            return (
-              <div
-                key={p.num}
-                className="relative rounded-xl p-7 transition-all duration-500 group cursor-default"
-                style={{
-                  background: isHovered ? "hsl(228 56% 10%)" : "white",
-                  border: isHovered ? "1px solid hsl(186 79% 47% / 0.3)" : "1px solid hsl(228 10% 85%)",
-                  transform: isHovered ? "translateY(-4px)" : "translateY(0)",
-                  boxShadow: isHovered ? "0 20px 40px -15px hsl(228 56% 10% / 0.25)" : "none",
-                }}
-                onMouseEnter={() => setHovered(p.num)}
-                onMouseLeave={() => setHovered(null)}
-              >
-                {/* Number + Icon */}
-                <div className="flex items-center gap-3 mb-5">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300"
-                    style={{
-                      background: isHovered ? "hsl(186 79% 47% / 0.15)" : "hsl(186 79% 47% / 0.08)",
-                    }}
-                  >
-                    <p.icon
-                      size={20}
-                      className="transition-colors duration-300"
-                      style={{ color: isHovered ? "hsl(186 79% 47%)" : "hsl(186 60% 32%)" }}
-                    />
+            {/* Cartes autour */}
+            {painPoints.map((p, i) => {
+              const slot = desktopSlots[i];
+              const isOn = i < revealed;
+              return (
+                <article
+                  key={p.num}
+                  style={{
+                    gridColumn: slot.col,
+                    gridRow: slot.row,
+                    opacity: isOn ? 1 : 0,
+                    transform: isOn ? "translateY(0)" : "translateY(16px)",
+                    transition: "opacity 600ms ease-out, transform 600ms ease-out",
+                  }}
+                  className={`flex flex-col justify-center ${slot.align}`}
+                >
+                  <div className="max-w-[320px]">
+                    <span className="font-mono text-xs text-navy/50 tracking-widest">
+                      {p.num}
+                    </span>
+                    <h3 className="mt-2 font-grotesk text-lg font-semibold leading-snug">
+                      {p.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-navy/70 leading-relaxed">
+                      {p.text}
+                    </p>
                   </div>
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-[1.5px] transition-colors duration-300"
-                    style={{ color: isHovered ? "hsl(186 79% 47%)" : "hsl(186 60% 32%)" }}
-                  >
+                </article>
+              );
+            })}
+          </div>
+
+          {/* MOBILE : centre puis liste */}
+          <div className="md:hidden">
+            <div className="text-center mb-12">
+              <span className="section-label mb-4 inline-block">Le constat</span>
+              <h2 className="font-grotesk text-3xl font-medium tracking-tight leading-tight mt-3">
+                Vous connaissez
+                <br />
+                <em className="font-serif italic font-normal">sûrement ça.</em>
+              </h2>
+            </div>
+            <div className="space-y-6">
+              {painPoints.map((p) => (
+                <article
+                  key={p.num}
+                  className="border-t border-navy/15 pt-4 animate-fade-in"
+                >
+                  <span className="font-mono text-xs text-navy/50 tracking-widest">
                     {p.num}
                   </span>
-                </div>
-
-                <h3
-                  className="text-lg font-grotesk font-semibold mb-3 transition-colors duration-300"
-                  style={{ color: isHovered ? "white" : "hsl(228 56% 10%)" }}
-                >
-                  {p.title}
-                </h3>
-
-                <p
-                  className="text-sm leading-relaxed transition-colors duration-300"
-                  style={{ color: isHovered ? "hsl(0 0% 100% / 0.6)" : "hsl(228 15% 40%)" }}
-                >
-                  {p.text}
-                </p>
-
-                {/* Bottom accent line */}
-                <div
-                  className="absolute bottom-0 left-7 right-7 h-[2px] rounded-full transition-all duration-500"
-                  style={{
-                    background: "hsl(186 79% 47%)",
-                    opacity: isHovered ? 1 : 0,
-                    transform: isHovered ? "scaleX(1)" : "scaleX(0)",
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA with separator line */}
-        <div className="mt-12 pt-8" style={{ borderTop: "1px solid hsl(228 10% 85%)" }}>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
-            <p className="text-base font-grotesk font-medium" style={{ color: "hsl(228 56% 10%)" }}>
-              futur proche existe pour ces moments-là.
-            </p>
-            <Link
-              to="/communaute"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-grotesk font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              style={{
-                background: "hsl(186 79% 47%)",
-                color: "hsl(228 56% 10%)",
-              }}
-            >
-              Découvrir la communauté →
-            </Link>
+                  <h3 className="mt-1 font-grotesk text-base font-semibold">
+                    {p.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-navy/70 leading-relaxed">
+                    {p.text}
+                  </p>
+                </article>
+              ))}
+            </div>
+            <div className="mt-12 text-center">
+              <Link
+                to="/candidater"
+                className="inline-flex items-center gap-2 bg-navy text-cream px-6 py-3 rounded-full font-grotesk text-sm font-medium hover:bg-navy/90 transition-colors"
+              >
+                Devenir Futuriste →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 };
+
+export default TensionSection;

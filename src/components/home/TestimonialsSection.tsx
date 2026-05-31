@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useStaggeredReveal } from "@/hooks/useStaggeredReveal";
+
 const testimonials = [
   {
     quote: "Enfin un endroit où poser mes vraies questions sans passer pour un junior.",
@@ -37,36 +40,93 @@ const testimonials = [
   },
 ];
 
+const offsets = [
+  { x: -16, y: 28, r: -1.2 },
+  { x: 14, y: 36, r: 0.8 },
+  { x: -10, y: 24, r: -0.6 },
+  { x: 18, y: 40, r: 1 },
+  { x: -14, y: 30, r: -0.9 },
+  { x: 12, y: 26, r: 0.6 },
+];
+
 export const TestimonialsSection = () => {
+  const { ref, revealed } = useStaggeredReveal<HTMLDivElement>(testimonials.length, 90, 0.15);
+  const [hovered, setHovered] = useState<number | null>(null);
+
   return (
     <section className="section-navy relative">
       <div className="dot-grid" />
       <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
         <span className="section-label">— Ce qu'en disent les Futuristes</span>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-3 mb-10 tracking-tight text-white">
+        <h2 className="text-3xl md:text-4xl font-grotesk font-medium mt-3 mb-12 tracking-tight text-white">
           La parole à ceux qui en sont.
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {testimonials.map((t) => (
-            <div
-              key={t.name}
-              className="rounded-xl p-6 card-lift"
-              style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
-            >
-              <span className="text-3xl font-serif leading-none" style={{ color: "hsl(186 60% 32%)" }}>"</span>
-              <p className="text-sm leading-relaxed mt-1 mb-5 text-white/80">{t.quote}</p>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "hsl(186 79% 47%)" }}>
-                  <span className="font-mono text-[10px] font-medium" style={{ color: "hsl(228 56% 10%)" }}>{t.initials}</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">{t.name}</p>
-                  <p className="text-xs text-white/50">{t.role}</p>
+        <div
+          ref={ref}
+          className="columns-1 md:columns-2 lg:columns-3 gap-5 [column-fill:_balance]"
+          onMouseLeave={() => setHovered(null)}
+        >
+          {testimonials.map((t, i) => {
+            const on = revealed[i];
+            const o = offsets[i % offsets.length];
+            const finalRotate = o.r;
+            const isHovered = hovered === i;
+            const isDimmed = hovered !== null && !isHovered;
+            return (
+              <div
+                key={t.name}
+                onMouseEnter={() => setHovered(i)}
+                className="mb-5 break-inside-avoid rounded-xl p-6 cursor-default"
+                style={{
+                  background: "hsl(228 40% 14%)",
+                  border: `1px solid ${isHovered ? "hsl(186 79% 47% / 0.55)" : "hsl(228 30% 22%)"}`,
+                  boxShadow: isHovered ? "0 0 48px hsl(186 79% 47% / 0.22)" : "none",
+                  opacity: on ? (isDimmed ? 0.4 : 1) : 0,
+                  transform: on
+                    ? `translate(0,0) scale(${isHovered ? 1.04 : isDimmed ? 0.98 : 1}) rotate(${finalRotate}deg)`
+                    : `translate(${o.x}px, ${o.y}px) scale(0.92) rotate(${o.r * 2}deg)`,
+                  transition: "opacity 400ms ease-out, transform 400ms ease-out, box-shadow 400ms ease-out, border-color 400ms ease-out",
+                  position: "relative",
+                  zIndex: isHovered ? 10 : 1,
+                }}
+              >
+                <span
+                  className="font-serif leading-none transition-all duration-400"
+                  style={{
+                    color: "hsl(186 60% 32%)",
+                    fontSize: isHovered ? "2.5rem" : "1.875rem",
+                    display: "inline-block",
+                  }}
+                >
+                  "
+                </span>
+                <p
+                  className="text-sm leading-relaxed mt-1 mb-5 transition-colors duration-400"
+                  style={{ color: isHovered ? "hsl(0 0% 100%)" : "hsl(0 0% 100% / 0.8)" }}
+                >
+                  {t.quote}
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ background: "hsl(186 79% 47%)" }}
+                  >
+                    <span
+                      className="font-mono text-[10px] font-medium"
+                      style={{ color: "hsl(228 56% 10%)" }}
+                    >
+                      {t.initials}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">{t.name}</p>
+                    <p className="text-xs text-white/50">{t.role}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

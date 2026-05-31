@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { TensionSection } from "@/components/home/TensionSection";
+import { VideoSection } from "@/components/home/VideoSection";
 import { KeyElementsSection } from "@/components/home/KeyElementsSection";
 import { FormatsSection } from "@/components/home/FormatsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
@@ -18,6 +19,8 @@ const Index = () => (
       <HeroSection />
       {/* 2. Cream — Constat */}
       <TensionSection />
+      {/* 2b. Navy — Vidéo de présentation */}
+      <VideoSection />
       {/* 3. Navy — Stats */}
       <KeyElementsSection />
       {/* 4. Cream — Formats + Photos */}
