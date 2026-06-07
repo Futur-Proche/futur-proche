@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ArrowDown } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
+import communityGroup from "@/assets/community-group.jpg";
+import networkingEchanges from "@/assets/networking-echanges.jpg";
 
 const rotatingPhrases = [
   "ne se prennent pas seul.",
@@ -104,17 +106,88 @@ export const HeroSection = () => {
             </div>
           </div>
 
-          {/* Stats cards with halo */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="card-halo p-6">
-              <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Commu_Active</span>
-              <p className="text-5xl font-grotesk font-bold text-white mt-2">850<span className="text-3xl text-white align-top">+</span></p>
-              <p className="text-sm text-white/50 mt-2">Leaders Marketing / Comm rassemblés. Tous secteurs, toutes tailles.</p>
-            </div>
-            <div className="card-halo p-6">
-              <span className="font-mono text-[10px] uppercase tracking-[1.2px] text-primary">Séniorité_Min</span>
-              <p className="text-5xl font-grotesk font-bold text-white mt-2">7 <span className="text-3xl text-white">ans</span></p>
-              <p className="text-sm text-white/50 mt-2">Filtre d'admission strict. CMO, VP, Directors, Heads of, indés seniors.</p>
+          {/* Photo composition — la communauté incarnée */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative">
+              {/* Halo cyan derrière */}
+              <div
+                className="absolute -inset-6 rounded-3xl pointer-events-none opacity-60 blur-3xl"
+                style={{
+                  background:
+                    "radial-gradient(60% 60% at 70% 30%, hsl(186 79% 47% / 0.35), transparent 70%)",
+                }}
+              />
+
+              {/* Image principale */}
+              <div
+                className="relative rounded-2xl overflow-hidden aspect-[4/5]"
+                style={{
+                  border: "1px solid hsl(228 30% 22%)",
+                  boxShadow:
+                    "0 40px 80px -30px hsl(186 79% 47% / 0.35), inset 0 1px 0 hsl(0 0% 100% / 0.05)",
+                }}
+              >
+                <img
+                  src={communityGroup}
+                  alt="La communauté Futur Proche réunie lors d'un After Proche"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+
+                {/* Coins futuristes cyan */}
+                <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-primary opacity-80" />
+                <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-primary opacity-80" />
+                <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-primary opacity-80" />
+                <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-primary opacity-80" />
+
+                {/* Étiquette mono */}
+                <div className="absolute top-5 left-16 font-mono text-[10px] uppercase tracking-[1.5px] text-primary/80">
+                  COMMU_2026 · IRL.JPG
+                </div>
+
+                {/* Dégradé bas pour lisibilité */}
+                <div
+                  className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(to top, hsl(228 56% 10% / 0.85), transparent)",
+                  }}
+                />
+              </div>
+
+              {/* Polaroïd secondaire — desktop only */}
+              <div
+                className="hidden md:block absolute -bottom-8 -left-10 w-40 lg:w-48 rotate-[-6deg] rounded-lg overflow-hidden"
+                style={{
+                  border: "3px solid hsl(40 33% 94%)",
+                  boxShadow: "0 20px 40px -10px hsl(228 56% 5% / 0.6)",
+                }}
+              >
+                <div className="aspect-[4/5]">
+                  <img
+                    src={networkingEchanges}
+                    alt="Échanges entre Futuristes"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              {/* Pastille preuve sociale */}
+              <div
+                className="absolute -bottom-4 right-4 md:right-6 flex items-center gap-2.5 px-4 py-2.5 rounded-full backdrop-blur-md"
+                style={{
+                  background: "hsl(228 56% 10% / 0.85)",
+                  border: "1px solid hsl(186 79% 47% / 0.5)",
+                  boxShadow: "0 10px 30px -10px hsl(186 79% 47% / 0.5)",
+                }}
+              >
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-white">
+                  850+ Futuristes
+                </span>
+              </div>
             </div>
           </div>
         </div>
