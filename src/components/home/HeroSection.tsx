@@ -141,10 +141,6 @@ export const HeroSection = () => {
                 <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-primary opacity-80" />
                 <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-primary opacity-80" />
 
-                {/* Étiquette mono */}
-                <div className="absolute top-5 left-16 font-mono text-[10px] uppercase tracking-[1.5px] text-primary/80">
-                  COMMU_2026 · IRL.JPG
-                </div>
 
                 {/* Dégradé bas pour lisibilité */}
                 <div
