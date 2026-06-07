@@ -102,10 +102,6 @@ export const VideoSection = () => {
               <div className="absolute bottom-4 left-4 w-10 h-10 border-l-2 border-b-2 border-primary opacity-80" />
               <div className="absolute bottom-4 right-4 w-10 h-10 border-r-2 border-b-2 border-primary opacity-80" />
 
-              {/* Étiquette de coin */}
-              <div className="absolute top-5 left-16 font-mono text-[10px] uppercase tracking-[1.5px] text-primary/70">
-                REEL_2026 · FP.MOV
-              </div>
               <div className="absolute bottom-5 right-16 font-mono text-[10px] uppercase tracking-[1.5px] text-white/40">
                 01:30
               </div>
