@@ -57,7 +57,7 @@ export const HeroSection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary/50">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-primary">
-                800+ leaders marketing & comm
+                850+ LEADERS MARKETING & COMM
               </span>
             </div>
 
@@ -181,7 +181,7 @@ export const HeroSection = () => {
               >
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-white">
-                  850+ Futuristes
+                  AMBIANCE APRES UN AFTER PROCHE
                 </span>
               </div>
             </div>
