@@ -9,6 +9,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Communaute from "./pages/Communaute";
 import Evenements from "./pages/Evenements";
+import EvenementDetail from "./pages/EvenementDetail";
+import EvenementSuccess from "./pages/EvenementSuccess";
 import Ressources from "./pages/Ressources";
 import Partenaires from "./pages/Partenaires";
 import APropos from "./pages/APropos";
@@ -44,6 +46,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/communaute" element={<Communaute />} />
             <Route path="/evenements" element={<Evenements />} />
+            <Route path="/evenements/:slug" element={<EvenementDetail />} />
+            <Route path="/evenements/:slug/success" element={<EvenementSuccess />} />
             <Route path="/ressources" element={<Ressources />} />
             <Route path="/partenaires" element={<Partenaires />} />
             <Route path="/a-propos" element={<APropos />} />

@@ -1,8 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
-import { CalendarDays, MapPin, Users, CreditCard } from "lucide-react";
+import { CalendarDays, MapPin, Users, CreditCard, ChevronDown, ChevronUp } from "lucide-react";
+import { ParticipantsList } from "@/components/event/ParticipantsList";
 
 const formatLabels: Record<string, string> = {
   after_proche: "After Proche",
@@ -13,8 +15,7 @@ const formatLabels: Record<string, string> = {
 
 const MembreEvenements = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const qc = useQueryClient();
+  const [openParticipants, setOpenParticipants] = useState<string | null>(null);
 
   const { data: events } = useQuery({
     queryKey: ["member-events"],
@@ -33,42 +34,35 @@ const MembreEvenements = () => {
     },
   });
 
-  const registerMutation = useMutation({
-    mutationFn: async (eventId: string) => {
-      const { error } = await supabase.from("event_registrations").insert({ event_id: eventId, user_id: user!.id });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-registrations"] });
-      toast({ title: "Inscription confirmée !" });
-    },
-  });
-
   const today = new Date().toISOString().split("T")[0];
   const upcoming = events?.filter((e) => e.date >= today && e.statut === "published") ?? [];
   const past = events?.filter((e) => e.date < today || e.statut === "past") ?? [];
+  const myPast = past.filter((ev) => myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
 
   const isRegistered = (eventId: string) => myRegistrations?.some((r) => r.event_id === eventId && r.statut !== "cancelled");
 
   const EventCard = ({ ev, isPast }: { ev: any; isPast?: boolean }) => (
     <div className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-      {/* Poster */}
-      <div className="relative p-6 min-h-[140px]" style={{ background: "linear-gradient(135deg, hsl(228 56% 12%) 0%, hsl(248 60% 20%) 50%, hsl(228 56% 12%) 100%)" }}>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, hsl(186 79% 47% / 0.15) 0%, transparent 60%)" }} />
-        <div className="relative z-10 flex items-start justify-between">
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-primary">{formatLabels[ev.format]}</span>
-            <h3 className="text-lg font-grotesk font-bold text-white mt-1">{ev.titre}</h3>
-            {ev.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{ev.description}</p>}
-          </div>
-          <div className="flex-shrink-0 text-center rounded-lg px-3 py-2 ml-4" style={{ border: "1px solid hsl(186 79% 47% / 0.3)" }}>
-            <p className="text-[10px] font-mono uppercase text-primary">
-              {new Date(ev.date).toLocaleDateString("fr-FR", { month: "short" })}
-            </p>
-            <p className="text-2xl font-grotesk font-bold text-white">{new Date(ev.date).getDate()}</p>
+      <Link to={`/evenements/${ev.slug ?? ev.id}`} className="block">
+        <div className="relative p-6 min-h-[140px]" style={{ background: "linear-gradient(135deg, hsl(228 56% 12%) 0%, hsl(248 60% 20%) 50%, hsl(228 56% 12%) 100%)" }}>
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, hsl(186 79% 47% / 0.15) 0%, transparent 60%)" }} />
+          <div className="relative z-10 flex items-start justify-between">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-primary">
+                {formatLabels[ev.format]}{ev.is_open_to_all && " · Ouvert à tous"}
+              </span>
+              <h3 className="text-lg font-grotesk font-bold text-white mt-1">{ev.titre}</h3>
+              {ev.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{ev.description}</p>}
+            </div>
+            <div className="flex-shrink-0 text-center rounded-lg px-3 py-2 ml-4" style={{ border: "1px solid hsl(186 79% 47% / 0.3)" }}>
+              <p className="text-[10px] font-mono uppercase text-primary">
+                {new Date(ev.date).toLocaleDateString("fr-FR", { month: "short" })}
+              </p>
+              <p className="text-2xl font-grotesk font-bold text-white">{new Date(ev.date).getDate()}</p>
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-4 text-white/40 text-xs">
           {ev.ville && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.ville}</span>}
@@ -78,18 +72,13 @@ const MembreEvenements = () => {
         {!isPast && (
           isRegistered(ev.id) ? (
             <span className="text-xs font-mono text-emerald-400">✓ Inscrit</span>
-          ) : ev.prix ? (
-            <button disabled className="px-4 py-1.5 rounded-lg text-xs font-grotesk bg-white/10 text-white/40 cursor-not-allowed">
-              Bientôt — Stripe
-            </button>
           ) : (
-            <button
-              onClick={() => registerMutation.mutate(ev.id)}
-              disabled={registerMutation.isPending}
-              className="px-4 py-1.5 rounded-lg text-xs font-grotesk bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            <Link
+              to={`/evenements/${ev.slug ?? ev.id}`}
+              className="px-4 py-1.5 rounded-lg text-xs font-grotesk bg-primary text-primary-foreground hover:opacity-90"
             >
-              S'inscrire →
-            </button>
+              Voir & s'inscrire →
+            </Link>
           )
         )}
       </div>
@@ -109,9 +98,45 @@ const MembreEvenements = () => {
         </>
       )}
 
+      {myPast.length > 0 && (
+        <>
+          <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">Mes événements passés</h2>
+          <div className="space-y-3 mb-8">
+            {myPast.map((ev) => (
+              <div key={ev.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+                <button
+                  onClick={() => setOpenParticipants(openParticipants === ev.id ? null : ev.id)}
+                  className="w-full p-5 flex items-center justify-between hover:bg-white/5 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-4">
+                    <CalendarDays className="w-4 h-4 text-primary" />
+                    <div>
+                      <p className="text-sm font-grotesk font-semibold text-white">{ev.titre}</p>
+                      <p className="text-xs text-white/40">
+                        {new Date(ev.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                        {ev.ville && ` · ${ev.ville}`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-primary font-mono">
+                    Retrouver les participants
+                    {openParticipants === ev.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  </div>
+                </button>
+                {openParticipants === ev.id && (
+                  <div className="p-5 border-t" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                    <ParticipantsList eventId={ev.id} visible={true} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       {past.length > 0 && (
         <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Passés</h2>
+          <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Tous les événements passés</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-60">
             {past.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
           </div>

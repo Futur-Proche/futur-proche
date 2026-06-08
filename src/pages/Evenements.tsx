@@ -377,11 +377,11 @@ const Evenements = () => {
 
                           <div className="flex-shrink-0">
                             <Link
-                              to="/candidater"
+                              to={`/evenements/${ev.slug ?? ev.id}`}
                               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg font-grotesk font-medium text-sm transition-all hover:scale-105"
                               style={{ background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }}
                             >
-                              S'inscrire <ExternalLink size={14} />
+                              Voir & s'inscrire <ExternalLink size={14} />
                             </Link>
                           </div>
                         </div>
