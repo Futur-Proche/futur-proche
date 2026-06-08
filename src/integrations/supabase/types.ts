@@ -140,12 +140,14 @@ export type Database = {
           date: string
           description: string | null
           format: Database["public"]["Enums"]["event_format"]
+          gallery: Json
           heure: string | null
           id: string
           image_url: string | null
           is_open_to_all: boolean
           lieu: string | null
           prix: number | null
+          recap: string | null
           slug: string | null
           speakers: Json | null
           statut: Database["public"]["Enums"]["event_status"]
@@ -159,12 +161,14 @@ export type Database = {
           date: string
           description?: string | null
           format?: Database["public"]["Enums"]["event_format"]
+          gallery?: Json
           heure?: string | null
           id?: string
           image_url?: string | null
           is_open_to_all?: boolean
           lieu?: string | null
           prix?: number | null
+          recap?: string | null
           slug?: string | null
           speakers?: Json | null
           statut?: Database["public"]["Enums"]["event_status"]
@@ -178,12 +182,14 @@ export type Database = {
           date?: string
           description?: string | null
           format?: Database["public"]["Enums"]["event_format"]
+          gallery?: Json
           heure?: string | null
           id?: string
           image_url?: string | null
           is_open_to_all?: boolean
           lieu?: string | null
           prix?: number | null
+          recap?: string | null
           slug?: string | null
           speakers?: Json | null
           statut?: Database["public"]["Enums"]["event_status"]
