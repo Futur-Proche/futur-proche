@@ -400,6 +400,90 @@ const Evenements = () => {
           </div>
         </section>
 
+        {/* ── SECTION 4.5 — Retours sur nos événements (avec photos & recap) ── */}
+        {(() => {
+          const pastWithContent = (pastEventsData ?? []).filter((ev) => {
+            const g = ((ev as any).gallery as any[] | null) ?? [];
+            const r = ((ev as any).recap as string | null) ?? "";
+            return g.length > 0 || (r && r.trim().length > 0);
+          });
+          if (pastWithContent.length === 0) return null;
+          return (
+            <section className="section-cream">
+              <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
+                <span className="section-label">— Ils ont eu lieu</span>
+                <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-3 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
+                  Retours sur nos rendez-vous
+                </h2>
+                <p className="text-sm md:text-base mb-10 max-w-2xl" style={{ color: "hsl(228 15% 45%)" }}>
+                  Photos, comptes-rendus et moments forts des derniers After Proche.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {pastWithContent.map((ev) => {
+                    const g = (((ev as any).gallery as { url: string; alt?: string }[] | null) ?? []);
+                    const r = ((ev as any).recap as string | null) ?? "";
+                    return (
+                      <Link
+                        key={ev.id}
+                        to={`/evenements/${ev.slug ?? ev.id}`}
+                        className="group rounded-2xl overflow-hidden bg-white card-lift block"
+                        style={{ border: "1px solid hsl(228 10% 85%)" }}
+                      >
+                        {g.length > 0 ? (
+                          <div className="grid grid-cols-3 gap-0.5 h-44">
+                            <img src={g[0].url} alt={g[0].alt ?? ev.titre} className="col-span-2 row-span-2 w-full h-full object-cover" />
+                            {g[1] && <img src={g[1].url} alt={g[1].alt ?? ""} className="w-full h-full object-cover" />}
+                            {g[2] ? (
+                              <div className="relative w-full h-full">
+                                <img src={g[2].url} alt={g[2].alt ?? ""} className="w-full h-full object-cover" />
+                                {g.length > 3 && (
+                                  <div className="absolute inset-0 flex items-center justify-center text-white font-grotesk font-semibold text-sm" style={{ background: "hsl(228 56% 10% / 0.65)" }}>
+                                    +{g.length - 3}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="w-full h-full" style={{ background: "hsl(228 56% 10%)" }} />
+                            )}
+                          </div>
+                        ) : (
+                          <div className="h-32 flex items-center justify-center" style={{ background: "linear-gradient(135deg, hsl(228 56% 12%), hsl(248 60% 20%))" }}>
+                            <Camera className="w-8 h-8 text-primary/40" />
+                          </div>
+                        )}
+
+                        <div className="p-5">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "hsl(186 60% 32%)" }}>
+                              {formatLabels[ev.format] ?? ev.format}
+                            </span>
+                            <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "hsl(228 15% 55%)" }}>
+                              {formatDate(ev.date)}{ev.ville ? ` · ${ev.ville}` : ""}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-grotesk font-bold mb-2" style={{ color: "hsl(228 56% 10%)" }}>
+                            {ev.titre}
+                          </h3>
+                          {r && (
+                            <p className="text-sm leading-relaxed line-clamp-3 mb-3" style={{ color: "hsl(228 15% 40%)" }}>
+                              {r}
+                            </p>
+                          )}
+                          <span className="inline-flex items-center gap-1 text-xs font-mono font-medium group-hover:gap-2 transition-all" style={{ color: "hsl(186 60% 32%)" }}>
+                            Voir le compte-rendu <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
+
         {/* ── SECTION 5 — Événements passés ── */}
         <section className="section-navy relative">
           <div className="dot-grid" />
