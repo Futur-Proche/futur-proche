@@ -666,7 +666,8 @@ const AdminEvenements = () => {
             );
           })}
         </div>
-      )}
+        );
+      })()}
       {visualEvent && (
         <EventVisualGenerator
           event={visualEvent}
