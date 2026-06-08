@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { CalendarDays, MapPin, Users, CreditCard, ChevronDown, ChevronUp } from "lucide-react";
+import { CalendarDays, MapPin, Users, CreditCard, ChevronDown, ChevronUp, LayoutGrid, List } from "lucide-react";
 import { ParticipantsList } from "@/components/event/ParticipantsList";
 
 const formatLabels: Record<string, string> = {
@@ -16,6 +16,9 @@ const formatLabels: Record<string, string> = {
 const MembreEvenements = () => {
   const { user } = useAuth();
   const [openParticipants, setOpenParticipants] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [villeFilter, setVilleFilter] = useState<string>("all");
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   const { data: events } = useQuery({
     queryKey: ["member-events"],
@@ -36,8 +39,24 @@ const MembreEvenements = () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const upcoming = events?.filter((e) => e.date >= today && e.statut === "published") ?? [];
-  const past = events?.filter((e) => e.date < today || e.statut === "past") ?? [];
+  const villes = useMemo(
+    () => Array.from(new Set((events ?? []).map((e) => e.ville).filter(Boolean))).sort() as string[],
+    [events]
+  );
+  const types = useMemo(
+    () => Array.from(new Set((events ?? []).map((e) => e.format).filter(Boolean))).sort() as string[],
+    [events]
+  );
+
+  const matchesFilters = (e: { format: string; ville: string | null }) =>
+    (typeFilter === "all" || e.format === typeFilter) &&
+    (villeFilter === "all" || e.ville === villeFilter);
+
+  const allUpcoming = (events ?? []).filter((e) => e.date >= today && e.statut === "published");
+  const allPast = (events ?? []).filter((e) => e.date < today || e.statut === "past");
+
+  const upcoming = allUpcoming.filter(matchesFilters);
+  const past = allPast.filter(matchesFilters);
 
   const myUpcoming = upcoming.filter((ev) => myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
   const otherUpcoming = upcoming.filter((ev) => !myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
@@ -46,6 +65,38 @@ const MembreEvenements = () => {
   const otherPast = past.filter((ev) => !myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
 
   const isRegistered = (eventId: string) => myRegistrations?.some((r) => r.event_id === eventId && r.statut !== "cancelled");
+
+  const selectClass = "px-3 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none";
+  const selectStyle = { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" };
+
+  const EventRow = ({ ev, isPast }: { ev: any; isPast?: boolean }) => (
+    <Link
+      to={`/evenements/${ev.slug ?? ev.id}`}
+      className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-4 py-3 border-b items-center hover:bg-white/[0.02]"
+      style={{ borderColor: "hsl(228 30% 22%)" }}
+    >
+      <div className="md:col-span-1 text-center rounded-md py-1 px-2" style={{ background: "hsl(228 56% 10%)" }}>
+        <p className="text-[9px] font-mono uppercase text-primary">{new Date(ev.date).toLocaleDateString("fr-FR", { month: "short" })}</p>
+        <p className="text-base font-grotesk font-bold text-white">{new Date(ev.date).getDate()}</p>
+      </div>
+      <div className="md:col-span-5">
+        <p className="text-sm font-grotesk font-semibold text-white">{ev.titre}</p>
+        <p className="text-[10px] font-mono uppercase tracking-wider text-primary mt-0.5">{formatLabels[ev.format] ?? ev.format}</p>
+      </div>
+      <span className="md:col-span-2 text-white/60 text-xs flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.ville ?? "—"}</span>
+      <span className="md:col-span-1 text-white/50 text-xs">{ev.capacite ? `${ev.capacite} pl.` : "—"}</span>
+      <span className="md:col-span-1 text-white/50 text-xs">{ev.prix ? `${Number(ev.prix).toFixed(0)}€` : "Gratuit"}</span>
+      <div className="md:col-span-2 md:text-right text-xs">
+        {!isPast && isRegistered(ev.id) ? (
+          <span className="font-mono text-emerald-400">✓ Inscrit</span>
+        ) : !isPast ? (
+          <span className="text-primary font-mono">Voir & s'inscrire →</span>
+        ) : (
+          <span className="text-white/40 font-mono">A eu lieu</span>
+        )}
+      </div>
+    </Link>
+  );
 
   const EventCard = ({ ev, isPast }: { ev: any; isPast?: boolean }) => (
     <div className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
