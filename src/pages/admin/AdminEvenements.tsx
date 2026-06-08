@@ -182,10 +182,13 @@ const AdminEvenements = () => {
       speakers: e.speakers ?? [],
       slug: e.slug ?? "",
       is_open_to_all: (e as any).is_open_to_all ?? false,
+      recap: (e as any).recap ?? "",
+      gallery: ((e as any).gallery ?? []) as any,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
     setSpeakers(existingSpeakers);
+    setGallery((((e as any).gallery as unknown as GalleryItem[]) ?? []));
     setShowForm(true);
   };
 
@@ -193,6 +196,7 @@ const AdminEvenements = () => {
     setEditing(null);
     setForm(defaultEvent);
     setSpeakers([]);
+    setGallery([]);
     setShowForm(!showForm);
   };
 
