@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
+import { EventBannerUploader } from "@/components/admin/EventBannerUploader";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
