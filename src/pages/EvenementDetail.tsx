@@ -79,8 +79,11 @@ const EvenementDetail = () => {
   }
 
   const speakers = (event.speakers as unknown as Speaker[] | null) ?? [];
+  const gallery = (((event as any).gallery as unknown as GalleryItem[] | null) ?? []).filter(Boolean);
+  const recap = ((event as any).recap as string | null) ?? null;
   const eventDate = new Date(event.date);
   const dayLabel = eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const isPast = event.statut === "past" || eventDate < new Date(new Date().toDateString());
 
   return (
     <>
