@@ -134,7 +134,7 @@ const AdminEvenements = () => {
   const saveMutation = useMutation({
     mutationFn: async (data: Omit<EventInsert, "id">) => {
       const slug = data.titre.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const payload = { ...data, slug, speakers: speakers as any };
+      const payload = { ...data, slug, speakers: speakers as any, gallery: gallery as any };
       if (editing) {
         const { error } = await supabase.from("events").update(payload).eq("id", editing.id);
         if (error) throw error;
@@ -151,6 +151,7 @@ const AdminEvenements = () => {
       setEditing(null);
       setForm(defaultEvent);
       setSpeakers([]);
+      setGallery([]);
     },
   });
 
