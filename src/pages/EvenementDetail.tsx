@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { Calendar, Clock, MapPin, Users, ArrowLeft, Globe } from "lucide-react";
 import { RegistrationBlock } from "@/components/event/RegistrationBlock";
 import { ParticipantsList } from "@/components/event/ParticipantsList";
+import { EventGallery, type GalleryItem } from "@/components/event/EventGallery";
 
 interface Speaker {
   prenom: string;
