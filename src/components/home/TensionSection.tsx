@@ -158,7 +158,6 @@ export const TensionSection = () => {
                     })()}
                   </div>
                 </div>
-                </div>
               );
             })}
           </div>
