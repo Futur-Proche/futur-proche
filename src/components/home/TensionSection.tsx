@@ -1,82 +1,72 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Wallet, Clock, User, LayoutGrid, BarChart3, Network } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-type Pain = {
-  num: string;
-  title: string;
+type Thought = {
   text: string;
-  icon: LucideIcon;
+  /** approx position in % within the stage (desktop) */
+  x: number;
+  y: number;
+  rotate: number;
+  size: "sm" | "md" | "lg";
+  /** which side the speech tail points */
+  tail: "bl" | "br" | "tl" | "tr";
 };
 
-const painPoints: Pain[] = [
-  {
-    num: "01",
-    title: "Un budget à défendre seul.",
-    text: "Personne autour de vous pour challenger vos arbitrages. Le ComEx attend des résultats, pas des explications.",
-    icon: Wallet,
-  },
-  {
-    num: "02",
-    title: "Des décisions qui n'attendent pas.",
-    text: "Changer de CRM, lancer un canal, couper un budget — pas le temps d'un appel d'offres ou d'un cabinet.",
-    icon: Clock,
-  },
-  {
-    num: "03",
-    title: "L'isolement du leader Marketing.",
-    text: "Un doute sur un outil, un prestataire, une stratégie. Aucune réponse de quelqu'un qui a vécu la même chose.",
-    icon: User,
-  },
-  {
-    num: "04",
-    title: "Des prestataires qui se ressemblent tous.",
-    text: "Mêmes slides, mêmes promesses. Difficile de séparer le bruit du signal sans retour direct de pairs.",
-    icon: LayoutGrid,
-  },
-  {
-    num: "05",
-    title: "Des KPIs qu'on ne peut pas comparer.",
-    text: "Vos benchmarks viennent de rapports génériques. Aucune base sectorielle réelle pour vous situer honnêtement.",
-    icon: BarChart3,
-  },
-  {
-    num: "06",
-    title: "Une carrière qu'on construit en silence.",
-    text: "Les bonnes opportunités circulent en off. Sans réseau de pairs au même niveau, vous passez à côté.",
-    icon: Network,
-  },
+// 15 pensées de CMO — ordre = ordre d'apparition au scroll
+const thoughts: Thought[] = [
+  { text: "Je suis seul·e à me battre avec mon CEO. Pas assez de soutien de la tech et du produit.", x: 12, y: 18, rotate: -3, size: "lg", tail: "bl" },
+  { text: "CAC ou LTV — quelle north star je suis censé·e suivre ce trimestre ?", x: 68, y: 12, rotate: 2, size: "md", tail: "br" },
+  { text: "Encore un board deck à défendre sans benchmark sectoriel solide.", x: 40, y: 28, rotate: -1, size: "md", tail: "bl" },
+  { text: "On me demande de couper 20% du budget paid. Sur quoi ?", x: 78, y: 36, rotate: 3, size: "sm", tail: "tl" },
+  { text: "Cette agence me ressort les mêmes slides que la précédente.", x: 6, y: 42, rotate: 2, size: "md", tail: "br" },
+  { text: "Faut-il vraiment changer de CRM maintenant ? Et pour lequel ?", x: 52, y: 50, rotate: -2, size: "sm", tail: "tr" },
+  { text: "Je passe plus de temps à justifier qu'à exécuter.", x: 24, y: 58, rotate: 3, size: "sm", tail: "br" },
+  { text: "Mon équipe attend une vision. Je n'ai que des hypothèses.", x: 70, y: 62, rotate: -3, size: "md", tail: "bl" },
+  { text: "Ce SDR tool à 80k€/an — est-ce que quelqu'un l'a vraiment testé ?", x: 8, y: 72, rotate: 1, size: "md", tail: "tr" },
+  { text: "Le ComEx veut du ROI. Le brand met 18 mois à payer.", x: 44, y: 76, rotate: 2, size: "sm", tail: "bl" },
+  { text: "Je n'ai personne à qui demander « tu ferais quoi à ma place ? »", x: 76, y: 80, rotate: -2, size: "md", tail: "tr" },
+  { text: "Recruter un Head of Growth — mais où sont les bons en off ?", x: 30, y: 8, rotate: 2, size: "sm", tail: "tl" },
+  { text: "L'IA générative : je dois trancher cette semaine, sans recul.", x: 58, y: 38, rotate: -2, size: "sm", tail: "br" },
+  { text: "Mon NPS monte, mon CAC aussi. Bonne ou mauvaise nouvelle ?", x: 16, y: 30, rotate: 3, size: "sm", tail: "tr" },
+  { text: "Si je quitte, qui dans mon réseau peut me passer le bon poste ?", x: 60, y: 86, rotate: -1, size: "md", tail: "tl" },
 ];
+
+const sizeClasses: Record<Thought["size"], string> = {
+  sm: "max-w-[220px] text-[13px] px-4 py-3",
+  md: "max-w-[280px] text-[14px] px-5 py-3.5",
+  lg: "max-w-[340px] text-[15px] px-5 py-4",
+};
+
+const tailClasses: Record<Thought["tail"], string> = {
+  bl: "after:left-6 after:bottom-[-8px] after:border-t-[10px] after:border-l-[10px] after:border-r-0 after:border-b-0",
+  br: "after:right-6 after:bottom-[-8px] after:border-t-[10px] after:border-r-[10px] after:border-l-0 after:border-b-0",
+  tl: "after:left-6 after:top-[-8px] after:border-b-[10px] after:border-l-[10px] after:border-r-0 after:border-t-0",
+  tr: "after:right-6 after:top-[-8px] after:border-b-[10px] after:border-r-[10px] after:border-l-0 after:border-t-0",
+};
 
 export const TensionSection = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [scrollLocked, setScrollLocked] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
-    const reduce = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setActiveIdx(painPoints.length - 1);
+      setReduceMotion(true);
+      setVisibleCount(thoughts.length);
       return;
     }
 
     const onScroll = () => {
       const el = sectionRef.current;
       if (!el) return;
-      if (window.innerWidth < 768) return;
       const rect = el.getBoundingClientRect();
       const scrollable = Math.max(rect.height - window.innerHeight, 1);
       const progress = Math.min(Math.max(-rect.top / scrollable, 0), 1);
-      const eased = Math.min(progress / 0.92, 1);
-      const i = Math.min(
-        painPoints.length - 1,
-        Math.floor(eased * painPoints.length)
-      );
-      setActiveIdx(i);
-      setScrollLocked(rect.top <= 0 && rect.bottom >= window.innerHeight);
+      // Reveal bubbles over the first 90% of the scroll, last 10% = settled cloud
+      const eased = Math.min(progress / 0.9, 1);
+      const count = Math.round(eased * thoughts.length);
+      setVisibleCount(count);
     };
 
     onScroll();
@@ -88,195 +78,124 @@ export const TensionSection = () => {
     };
   }, []);
 
-  const jumpTo = (i: number) => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const scrollable = rect.height - window.innerHeight;
-    const target =
-      window.scrollY +
-      rect.top +
-      ((i + 0.5) / painPoints.length) * scrollable;
-    window.scrollTo({ top: target, behavior: "smooth" });
-  };
-
-  const active = painPoints[activeIdx];
-  const ActiveIcon = active.icon;
-
   return (
     <section
       ref={sectionRef}
       id="tension"
-      className="relative bg-cream text-navy md:min-h-[260vh]"
+      className="relative bg-cream text-navy md:min-h-[320vh]"
     >
-      {/* DESKTOP : sticky stage */}
+      {/* DESKTOP : sticky cloud stage */}
       <div className="hidden md:block md:sticky md:top-0 md:h-screen overflow-hidden">
         {/* subtle dot grid */}
         <div
           aria-hidden
           className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage:
-              "radial-gradient(hsl(228 56% 10%) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(hsl(228 56% 10%) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
 
-        <div className="container mx-auto px-6 lg:px-12 h-full flex flex-col justify-center relative">
-          {/* header */}
-          <div className="text-center mb-10 lg:mb-14">
-            <span className="section-label mb-3 inline-block">— Le constat</span>
-            <h2 className="font-grotesk text-4xl lg:text-5xl font-medium tracking-tight leading-[1.05] mt-2">
-              Vous connaissez{" "}
-              <em className="font-serif italic font-normal">sûrement ça.</em>
-            </h2>
-            <p className="mt-4 text-sm text-navy/60 max-w-xl mx-auto">
-              Six tensions que vivent chaque semaine les leaders Marketing / Comm.
-            </p>
-          </div>
+        {/* header */}
+        <div className="absolute top-0 left-0 right-0 pt-16 lg:pt-20 text-center px-6 z-20 pointer-events-none">
+          <span className="section-label mb-3 inline-block">— Le constat</span>
+          <h2 className="font-grotesk text-3xl lg:text-5xl font-medium tracking-tight leading-[1.05] mt-2 max-w-3xl mx-auto">
+            Ce qui tourne en boucle dans la tête{" "}
+            <em className="font-serif italic font-normal">d'un·e leader Marketing / Comm.</em>
+          </h2>
+        </div>
 
-          {/* active card */}
-          <div className="max-w-3xl mx-auto w-full px-4">
-            <article
-              key={active.num}
-              className="relative"
-              style={{
-                animation: "tensionIn 600ms cubic-bezier(0.2,0.7,0.2,1) both",
-              }}
-            >
-              <div className="flex items-start gap-6">
+        {/* cloud stage */}
+        <div className="absolute inset-0 pt-40 pb-32">
+          <div className="relative w-full h-full max-w-6xl mx-auto px-6">
+            {thoughts.map((t, i) => {
+              const visible = i < visibleCount;
+              const floatDelay = (i % 7) * 0.6;
+              const floatDur = 6 + (i % 4);
+              return (
                 <div
-                  className="shrink-0 w-16 h-16 rounded-xl flex items-center justify-center border"
+                  key={i}
+                  className="absolute"
                   style={{
-                    background: "hsl(186 79% 47% / 0.08)",
-                    borderColor: "hsl(186 79% 47% / 0.3)",
+                    left: `${t.x}%`,
+                    top: `${t.y}%`,
+                    transform: `translate(-50%, -50%) rotate(${t.rotate}deg)`,
+                    opacity: visible ? 1 : 0,
+                    transition:
+                      "opacity 700ms cubic-bezier(0.2,0.7,0.2,1), filter 700ms ease",
+                    filter: visible ? "blur(0)" : "blur(8px)",
+                    zIndex: visible ? 10 : 1,
                   }}
                 >
-                  <ActiveIcon size={28} strokeWidth={1.6} className="text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-3 mb-2">
-                    <span className="font-mono text-xs text-navy/50 tracking-[2px]">
-                      {active.num}
-                      <span className="text-navy/25"> / 06</span>
-                    </span>
-                    <span
-                      className="h-px flex-1 bg-primary origin-left"
-                      style={{
-                        animation: "tensionLine 700ms ease-out 120ms both",
-                      }}
-                    />
-                  </div>
-                  <h3 className="font-grotesk text-2xl lg:text-3xl font-semibold leading-tight tracking-tight">
-                    {active.title}
-                  </h3>
-                  <p className="mt-3 text-base lg:text-lg text-navy/70 leading-relaxed max-w-2xl">
-                    {active.text}
-                  </p>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          {/* progress rail (right side) */}
-          <div className="absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 flex flex-col gap-3">
-            {painPoints.map((p, i) => {
-              const isActive = i === activeIdx;
-              const isPast = i < activeIdx;
-              return (
-                <button
-                  key={p.num}
-                  type="button"
-                  onClick={() => jumpTo(i)}
-                  aria-label={`Tension ${p.num} — ${p.title}`}
-                  className="group flex items-center gap-3 cursor-pointer"
-                >
-                  <span
-                    className="font-mono text-[10px] tracking-[1.5px] transition-opacity"
+                  <div
+                    className={`relative bg-white rounded-2xl shadow-[0_8px_28px_-12px_hsl(228_56%_10%/0.18)] border border-navy/10 font-grotesk leading-snug text-navy ${sizeClasses[t.size]} after:content-[''] after:absolute after:w-0 after:h-0 after:border-solid after:border-transparent after:border-t-white after:border-l-white after:border-b-white after:border-r-white ${tailClasses[t.tail]}`}
                     style={{
-                      opacity: isActive ? 1 : 0,
-                      color: "hsl(228 56% 10%)",
+                      animation: reduceMotion
+                        ? undefined
+                        : `thoughtFloat ${floatDur}s ease-in-out ${floatDelay}s infinite`,
                     }}
                   >
-                    {p.num}
-                  </span>
-                  <span
-                    className="block rounded-full transition-all duration-300"
-                    style={{
-                      width: isActive ? 28 : 8,
-                      height: 8,
-                      background: isActive
-                        ? "hsl(186 79% 47%)"
-                        : isPast
-                          ? "hsl(228 56% 10% / 0.5)"
-                          : "hsl(228 56% 10% / 0.15)",
-                    }}
-                  />
-                </button>
+                    {t.text}
+                  </div>
+                </div>
               );
             })}
           </div>
+        </div>
 
-          {/* scroll hint */}
+        {/* counter + conclusion */}
+        <div className="absolute bottom-6 left-0 right-0 text-center z-20 pointer-events-none px-6">
+          <div className="font-mono text-[10px] uppercase tracking-[2px] text-navy/50 mb-3">
+            {String(Math.min(visibleCount, thoughts.length)).padStart(2, "0")} / {thoughts.length} pensées
+          </div>
           <div
-            className="absolute left-1/2 -translate-x-1/2 bottom-6 font-mono text-[10px] uppercase tracking-[2px] text-navy/40 transition-opacity"
-            style={{ opacity: scrollLocked && activeIdx < painPoints.length - 1 ? 1 : 0 }}
+            className="transition-opacity duration-700"
+            style={{ opacity: visibleCount >= thoughts.length ? 1 : 0 }}
           >
-            Scrollez pour révéler ↓
+            <p className="font-grotesk text-lg lg:text-xl text-navy/80 mb-3">
+              Et si vous n'étiez plus <em className="font-serif italic">seul·e à y penser</em> ?
+            </p>
+            <Link
+              to="/candidater"
+              className="pointer-events-auto inline-flex items-center gap-2 bg-navy text-cream px-6 py-3 rounded-full font-grotesk text-sm font-medium hover:bg-navy/90 transition-colors"
+            >
+              Devenir Futuriste →
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* MOBILE : liste verticale */}
+      {/* MOBILE : fil de pensées en quinconce */}
       <div className="md:hidden container mx-auto px-6 py-20">
         <div className="text-center mb-12">
           <span className="section-label mb-4 inline-block">— Le constat</span>
           <h2 className="font-grotesk text-3xl font-medium tracking-tight leading-tight mt-3">
-            Vous connaissez{" "}
-            <em className="font-serif italic font-normal">sûrement ça.</em>
+            Ce qui tourne en boucle dans la tête{" "}
+            <em className="font-serif italic font-normal">d'un·e leader Marketing / Comm.</em>
           </h2>
         </div>
-        <div className="space-y-4">
-          {painPoints.map((p, i) => {
-            const Icon = p.icon;
+        <div className="space-y-5">
+          {thoughts.map((t, i) => {
+            const align = i % 2 === 0 ? "self-start" : "self-end";
             return (
-              <article
-                key={p.num}
-                className="relative pl-5 pr-4 py-5 rounded-lg bg-white/60 border-l-2 border-primary"
-                style={{
-                  animation: `fadeInUp 500ms ease-out ${i * 80}ms both`,
-                  border: "1px solid hsl(228 10% 85%)",
-                  borderLeft: "3px solid hsl(186 79% 47%)",
-                  background:
-                    i % 2 === 0 ? "hsl(0 0% 100% / 0.6)" : "hsl(40 33% 96%)",
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="shrink-0 w-10 h-10 rounded-md flex items-center justify-center"
-                    style={{
-                      background: "hsl(186 79% 47% / 0.1)",
-                    }}
-                  >
-                    <Icon size={18} strokeWidth={1.7} className="text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="font-mono text-[10px] text-navy/50 tracking-[1.5px]">
-                      {p.num}
-                    </span>
-                    <h3 className="mt-1 font-grotesk text-base font-semibold leading-snug">
-                      {p.title}
-                    </h3>
-                    <p className="mt-1.5 text-sm text-navy/70 leading-relaxed">
-                      {p.text}
-                    </p>
-                  </div>
+              <div key={i} className={`flex ${i % 2 === 0 ? "justify-start" : "justify-end"}`}>
+                <div
+                  className={`relative bg-white rounded-2xl border border-navy/10 shadow-[0_6px_20px_-10px_hsl(228_56%_10%/0.15)] font-grotesk leading-snug text-navy px-4 py-3 text-[14px] max-w-[85%] ${align}`}
+                  style={{
+                    animation: `fadeInUp 500ms ease-out ${i * 60}ms both`,
+                    transform: `rotate(${t.rotate * 0.4}deg)`,
+                  }}
+                >
+                  {t.text}
                 </div>
-              </article>
+              </div>
             );
           })}
         </div>
-        <div className="mt-12 text-center hidden md:block">
+        <div className="mt-12 text-center">
+          <p className="font-grotesk text-base text-navy/80 mb-4">
+            Et si vous n'étiez plus <em className="font-serif italic">seul·e à y penser</em> ?
+          </p>
           <Link
             to="/candidater"
             className="inline-flex items-center gap-2 bg-navy text-cream px-6 py-3 rounded-full font-grotesk text-sm font-medium hover:bg-navy/90 transition-colors"
@@ -287,13 +206,9 @@ export const TensionSection = () => {
       </div>
 
       <style>{`
-        @keyframes tensionIn {
-          0% { opacity: 0; transform: translateY(14px); filter: blur(6px); }
-          100% { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-        @keyframes tensionLine {
-          0% { transform: scaleX(0); }
-          100% { transform: scaleX(1); }
+        @keyframes thoughtFloat {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(0, -6px); }
         }
         @keyframes fadeInUp {
           0% { opacity: 0; transform: translateY(10px); }
