@@ -13,6 +13,8 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  Camera,
+  ArrowRight,
 } from "lucide-react";
 
 import speakerEventImg from "@/assets/speaker-event.jpg";
