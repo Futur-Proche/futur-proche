@@ -504,21 +504,40 @@ const Evenements = () => {
             </div>
 
             <div className="space-y-0">
-              {(pastEventsData ?? []).map((ev, i) => (
-                <div
-                  key={ev.id}
-                  className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 py-4 border-b"
-                  style={{ borderColor: "hsl(228 30% 22%)" }}
-                >
-                  <span className="md:col-span-1 font-mono text-xs text-primary">#{(pastEventsData?.length ?? 0) - i}</span>
-                  <span className="md:col-span-6 text-sm text-white/80 font-medium">{ev.titre}</span>
-                  <span className="md:col-span-3 text-sm text-white/50">{ev.ville}</span>
-                  <span className="md:col-span-2 text-sm text-white/40 font-mono">{formatDate(ev.date)}</span>
-                </div>
-              ))}
+              {(pastEventsData ?? []).map((ev, i) => {
+                const g = (((ev as any).gallery as any[] | null) ?? []);
+                const r = ((ev as any).recap as string | null) ?? "";
+                const hasContent = g.length > 0 || (r && r.trim().length > 0);
+                const Row = (
+                  <div
+                    className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 py-4 border-b items-center"
+                    style={{ borderColor: "hsl(228 30% 22%)" }}
+                  >
+                    <span className="md:col-span-1 font-mono text-xs text-primary">#{(pastEventsData?.length ?? 0) - i}</span>
+                    <span className="md:col-span-6 text-sm text-white/80 font-medium flex items-center gap-2">
+                      {ev.titre}
+                      {hasContent && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-primary">
+                          <Camera className="w-3 h-3" /> Compte-rendu
+                        </span>
+                      )}
+                    </span>
+                    <span className="md:col-span-3 text-sm text-white/50">{ev.ville}</span>
+                    <span className="md:col-span-2 text-sm text-white/40 font-mono">{formatDate(ev.date)}</span>
+                  </div>
+                );
+                return hasContent ? (
+                  <Link key={ev.id} to={`/evenements/${ev.slug ?? ev.id}`} className="block hover:bg-white/[0.02] transition-colors">
+                    {Row}
+                  </Link>
+                ) : (
+                  <div key={ev.id}>{Row}</div>
+                );
+              })}
             </div>
           </div>
         </section>
+
 
         {/* ── SECTION 6 — En images (carousel) ── */}
         <section className="section-cream">
