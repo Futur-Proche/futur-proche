@@ -124,7 +124,33 @@ const MembreEvenements = () => {
                   </div>
                 </button>
                 {openParticipants === ev.id && (
-                  <div className="p-5 border-t" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                  <div className="p-5 border-t space-y-5" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                    {(() => {
+                      const g = (((ev as any).gallery as { url: string; alt?: string }[] | null) ?? []);
+                      if (g.length === 0) return null;
+                      return (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-mono uppercase tracking-wider text-primary">Galerie</p>
+                            <Link to={`/evenements/${ev.slug ?? ev.id}`} className="text-xs text-primary/80 hover:text-primary">
+                              Voir le compte-rendu →
+                            </Link>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {g.slice(0, 3).map((it, i) => (
+                              <Link key={i} to={`/evenements/${ev.slug ?? ev.id}`} className="relative aspect-[4/3] overflow-hidden rounded">
+                                <img src={it.url} alt={it.alt ?? ""} className="w-full h-full object-cover" />
+                                {i === 2 && g.length > 3 && (
+                                  <div className="absolute inset-0 flex items-center justify-center text-white font-grotesk font-bold text-sm" style={{ background: "hsl(228 56% 10% / 0.65)" }}>
+                                    +{g.length - 3}
+                                  </div>
+                                )}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <ParticipantsList eventId={ev.id} visible={true} />
                   </div>
                 )}
