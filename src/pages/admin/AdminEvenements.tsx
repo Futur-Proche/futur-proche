@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit2, Trash2, Calendar, Image, UserPlus, X, Search } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Plus, Edit2, Trash2, Image, UserPlus, X, Search, LayoutGrid, List } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
@@ -58,6 +58,13 @@ const AdminEvenements = () => {
   const [showMemberSearch, setShowMemberSearch] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Filters + view toggle
+  const [search, setSearch] = useState("");
+  const [statutFilter, setStatutFilter] = useState<string>("all");
+  const [formatFilter, setFormatFilter] = useState<string>("all");
+  const [villeFilter, setVilleFilter] = useState<string>("all");
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   const { data: events, isLoading } = useQuery({
     queryKey: ["admin-events"],
