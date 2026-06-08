@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
+import { EventBannerUploader } from "@/components/admin/EventBannerUploader";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -37,6 +38,7 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   is_open_to_all: false,
   recap: "",
   gallery: [] as any,
+  image_url: null,
 };
 
 const formatLabels: Record<string, string> = {
@@ -191,6 +193,7 @@ const AdminEvenements = () => {
       is_open_to_all: (e as any).is_open_to_all ?? false,
       recap: (e as any).recap ?? "",
       gallery: ((e as any).gallery ?? []) as any,
+      image_url: e.image_url ?? null,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
@@ -295,6 +298,15 @@ const AdminEvenements = () => {
             <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description</label>
             <textarea className={`${inputClass} min-h-[80px]`} style={inputStyle} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
+
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-2">Bannière de l'événement</label>
+            <EventBannerUploader
+              value={form.image_url}
+              onChange={(url) => setForm({ ...form, image_url: url })}
+            />
+          </div>
+
 
           {/* ── Speakers Section ── */}
           <div>
