@@ -37,11 +37,12 @@ const sizeClasses: Record<Thought["size"], string> = {
   lg: "max-w-[340px] text-[15px] px-5 py-4",
 };
 
-const tailClasses: Record<Thought["tail"], string> = {
-  bl: "after:left-6 after:bottom-[-8px] after:border-t-[10px] after:border-l-[10px] after:border-r-0 after:border-b-0",
-  br: "after:right-6 after:bottom-[-8px] after:border-t-[10px] after:border-r-[10px] after:border-l-0 after:border-b-0",
-  tl: "after:left-6 after:top-[-8px] after:border-b-[10px] after:border-l-[10px] after:border-r-0 after:border-t-0",
-  tr: "after:right-6 after:top-[-8px] after:border-b-[10px] after:border-r-[10px] after:border-l-0 after:border-t-0",
+// Small dots below the bubble = "thought" tail (two circles)
+const tailPositions: Record<Thought["tail"], { side: "left" | "right"; vertical: "bottom" | "top" }> = {
+  bl: { side: "left", vertical: "bottom" },
+  br: { side: "right", vertical: "bottom" },
+  tl: { side: "left", vertical: "top" },
+  tr: { side: "right", vertical: "top" },
 };
 
 export const TensionSection = () => {
