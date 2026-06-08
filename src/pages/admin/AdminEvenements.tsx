@@ -52,6 +52,7 @@ const AdminEvenements = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [visualEvent, setVisualEvent] = useState<Event | null>(null);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [showMemberSearch, setShowMemberSearch] = useState(false);
