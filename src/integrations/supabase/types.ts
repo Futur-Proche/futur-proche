@@ -79,28 +79,49 @@ export type Database = {
       }
       event_registrations: {
         Row: {
+          amount_paid: number | null
           created_at: string
           event_id: string
+          guest_email: string | null
+          guest_nom: string | null
+          guest_prenom: string | null
           id: string
+          is_guest: boolean
+          paid_at: string | null
           statut: Database["public"]["Enums"]["registration_status"]
           stripe_payment_id: string | null
-          user_id: string
+          stripe_session_id: string | null
+          user_id: string | null
         }
         Insert: {
+          amount_paid?: number | null
           created_at?: string
           event_id: string
+          guest_email?: string | null
+          guest_nom?: string | null
+          guest_prenom?: string | null
           id?: string
+          is_guest?: boolean
+          paid_at?: string | null
           statut?: Database["public"]["Enums"]["registration_status"]
           stripe_payment_id?: string | null
-          user_id: string
+          stripe_session_id?: string | null
+          user_id?: string | null
         }
         Update: {
+          amount_paid?: number | null
           created_at?: string
           event_id?: string
+          guest_email?: string | null
+          guest_nom?: string | null
+          guest_prenom?: string | null
           id?: string
+          is_guest?: boolean
+          paid_at?: string | null
           statut?: Database["public"]["Enums"]["registration_status"]
           stripe_payment_id?: string | null
-          user_id?: string
+          stripe_session_id?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -122,6 +143,7 @@ export type Database = {
           heure: string | null
           id: string
           image_url: string | null
+          is_open_to_all: boolean
           lieu: string | null
           prix: number | null
           slug: string | null
@@ -140,6 +162,7 @@ export type Database = {
           heure?: string | null
           id?: string
           image_url?: string | null
+          is_open_to_all?: boolean
           lieu?: string | null
           prix?: number | null
           slug?: string | null
@@ -158,6 +181,7 @@ export type Database = {
           heure?: string | null
           id?: string
           image_url?: string | null
+          is_open_to_all?: boolean
           lieu?: string | null
           prix?: number | null
           slug?: string | null
@@ -284,6 +308,11 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_member: { Args: { _email: string }; Returns: boolean }
+      is_registered_to_event: {
+        Args: { _event_id: string; _user_id: string }
         Returns: boolean
       }
     }
