@@ -33,16 +33,43 @@ const AdminCandidatures = () => {
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, statut }: { id: string; statut: "approved" | "rejected" }) => {
+      if (statut === "approved") {
+        const { data, error } = await supabase.functions.invoke("approve-candidature", {
+          body: { candidatureId: id },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(typeof data.error === "string" ? data.error : "Erreur d'approbation");
+        return data;
+      }
       const { error } = await supabase
         .from("candidatures")
         .update({ statut, reviewed_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: (_, { statut }) => {
+    onSuccess: (data, { statut }) => {
       qc.invalidateQueries({ queryKey: ["admin-candidatures"] });
       qc.invalidateQueries({ queryKey: ["admin-stats"] });
-      toast({ title: statut === "approved" ? "Candidature approuvée" : "Candidature refusée" });
+      qc.invalidateQueries({ queryKey: ["admin-members"] });
+      if (statut === "approved") {
+        const status = (data as { status?: string } | undefined)?.status;
+        toast({
+          title: "Candidature approuvée",
+          description:
+            status === "already_member"
+              ? "Le membre existait déjà dans l'annuaire."
+              : "La fiche membre a été créée dans l'annuaire.",
+        });
+      } else {
+        toast({ title: "Candidature refusée" });
+      }
+    },
+    onError: (err) => {
+      toast({
+        title: "Erreur",
+        description: err instanceof Error ? err.message : "Action impossible.",
+        variant: "destructive",
+      });
     },
   });
 
