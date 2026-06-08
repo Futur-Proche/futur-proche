@@ -38,6 +38,7 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   is_open_to_all: false,
   recap: "",
   gallery: [] as any,
+  image_url: null,
 };
 
 const formatLabels: Record<string, string> = {
