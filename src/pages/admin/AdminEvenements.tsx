@@ -33,6 +33,7 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   statut: "draft",
   speakers: [],
   slug: "",
+  is_open_to_all: false,
 };
 
 const formatLabels: Record<string, string> = {
@@ -175,6 +176,7 @@ const AdminEvenements = () => {
       statut: e.statut,
       speakers: e.speakers ?? [],
       slug: e.slug ?? "",
+      is_open_to_all: (e as any).is_open_to_all ?? false,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
@@ -260,6 +262,18 @@ const AdminEvenements = () => {
                 <option value="past">Passé</option>
               </select>
             </div>
+          </div>
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={(form as any).is_open_to_all ?? false}
+                onChange={(e) => setForm({ ...form, is_open_to_all: e.target.checked } as any)}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-sm font-grotesk text-white">Ouvert à tous</span>
+              <span className="text-xs text-white/40">(sinon réservé aux membres)</span>
+            </label>
           </div>
           <div>
             <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description</label>
