@@ -187,20 +187,49 @@ const EvenementDetail = () => {
                   </div>
                 )}
 
+                {recap && (
+                  <div className="mb-10">
+                    <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-3">Compte-rendu</h2>
+                    <div className="text-white/75 text-base leading-relaxed whitespace-pre-line font-serif-accent-none">
+                      {recap}
+                    </div>
+                  </div>
+                )}
+
+                {gallery.length > 0 && (
+                  <div className="mb-10">
+                    <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">
+                      Galerie ({gallery.length})
+                    </h2>
+                    <EventGallery items={gallery} />
+                  </div>
+                )}
+
                 <div>
                   <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">
-                    Qui sera là ? ({registrations?.length ?? 0})
+                    Qui {isPast ? "était là" : "sera là"} ? ({registrations?.length ?? 0})
                   </h2>
                   <ParticipantsList eventId={event.id} visible={isUserRegistered} />
                 </div>
               </div>
 
               <aside className="lg:col-span-1">
-                <RegistrationBlock
-                  event={event}
-                  isUserRegistered={isUserRegistered}
-                  registrationsCount={registrations?.length ?? 0}
-                />
+                {isPast ? (
+                  <div className="rounded-2xl p-6 sticky top-24" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-white/40 mb-2">Événement passé</p>
+                    <h3 className="text-lg font-grotesk font-bold text-white mb-1">A eu lieu</h3>
+                    <p className="text-white/60 text-sm capitalize">{dayLabel}.</p>
+                    {gallery.length > 0 && (
+                      <p className="text-white/40 text-xs mt-3">📷 {gallery.length} photo{gallery.length > 1 ? "s" : ""} dans la galerie</p>
+                    )}
+                  </div>
+                ) : (
+                  <RegistrationBlock
+                    event={event}
+                    isUserRegistered={isUserRegistered}
+                    registrationsCount={registrations?.length ?? 0}
+                  />
+                )}
               </aside>
             </div>
           </div>
