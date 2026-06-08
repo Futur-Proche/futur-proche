@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, ShieldCheck, ShieldOff, Pencil, X, Save, Trash2, Linkedin } from "lucide-react";
-import { useState } from "react";
+import { Search, ShieldCheck, ShieldOff, Pencil, Save, Linkedin, LayoutGrid, List } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -33,6 +33,9 @@ type Profile = {
 
 const AdminMembres = () => {
   const [search, setSearch] = useState("");
+  const [secteurFilter, setSecteurFilter] = useState<string>("all");
+  const [villeFilter, setVilleFilter] = useState<string>("all");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [editingMember, setEditingMember] = useState<Profile | null>(null);
   const [form, setForm] = useState<Partial<Profile>>({});
   const { toast } = useToast();
