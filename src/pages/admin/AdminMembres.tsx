@@ -38,6 +38,7 @@ const AdminMembres = () => {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [editingMember, setEditingMember] = useState<Profile | null>(null);
   const [form, setForm] = useState<Partial<Profile>>({});
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -358,11 +359,65 @@ const AdminMembres = () => {
             </div>
 
             <div>
-              <Label className="text-white/60 text-xs">Photo URL</Label>
-              <Input value={form.photo_url || ""} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" placeholder="https://..." />
-              {form.photo_url && (
-                <img src={form.photo_url} alt="Preview" className="w-16 h-16 rounded-full object-cover mt-2" />
-              )}
+              <Label className="text-white/60 text-xs">Photo de profil</Label>
+              <div className="flex items-center gap-3 mt-1">
+                {form.photo_url ? (
+                  <img src={form.photo_url} alt="Photo" className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-xs font-mono flex-shrink-0" style={{ background: "hsl(228 30% 20%)", color: "hsl(228 15% 55%)" }}>
+                    {(form.prenom?.[0] ?? "?")}{(form.nom?.[0] ?? "?")}
+                  </div>
+                )}
+                <div className="flex-1 space-y-2">
+                  <Input
+                    value={form.photo_url || ""}
+                    onChange={(e) => setForm({ ...form, photo_url: e.target.value })}
+                    className="bg-white/5 border-white/10 text-white text-sm"
+                    placeholder="URL de la photo ou téléverser ↓"
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingPhoto}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !editingMember) return;
+                      setUploadingPhoto(true);
+                      try {
+                        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+                        const path = `profiles/${editingMember.id}/photo-${Date.now()}.${ext}`;
+                        const { error: upErr } = await supabase.storage
+                          .from("avatars")
+                          .upload(path, file, { upsert: true, contentType: file.type });
+                        if (upErr) throw upErr;
+                        const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+                        setForm((f) => ({ ...f, photo_url: pub.publicUrl }));
+                        toast({ title: "Photo téléversée", description: "N'oubliez pas d'enregistrer." });
+                      } catch (err) {
+                        toast({
+                          title: "Erreur",
+                          description: err instanceof Error ? err.message : "Téléversement impossible",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setUploadingPhoto(false);
+                        e.target.value = "";
+                      }
+                    }}
+                    className="text-xs text-white/60 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-primary/15 file:text-primary hover:file:bg-primary/25 file:cursor-pointer"
+                  />
+                  {uploadingPhoto && <p className="text-xs text-white/40">Téléversement…</p>}
+                  {form.photo_url && (
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, photo_url: "" })}
+                      className="text-xs text-red-400/70 hover:text-red-400"
+                    >
+                      Retirer la photo
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div>
