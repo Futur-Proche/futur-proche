@@ -129,7 +129,7 @@ export const TensionSection = () => {
                   }}
                 >
                   <div
-                    className={`relative bg-white rounded-2xl shadow-[0_8px_28px_-12px_hsl(228_56%_10%/0.18)] border border-navy/10 font-grotesk leading-snug text-navy ${sizeClasses[t.size]} after:content-[''] after:absolute after:w-0 after:h-0 after:border-solid after:border-transparent after:border-t-white after:border-l-white after:border-b-white after:border-r-white ${tailClasses[t.tail]}`}
+                    className={`relative bg-white rounded-2xl shadow-[0_8px_28px_-12px_hsl(228_56%_10%/0.18)] border border-navy/10 font-grotesk leading-snug text-navy ${sizeClasses[t.size]}`}
                     style={{
                       animation: reduceMotion
                         ? undefined
@@ -137,7 +137,27 @@ export const TensionSection = () => {
                     }}
                   >
                     {t.text}
+                    {/* thought-bubble tail: 2 small circles */}
+                    {(() => {
+                      const tp = tailPositions[t.tail];
+                      const sideStyle = tp.side === "left" ? { left: "16px" } : { right: "16px" };
+                      const vBig = tp.vertical === "bottom" ? { bottom: "-10px" } : { top: "-10px" };
+                      const vSmall = tp.vertical === "bottom" ? { bottom: "-22px" } : { top: "-22px" };
+                      return (
+                        <>
+                          <span
+                            className="absolute w-3 h-3 rounded-full bg-white border border-navy/10"
+                            style={{ ...sideStyle, ...vBig }}
+                          />
+                          <span
+                            className="absolute w-1.5 h-1.5 rounded-full bg-white border border-navy/10"
+                            style={{ ...sideStyle, ...vSmall, marginLeft: tp.side === "left" ? "-6px" : 0, marginRight: tp.side === "right" ? "-6px" : 0 }}
+                          />
+                        </>
+                      );
+                    })()}
                   </div>
+                </div>
                 </div>
               );
             })}
