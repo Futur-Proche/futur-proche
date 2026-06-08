@@ -193,6 +193,7 @@ const AdminEvenements = () => {
       is_open_to_all: (e as any).is_open_to_all ?? false,
       recap: (e as any).recap ?? "",
       gallery: ((e as any).gallery ?? []) as any,
+      image_url: e.image_url ?? null,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
