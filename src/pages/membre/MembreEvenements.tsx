@@ -142,27 +142,49 @@ const MembreEvenements = () => {
     </div>
   );
 
+  const renderSection = (title: string, color: string, items: any[], isPast?: boolean) => {
+    if (items.length === 0) return null;
+    return (
+      <>
+        <h2 className={`text-xs font-mono uppercase tracking-wider ${color} mb-4`}>{title}</h2>
+        {view === "grid" ? (
+          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8 ${isPast ? "opacity-60" : ""}`}>
+            {items.map((ev) => <EventCard key={ev.id} ev={ev} isPast={isPast} />)}
+          </div>
+        ) : (
+          <div className={`rounded-xl overflow-hidden mb-8 ${isPast ? "opacity-60" : ""}`} style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+            {items.map((ev) => <EventRow key={ev.id} ev={ev} isPast={isPast} />)}
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-grotesk font-bold text-white mb-6">Événements</h1>
 
-      {myUpcoming.length > 0 && (
-        <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-emerald-400 mb-4">Mes prochaines participations</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-            {myUpcoming.map((ev) => <EventCard key={ev.id} ev={ev} />)}
-          </div>
-        </>
-      )}
+      <div className="flex flex-wrap gap-3 mb-6 items-center">
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className={selectClass} style={selectStyle}>
+          <option value="all">Tous les formats</option>
+          {types.map((t) => <option key={t} value={t}>{formatLabels[t] ?? t}</option>)}
+        </select>
+        <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)} className={selectClass} style={selectStyle}>
+          <option value="all">Toutes les villes</option>
+          {villes.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+        <div className="flex rounded-lg overflow-hidden ml-auto" style={selectStyle}>
+          <button onClick={() => setView("grid")} className={`p-2.5 ${view === "grid" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Grille">
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+          <button onClick={() => setView("list")} className={`p-2.5 ${view === "list" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Liste">
+            <List className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
 
-      {otherUpcoming.length > 0 && (
-        <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">À venir · Ouverts aux inscriptions</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-            {otherUpcoming.map((ev) => <EventCard key={ev.id} ev={ev} />)}
-          </div>
-        </>
-      )}
+      {renderSection("Mes prochaines participations", "text-emerald-400", myUpcoming)}
+      {renderSection("À venir · Ouverts aux inscriptions", "text-primary", otherUpcoming)}
 
       {myPast.length > 0 && (
         <>
@@ -229,9 +251,15 @@ const MembreEvenements = () => {
       {otherPast.length > 0 && (
         <>
           <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Événements passés</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-60">
-            {otherPast.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
-          </div>
+          {view === "grid" ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-60">
+              {otherPast.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
+            </div>
+          ) : (
+            <div className="rounded-xl overflow-hidden opacity-60" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+              {otherPast.map((ev) => <EventRow key={ev.id} ev={ev} isPast />)}
+            </div>
+          )}
         </>
       )}
 
