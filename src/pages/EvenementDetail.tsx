@@ -89,36 +89,71 @@ const EvenementDetail = () => {
     <>
       <Navbar />
       <main className="section-navy">
-        {/* Hero */}
-        <section className="relative pt-28 pb-12 md:pt-36 md:pb-16">
-          <div className="dot-grid" />
-          <div className="container relative z-10 mx-auto px-6 lg:px-12">
-            <Link to="/evenements" className="inline-flex items-center gap-2 text-white/50 text-xs font-mono uppercase tracking-wider mb-6 hover:text-primary transition-colors">
-              <ArrowLeft className="w-3 h-3" /> Tous les événements
-            </Link>
-
-            <div className="grid lg:grid-cols-3 gap-10">
-              <div className="lg:col-span-2">
-                <div className="flex flex-wrap items-center gap-2 mb-4">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-primary">
+        {/* Banner hero (if image) */}
+        {event.image_url && (
+          <section className="relative w-full pt-20">
+            <div className="relative h-[280px] md:h-[420px] overflow-hidden">
+              <img
+                src={event.image_url}
+                alt={event.titre}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(228_45%_8%)] via-[hsl(228_45%_8%)]/40 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 container mx-auto px-6 lg:px-12 pb-6">
+                <Link to="/evenements" className="inline-flex items-center gap-2 text-white/70 text-xs font-mono uppercase tracking-wider mb-3 hover:text-primary transition-colors">
+                  <ArrowLeft className="w-3 h-3" /> Tous les événements
+                </Link>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-primary px-2 py-0.5 rounded-full bg-primary/15">
                     {formatLabels[event.format] ?? event.format}
                   </span>
                   {event.is_open_to_all ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-emerald-400/10 text-emerald-400">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-emerald-400/15 text-emerald-400">
                       <Globe className="w-3 h-3" /> Ouvert à tous
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-primary/10 text-primary">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/10 text-white/80">
                       Réservé membres
                     </span>
                   )}
                 </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Hero */}
+        <section className="relative pt-10 pb-12 md:pt-14 md:pb-16" style={!event.image_url ? { paddingTop: "7rem" } : undefined}>
+          <div className="dot-grid" />
+          <div className="container relative z-10 mx-auto px-6 lg:px-12">
+            {!event.image_url && (
+              <Link to="/evenements" className="inline-flex items-center gap-2 text-white/50 text-xs font-mono uppercase tracking-wider mb-6 hover:text-primary transition-colors">
+                <ArrowLeft className="w-3 h-3" /> Tous les événements
+              </Link>
+            )}
+
+            <div className="grid lg:grid-cols-3 gap-10">
+              <div className="lg:col-span-2">
+                {!event.image_url && (
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-primary">
+                      {formatLabels[event.format] ?? event.format}
+                    </span>
+                    {event.is_open_to_all ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-emerald-400/10 text-emerald-400">
+                        <Globe className="w-3 h-3" /> Ouvert à tous
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-primary/10 text-primary">
+                        Réservé membres
+                      </span>
+                    )}
+                  </div>
+                )}
                 <h1 className="text-3xl md:text-5xl font-grotesk font-bold tracking-tight text-white leading-[1.15] mb-6">
                   {event.titre}
                 </h1>
-                {event.image_url && (
-                  <img src={event.image_url} alt={event.titre} className="w-full rounded-2xl mb-6 object-cover max-h-[400px]" />
-                )}
+
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                   <div className="flex items-start gap-2">
