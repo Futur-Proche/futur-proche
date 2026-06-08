@@ -126,32 +126,65 @@ const AdminMembres = () => {
     updateProfile.mutate({ id: editingMember.id, updates });
   };
 
+  const secteurs = useMemo(
+    () => Array.from(new Set((members ?? []).map((m) => m.secteur).filter(Boolean))).sort() as string[],
+    [members]
+  );
+  const villes = useMemo(
+    () => Array.from(new Set((members ?? []).map((m) => m.ville).filter(Boolean))).sort() as string[],
+    [members]
+  );
+
   const filtered = members?.filter((m) => {
     const term = search.toLowerCase();
-    return !term || `${m.prenom} ${m.nom} ${m.entreprise} ${m.poste} ${m.ville} ${m.email}`.toLowerCase().includes(term);
+    const matchSearch = !term || `${m.prenom} ${m.nom} ${m.entreprise ?? ""} ${m.poste ?? ""} ${m.ville ?? ""} ${m.email}`.toLowerCase().includes(term);
+    const matchSecteur = secteurFilter === "all" || m.secteur === secteurFilter;
+    const matchVille = villeFilter === "all" || m.ville === villeFilter;
+    return matchSearch && matchSecteur && matchVille;
   });
+
+  const selectClass = "px-3 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none";
+  const selectStyle = { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-grotesk font-bold text-white">Membres ({members?.length || 0})</h1>
+        <h1 className="text-2xl font-grotesk font-bold text-white">Membres ({filtered?.length ?? 0} / {members?.length || 0})</h1>
       </div>
 
-      <div className="relative mb-6 max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-        <input
-          type="text"
-          placeholder="Rechercher un membre..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none"
-          style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
-        />
+      <div className="flex flex-wrap gap-3 mb-6 items-center">
+        <div className="relative flex-1 min-w-[220px] max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <input
+            type="text"
+            placeholder="Rechercher un membre..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none"
+            style={selectStyle}
+          />
+        </div>
+        <select value={secteurFilter} onChange={(e) => setSecteurFilter(e.target.value)} className={selectClass} style={selectStyle}>
+          <option value="all">Tous secteurs</option>
+          {secteurs.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)} className={selectClass} style={selectStyle}>
+          <option value="all">Toutes villes</option>
+          {villes.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+        <div className="flex rounded-lg overflow-hidden ml-auto" style={selectStyle}>
+          <button onClick={() => setView("grid")} className={`p-2.5 ${view === "grid" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Grille">
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+          <button onClick={() => setView("list")} className={`p-2.5 ${view === "list" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Liste">
+            <List className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
         <p className="text-white/40 text-sm">Chargement...</p>
-      ) : (
+      ) : view === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered?.map((m) => {
             const isAdmin = adminUserIds?.has(m.id) ?? false;
@@ -205,6 +238,62 @@ const AdminMembres = () => {
                   {isAdmin ? <ShieldOff className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                   {isAdmin ? "Retirer admin" : "Rendre admin"}
                 </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 border-b text-[10px] font-mono uppercase tracking-wider text-white/40" style={{ borderColor: "hsl(228 30% 22%)" }}>
+            <span className="col-span-3">Membre</span>
+            <span className="col-span-2">Poste</span>
+            <span className="col-span-2">Entreprise</span>
+            <span className="col-span-2">Secteur</span>
+            <span className="col-span-1">Ville</span>
+            <span className="col-span-2 text-right">Actions</span>
+          </div>
+          {filtered?.map((m) => {
+            const isAdmin = adminUserIds?.has(m.id) ?? false;
+            return (
+              <div key={m.id} className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-4 py-3 border-b items-center hover:bg-white/[0.02]" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                <div className="md:col-span-3 flex items-center gap-3 min-w-0">
+                  {m.photo_url ? (
+                    <img src={m.photo_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-mono flex-shrink-0" style={{ background: "hsl(228 30% 20%)", color: "hsl(228 15% 55%)" }}>
+                      {m.prenom[0]}{m.nom[0]}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-white text-sm font-grotesk font-medium truncate flex items-center gap-1.5">
+                      {m.prenom} {m.nom}
+                      {isAdmin && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ background: "hsl(187 78% 48% / 0.15)", color: "hsl(187 78% 48%)" }}>Admin</span>}
+                    </p>
+                    <p className="text-white/40 text-xs truncate">{m.email}</p>
+                  </div>
+                </div>
+                <p className="md:col-span-2 text-white/60 text-xs truncate">{m.poste}</p>
+                <p className="md:col-span-2 text-white/60 text-xs truncate">{m.entreprise}</p>
+                <p className="md:col-span-2 text-white/50 text-xs truncate">{m.secteur}</p>
+                <p className="md:col-span-1 text-primary/70 text-[10px] font-mono uppercase">{m.ville}</p>
+                <div className="md:col-span-2 flex justify-end items-center gap-2">
+                  {m.linkedin && (
+                    <a href={m.linkedin} target="_blank" rel="noopener noreferrer" className="text-primary/70 hover:text-primary">
+                      <Linkedin className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                  <button onClick={() => openEdit(m)} className="p-1.5 rounded-lg hover:bg-white/10" title="Modifier">
+                    <Pencil className="w-3.5 h-3.5 text-white/50" />
+                  </button>
+                  <button
+                    onClick={() => toggleAdmin.mutate({ userId: m.id, isCurrentlyAdmin: isAdmin })}
+                    disabled={toggleAdmin.isPending}
+                    className="p-1.5 rounded-lg hover:bg-white/10"
+                    title={isAdmin ? "Retirer admin" : "Rendre admin"}
+                  >
+                    {isAdmin ? <ShieldOff className="w-3.5 h-3.5 text-red-400" /> : <ShieldCheck className="w-3.5 h-3.5 text-primary" />}
+                  </button>
+                </div>
               </div>
             );
           })}
