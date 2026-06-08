@@ -1,78 +1,107 @@
-# Refonte TensionSection — Nuage de pensées CMO
 
-Inspiration : section "Is this you?" de bima.framer.media — apparition progressive de bulles au scroll, qui s'accumulent jusqu'à former un nuage de pensées illustrant le quotidien mental d'un·e leader Marketing / Comm.
+# Refonte gestion des événements
 
-## Concept
+## 1. Base de données
 
-Remplacer le système actuel (1 carte active + rail de progression) par un **canvas de pensées flottantes** sur fond cream :
+**Migration `events`** : ajout `is_open_to_all boolean default false`.
 
-- Chaque pensée = une bulle façon "speech bubble" / sticky note, écrite à la première personne (vouvoiement → ici tutoiement intérieur = monologue interne, on garde le "je").
-- Au scroll dans la section (sticky), les bulles apparaissent une par une, à des positions pré-calculées autour d'un point central, avec rotations légères, tailles variées, et un léger flottement.
-- À la fin du scroll, ~15 bulles sont visibles → un véritable nuage de pensées dense.
-- Sous le nuage final, une ligne de conclusion révèle le pivot : *"Et si vous n'étiez plus seul·e à y penser ?"* + CTA "Devenir Futuriste →".
+**Migration `event_registrations`** : passer de "membres uniquement" à supporter les invités.
+- Ajout colonnes : `guest_email text`, `guest_nom text`, `guest_prenom text`, `is_guest boolean default false`, `amount_paid numeric`, `stripe_session_id text`, `paid_at timestamptz`.
+- `user_id` devient nullable (requis si `is_guest=false`).
+- Contrainte CHECK : (`user_id IS NOT NULL AND is_guest=false`) OR (`guest_email IS NOT NULL AND is_guest=true`).
+- Index unique partiel sur (`event_id`, `user_id`) WHERE user_id IS NOT NULL ; sur (`event_id`, `guest_email`) WHERE guest_email IS NOT NULL.
 
-## Contenu — 15 pensées de CMO
+**Fonction helper `is_member(_email text)`** (SECURITY DEFINER) : retourne true si l'email existe dans `profiles` OU dans `candidatures` avec `statut='approved'`. Utilisée par l'edge function checkout.
 
-Mappées sur les 6 tensions existantes + élargies pour densifier le nuage.
+**Policies RLS event_registrations** :
+- SELECT : un membre connecté voit les inscriptions des événements auxquels il est lui-même inscrit (pour le trombinoscope avant/après) + ses propres inscriptions. Admin voit tout.
+- INSERT bloqué côté client : seules les edge functions (service_role) créent les rows après paiement Stripe.
 
-1. "Je suis seul·e à me battre avec mon CEO. Pas assez de soutien de la tech et du produit." *(isolement)*
-2. "CAC ou LTV — quelle north star je suis censé·e suivre ce trimestre ?" *(KPIs)*
-3. "Encore un board deck à défendre sans benchmark sectoriel solide." *(budget)*
-4. "On me demande de couper 20% du budget paid. Sur quoi ?" *(budget)*
-5. "Cette agence me ressort les mêmes slides que la précédente." *(prestataires)*
-6. "Faut-il vraiment changer de CRM maintenant ? Et pour lequel ?" *(décisions rapides)*
-7. "Je passe plus de temps à justifier qu'à exécuter." *(isolement)*
-8. "Mon équipe attend une vision. Je n'ai que des hypothèses." *(isolement)*
-9. "Ce SDR tool à 80k€/an — est-ce que quelqu'un l'a vraiment testé ?" *(prestataires)*
-10. "Le ComEx veut du ROI. Le brand met 18 mois à payer." *(KPIs)*
-11. "Je n'ai personne à qui demander 'tu ferais quoi à ma place ?'" *(isolement)*
-12. "Recruter un Head of Growth — mais où sont les bons en off ?" *(carrière)*
-13. "L'IA générative : je dois trancher cette semaine, sans recul." *(décisions rapides)*
-14. "Mon NPS monte, mon CAC aussi. Bonne ou mauvaise nouvelle ?" *(KPIs)*
-15. "Si je quitte, qui dans mon réseau peut me passer le bon poste ?" *(carrière)*
+**Policies events** : SELECT public reste, plus un filtre côté query pour `is_open_to_all` quand pertinent.
 
-Copy ajustable d'un clic une fois la structure validée.
+## 2. Admin — toggle "Ouvert à tous"
 
-## Structure visuelle
+`AdminEvenements.tsx` : ajouter une case à cocher `is_open_to_all` dans le formulaire d'édition. Badge visuel "Ouvert à tous" / "Réservé membres" dans la liste.
 
-```text
-┌─────────────────────────────────────────────────┐
-│  — Le constat                                    │
-│  Ce qui tourne en boucle dans la tête           │
-│  d'un·e leader Marketing / Comm.                │
-│                                                  │
-│      ╭──────────╮      ╭───────────╮            │
-│      │ pensée 1 │      │ pensée 3  │            │
-│      ╰──────────╯  ╭─────────╮     ╰──          │
-│                    │pensée 2 │                  │
-│   ╭─────────╮      ╰─────────╯  ╭──────────╮   │
-│   │pensée 5 │       (avatar      │ pensée 4 │   │
-│   ╰─────────╯        silhouette  ╰──────────╯   │
-│         ╭──────────╮  centrée?)                 │
-│         │ pensée 6 │                            │
-│         ╰──────────╯       ... etc 15 bulles    │
-│                                                  │
-│       Et si vous n'étiez plus seul·e ?          │
-│           [ Devenir Futuriste → ]               │
-└─────────────────────────────────────────────────┘
-```
+## 3. Page publique détail événement (nouvelle)
+
+**Nouvelle route** : `/evenements/:slug` → `src/pages/EvenementDetail.tsx`.
+
+Layout inspiré Eventbrite :
+- Hero : image, titre, format, date/heure, lieu/ville, prix.
+- Colonne gauche : description longue, programme, speakers (JSON `speakers`), infos pratiques.
+- Sidebar sticky droite : bloc d'inscription contextuel (voir logique ci-dessous).
+- Section "Qui sera là ?" : trombinoscope des membres inscrits (visible uniquement si l'utilisateur courant est lui-même inscrit, conforme RLS). Sinon, message "Inscrivez-vous pour voir qui participe".
+
+**Logique du bloc sidebar** :
+
+| Cas | Affichage |
+|---|---|
+| Visiteur non connecté + événement réservé membres | Message "Réservé à la communauté" + CTA "Postuler" → `/candidater`. Champ email "Déjà membre ? Renseignez votre email" qui appelle edge function `check-member-email` ; si reconnu, débloque le bouton payer (checkout en mode guest-by-email). |
+| Visiteur non connecté + événement ouvert à tous | Formulaire email/prénom/nom + bouton "Payer & s'inscrire" (Stripe Checkout en guest). |
+| Membre connecté | Bouton "S'inscrire" (gratuit) ou "Payer Xx €" direct. Si déjà inscrit : badge "✓ Inscrit". |
+| Non-membre connecté (cas marginal — pas censé exister mais safe) | Même logique que visiteur non connecté. |
+
+Lien depuis `Evenements.tsx` (liste publique) vers la nouvelle page détail.
+
+## 4. Paiement Stripe (BYOK)
+
+**Secret requis** : `STRIPE_SECRET_KEY` — demandé via `add_secret` après approbation du plan.
+
+**Edge function `create-event-checkout`** (`verify_jwt=false`, validation manuelle) :
+- Input : `{ event_id, guest_email?, guest_nom?, guest_prenom? }`.
+- Vérifie : événement publié, capacité non atteinte, droit d'inscription (membre OU `is_open_to_all` OU email reconnu membre via `is_member`).
+- Si gratuit (prix=0 ou null) : insert direct en DB, statut `registered`, retour `{ free: true }`.
+- Sinon : crée une Stripe Checkout Session (mode `payment`), `customer_email` pré-rempli, metadata `event_id` + `user_id`/`guest_email`. Retour `{ url }` → redirect client.
+
+**Edge function `stripe-webhook`** (`verify_jwt=false`) :
+- Vérifie la signature Stripe (`STRIPE_WEBHOOK_SECRET`).
+- Sur `checkout.session.completed` : insert/upsert `event_registrations` avec statut `paid`, `amount_paid`, `paid_at`, `stripe_session_id`.
+- Idempotent via `stripe_session_id` unique.
+
+**Edge function `check-member-email`** (`verify_jwt=false`) :
+- Input `{ email }` → output `{ is_member: boolean, prenom?, nom? }` via `is_member()` + lookup profile/candidature pour pré-remplir le nom.
+
+**Pages de retour** :
+- `/evenements/:slug/success?session_id=...` — confirmation visuelle "Inscription confirmée", récap, lien vers espace membre.
+- `/evenements/:slug/cancel` — message simple, retour à la page détail.
+
+## 5. Espace membre — historique participants
+
+`MembreDashboard.tsx` ou nouvelle section dans `MembreEvenements.tsx` :
+- Section "Mes événements passés" : liste des événements passés où le user a une inscription.
+- Pour chaque événement : bouton "Voir les participants" → modal/drawer affichant les autres membres inscrits (photo, prénom, nom, entreprise, poste, lien LinkedIn). Données chargées via RLS (le user voit uniquement les participants des événements auxquels il est inscrit).
+
+Mise à jour `MembreEvenements.tsx` existant : remplacer le bouton "S'inscrire" actuel par un lien vers `/evenements/:slug` pour passer par le tunnel unifié.
+
+## 6. Hors scope
+
+- Pas de gestion remboursement.
+- Pas d'emails transactionnels (peut être ajouté ensuite via email-domain infra).
+- Pas de waitlist quand capacité atteinte.
+- Pas de modification du système de candidature/auth.
 
 ## Détails techniques
 
-- Fichier modifié : `src/components/home/TensionSection.tsx` (réécriture complète, on garde l'export et l'usage dans `Index.tsx`).
-- Conteneur sticky : `min-h-[300vh]` desktop, sticky `top-0 h-screen` pour le stage du nuage.
-- Positions des bulles : tableau statique `{ x: %, y: %, rotate: deg, size: 'sm'|'md'|'lg', delay: 0..1 }` calculé manuellement pour éviter le chevauchement.
-- Apparition : progress scroll 0→1 mappé linéairement sur les 15 bulles. Bulle `i` visible quand `progress >= i/15`. Animation `opacity + scale + translateY` via classes Tailwind + style inline.
-- Style bulle : fond blanc, bord cyan léger, ombre douce, `border-radius` asymétrique (queue de bulle façon speech bubble via `::after` ou SVG inline), typo Space Grotesk + une accentuation Instrument Serif italic sur 2-3 mots clés par bulle si possible (sinon plein texte sans italique).
-- Tailles : `sm` 200px, `md` 260px, `lg` 320px — variation pour densité visuelle.
-- Léger flottement perpétuel (`@keyframes float`) avec délai aléatoire par bulle (basé sur l'index, déterministe).
-- Mobile (`md:` non) : pas de sticky. Liste verticale révélée au scroll via IntersectionObserver, bulles empilées en quinconce gauche/droite (façon fil de pensées). Pas de positionnement absolu.
-- Respect `prefers-reduced-motion` : toutes les bulles visibles d'emblée, pas de float, pas de scroll lock.
-- Rail de progression à droite : conservé en version simplifiée (15 petits points) ou supprimé — proposition : **supprimé**, remplacé par un compteur discret `01 → 15` en bas qui s'incrémente au scroll.
-- Pas de modif backend, pas de modif autres composants, pas de nouvelle dépendance.
+**Fichiers créés**
+- `src/pages/EvenementDetail.tsx`
+- `src/pages/EvenementSuccess.tsx`
+- `src/components/event/RegistrationBlock.tsx`
+- `src/components/event/ParticipantsList.tsx`
+- `supabase/functions/create-event-checkout/index.ts`
+- `supabase/functions/stripe-webhook/index.ts`
+- `supabase/functions/check-member-email/index.ts`
 
-## Hors scope
+**Fichiers modifiés**
+- `src/App.tsx` (routes `/evenements/:slug`, `/evenements/:slug/success`)
+- `src/pages/Evenements.tsx` (liens vers détail)
+- `src/pages/admin/AdminEvenements.tsx` (toggle is_open_to_all)
+- `src/pages/membre/MembreEvenements.tsx` (lien détail + section passés avec trombi)
+- `supabase/config.toml` (verify_jwt=false pour stripe-webhook)
 
-- Pas de changement des autres sections de la home.
-- Pas d'ajout d'avatar/illustration centrale (le nuage parle de lui-même) — à ajouter dans une 2e passe si souhaité.
-- Pas de tracking analytics sur les bulles.
+**Migrations Supabase**
+- Ajout colonnes events/event_registrations.
+- Fonction `is_member()` SECURITY DEFINER.
+- Refonte policies RLS event_registrations.
+
+**Secrets demandés** : `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (après création endpoint webhook le user copie l'URL chez Stripe pour récupérer le secret).
