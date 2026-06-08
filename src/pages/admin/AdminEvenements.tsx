@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, Calendar, Image, UserPlus, X, Search } from "lucid
 import { useState, useRef, useEffect } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
+import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
