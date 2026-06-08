@@ -13,6 +13,8 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  Camera,
+  ArrowRight,
 } from "lucide-react";
 
 import speakerEventImg from "@/assets/speaker-event.jpg";
@@ -290,10 +292,13 @@ const Evenements = () => {
         {/* ── SECTION 4 — Prochains rendez-vous (from DB) ── */}
         <section className="section-cream">
           <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-            <span className="section-label">— Bientôt près de chez vous</span>
-            <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-10 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
+            <span className="section-label">— Bientôt près de chez vous · Inscriptions ouvertes</span>
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-3 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
               Nos prochains rendez-vous
             </h2>
+            <p className="text-sm md:text-base mb-10 max-w-2xl" style={{ color: "hsl(228 15% 45%)" }}>
+              Les dates à venir, à réserver dès maintenant.
+            </p>
 
             <div className="space-y-5">
               {publishedEvents && publishedEvents.length > 0 ? (
@@ -398,6 +403,90 @@ const Evenements = () => {
           </div>
         </section>
 
+        {/* ── SECTION 4.5 — Retours sur nos événements (avec photos & recap) ── */}
+        {(() => {
+          const pastWithContent = (pastEventsData ?? []).filter((ev) => {
+            const g = ((ev as any).gallery as any[] | null) ?? [];
+            const r = ((ev as any).recap as string | null) ?? "";
+            return g.length > 0 || (r && r.trim().length > 0);
+          });
+          if (pastWithContent.length === 0) return null;
+          return (
+            <section className="section-cream">
+              <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
+                <span className="section-label">— Ils ont eu lieu</span>
+                <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-3 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
+                  Retours sur nos rendez-vous
+                </h2>
+                <p className="text-sm md:text-base mb-10 max-w-2xl" style={{ color: "hsl(228 15% 45%)" }}>
+                  Photos, comptes-rendus et moments forts des derniers After Proche.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {pastWithContent.map((ev) => {
+                    const g = (((ev as any).gallery as { url: string; alt?: string }[] | null) ?? []);
+                    const r = ((ev as any).recap as string | null) ?? "";
+                    return (
+                      <Link
+                        key={ev.id}
+                        to={`/evenements/${ev.slug ?? ev.id}`}
+                        className="group rounded-2xl overflow-hidden bg-white card-lift block"
+                        style={{ border: "1px solid hsl(228 10% 85%)" }}
+                      >
+                        {g.length > 0 ? (
+                          <div className="grid grid-cols-3 gap-0.5 h-44">
+                            <img src={g[0].url} alt={g[0].alt ?? ev.titre} className="col-span-2 row-span-2 w-full h-full object-cover" />
+                            {g[1] && <img src={g[1].url} alt={g[1].alt ?? ""} className="w-full h-full object-cover" />}
+                            {g[2] ? (
+                              <div className="relative w-full h-full">
+                                <img src={g[2].url} alt={g[2].alt ?? ""} className="w-full h-full object-cover" />
+                                {g.length > 3 && (
+                                  <div className="absolute inset-0 flex items-center justify-center text-white font-grotesk font-semibold text-sm" style={{ background: "hsl(228 56% 10% / 0.65)" }}>
+                                    +{g.length - 3}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="w-full h-full" style={{ background: "hsl(228 56% 10%)" }} />
+                            )}
+                          </div>
+                        ) : (
+                          <div className="h-32 flex items-center justify-center" style={{ background: "linear-gradient(135deg, hsl(228 56% 12%), hsl(248 60% 20%))" }}>
+                            <Camera className="w-8 h-8 text-primary/40" />
+                          </div>
+                        )}
+
+                        <div className="p-5">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "hsl(186 60% 32%)" }}>
+                              {formatLabels[ev.format] ?? ev.format}
+                            </span>
+                            <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "hsl(228 15% 55%)" }}>
+                              {formatDate(ev.date)}{ev.ville ? ` · ${ev.ville}` : ""}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-grotesk font-bold mb-2" style={{ color: "hsl(228 56% 10%)" }}>
+                            {ev.titre}
+                          </h3>
+                          {r && (
+                            <p className="text-sm leading-relaxed line-clamp-3 mb-3" style={{ color: "hsl(228 15% 40%)" }}>
+                              {r}
+                            </p>
+                          )}
+                          <span className="inline-flex items-center gap-1 text-xs font-mono font-medium group-hover:gap-2 transition-all" style={{ color: "hsl(186 60% 32%)" }}>
+                            Voir le compte-rendu <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
+
         {/* ── SECTION 5 — Événements passés ── */}
         <section className="section-navy relative">
           <div className="dot-grid" />
@@ -418,21 +507,40 @@ const Evenements = () => {
             </div>
 
             <div className="space-y-0">
-              {(pastEventsData ?? []).map((ev, i) => (
-                <div
-                  key={ev.id}
-                  className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 py-4 border-b"
-                  style={{ borderColor: "hsl(228 30% 22%)" }}
-                >
-                  <span className="md:col-span-1 font-mono text-xs text-primary">#{(pastEventsData?.length ?? 0) - i}</span>
-                  <span className="md:col-span-6 text-sm text-white/80 font-medium">{ev.titre}</span>
-                  <span className="md:col-span-3 text-sm text-white/50">{ev.ville}</span>
-                  <span className="md:col-span-2 text-sm text-white/40 font-mono">{formatDate(ev.date)}</span>
-                </div>
-              ))}
+              {(pastEventsData ?? []).map((ev, i) => {
+                const g = (((ev as any).gallery as any[] | null) ?? []);
+                const r = ((ev as any).recap as string | null) ?? "";
+                const hasContent = g.length > 0 || (r && r.trim().length > 0);
+                const Row = (
+                  <div
+                    className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 py-4 border-b items-center"
+                    style={{ borderColor: "hsl(228 30% 22%)" }}
+                  >
+                    <span className="md:col-span-1 font-mono text-xs text-primary">#{(pastEventsData?.length ?? 0) - i}</span>
+                    <span className="md:col-span-6 text-sm text-white/80 font-medium flex items-center gap-2">
+                      {ev.titre}
+                      {hasContent && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-primary">
+                          <Camera className="w-3 h-3" /> Compte-rendu
+                        </span>
+                      )}
+                    </span>
+                    <span className="md:col-span-3 text-sm text-white/50">{ev.ville}</span>
+                    <span className="md:col-span-2 text-sm text-white/40 font-mono">{formatDate(ev.date)}</span>
+                  </div>
+                );
+                return hasContent ? (
+                  <Link key={ev.id} to={`/evenements/${ev.slug ?? ev.id}`} className="block hover:bg-white/[0.02] transition-colors">
+                    {Row}
+                  </Link>
+                ) : (
+                  <div key={ev.id}>{Row}</div>
+                );
+              })}
             </div>
           </div>
         </section>
+
 
         {/* ── SECTION 6 — En images (carousel) ── */}
         <section className="section-cream">

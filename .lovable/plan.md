@@ -1,107 +1,66 @@
-
-# Refonte gestion des événements
+# Galerie & résumé pour événements passés
 
 ## 1. Base de données
 
-**Migration `events`** : ajout `is_open_to_all boolean default false`.
+Migration sur `events` :
+- `recap` (text, nullable) — résumé/compte rendu de l'événement (markdown léger ou texte).
+- `gallery` (jsonb, nullable) — tableau d'URLs d'images : `[{ url, alt }]`.
 
-**Migration `event_registrations`** : passer de "membres uniquement" à supporter les invités.
-- Ajout colonnes : `guest_email text`, `guest_nom text`, `guest_prenom text`, `is_guest boolean default false`, `amount_paid numeric`, `stripe_session_id text`, `paid_at timestamptz`.
-- `user_id` devient nullable (requis si `is_guest=false`).
-- Contrainte CHECK : (`user_id IS NOT NULL AND is_guest=false`) OR (`guest_email IS NOT NULL AND is_guest=true`).
-- Index unique partiel sur (`event_id`, `user_id`) WHERE user_id IS NOT NULL ; sur (`event_id`, `guest_email`) WHERE guest_email IS NOT NULL.
+Bucket `event-images` (déjà existant et public) sera réutilisé pour les photos de galerie, sous un préfixe `gallery/<event_id>/`.
 
-**Fonction helper `is_member(_email text)`** (SECURITY DEFINER) : retourne true si l'email existe dans `profiles` OU dans `candidatures` avec `statut='approved'`. Utilisée par l'edge function checkout.
+## 2. Admin — AdminEvenements.tsx
 
-**Policies RLS event_registrations** :
-- SELECT : un membre connecté voit les inscriptions des événements auxquels il est lui-même inscrit (pour le trombinoscope avant/après) + ses propres inscriptions. Admin voit tout.
-- INSERT bloqué côté client : seules les edge functions (service_role) créent les rows après paiement Stripe.
+Dans le formulaire d'édition d'un événement, ajouter une section **"Après l'événement"** visible quand `statut = past` (mais éditable même en `published`) :
+- Textarea **Résumé** (`recap`) — multi-lignes, ~6 rows.
+- **Galerie photo** :
+  - Upload multi-fichiers vers `event-images/gallery/<event_id>/<uuid>.jpg`.
+  - Vignettes des photos uploadées, avec bouton suppression et champ `alt` optionnel.
+  - Drag-to-reorder (simple : flèches ↑/↓).
+- Bouton "Marquer comme passé" (passe `statut` à `past`) — déjà existant ou à ajouter.
 
-**Policies events** : SELECT public reste, plus un filtre côté query pour `is_open_to_all` quand pertinent.
+## 3. Page publique `/evenements` — Section "Nos prochains rendez-vous"
 
-## 2. Admin — toggle "Ouvert à tous"
+Renommer en **"Nos rendez-vous"** avec deux blocs visuellement distincts :
 
-`AdminEvenements.tsx` : ajouter une case à cocher `is_open_to_all` dans le formulaire d'édition. Badge visuel "Ouvert à tous" / "Réservé membres" dans la liste.
+### 3a. À venir (en haut)
+- Sous-titre : *"Prochaines dates"*
+- Cartes existantes (date colorée, speakers, CTA "Voir & s'inscrire →" qui pointe vers `/evenements/:slug`).
+- Badge "Inscriptions ouvertes" si `is_open_to_all` ou prix défini.
 
-## 3. Page publique détail événement (nouvelle)
+### 3b. Événements passés (en dessous)
+- Sous-titre : *"Ils ont eu lieu"* + petit séparateur visuel.
+- Filtre : uniquement les events avec `recap` non vide OU `gallery` non vide (les autres passés restent invisibles côté public).
+- Format de carte distinct :
+  - Visuel "archivé" : date en gris/desaturé au lieu du navy plein.
+  - Mosaïque photo (3-4 vignettes de la galerie en aperçu) à droite.
+  - Extrait du résumé (3 lignes max).
+  - CTA : "Voir le compte-rendu →" → `/evenements/:slug`.
+- Pas de CTA "S'inscrire".
 
-**Nouvelle route** : `/evenements/:slug` → `src/pages/EvenementDetail.tsx`.
+## 4. Page détail `/evenements/:slug` — EvenementDetail.tsx
 
-Layout inspiré Eventbrite :
-- Hero : image, titre, format, date/heure, lieu/ville, prix.
-- Colonne gauche : description longue, programme, speakers (JSON `speakers`), infos pratiques.
-- Sidebar sticky droite : bloc d'inscription contextuel (voir logique ci-dessous).
-- Section "Qui sera là ?" : trombinoscope des membres inscrits (visible uniquement si l'utilisateur courant est lui-même inscrit, conforme RLS). Sinon, message "Inscrivez-vous pour voir qui participe".
+Quand `statut = past` :
+- Masquer la sidebar d'inscription, la remplacer par un bloc "Cet événement a eu lieu le [date]".
+- Ajouter sous la description :
+  - **Section "Compte-rendu"** si `recap` rempli (typographie éditoriale).
+  - **Section "Galerie"** si `gallery` non vide : grid responsive (3 colonnes desktop, 2 mobile) avec lightbox au clic (Dialog shadcn).
+- La `ParticipantsList` (membres inscrits) reste visible pour les membres connectés inscrits.
 
-**Logique du bloc sidebar** :
+## 5. Espace membre — MembreEvenements.tsx
 
-| Cas | Affichage |
-|---|---|
-| Visiteur non connecté + événement réservé membres | Message "Réservé à la communauté" + CTA "Postuler" → `/candidater`. Champ email "Déjà membre ? Renseignez votre email" qui appelle edge function `check-member-email` ; si reconnu, débloque le bouton payer (checkout en mode guest-by-email). |
-| Visiteur non connecté + événement ouvert à tous | Formulaire email/prénom/nom + bouton "Payer & s'inscrire" (Stripe Checkout en guest). |
-| Membre connecté | Bouton "S'inscrire" (gratuit) ou "Payer Xx €" direct. Si déjà inscrit : badge "✓ Inscrit". |
-| Non-membre connecté (cas marginal — pas censé exister mais safe) | Même logique que visiteur non connecté. |
+Dans "Mes événements passés", afficher un petit aperçu galerie (3 vignettes) en plus du bouton "Retrouver les participants" si la galerie existe, avec lien vers la page détail publique pour voir tout le compte-rendu.
 
-Lien depuis `Evenements.tsx` (liste publique) vers la nouvelle page détail.
+## Hors scope
+- Pas de système de tags/album multiples.
+- Pas de notifications aux participants à la publication du compte-rendu.
+- Pas d'édition collaborative — admin seul.
+- Pas de likes/commentaires sur les photos.
 
-## 4. Paiement Stripe (BYOK)
-
-**Secret requis** : `STRIPE_SECRET_KEY` — demandé via `add_secret` après approbation du plan.
-
-**Edge function `create-event-checkout`** (`verify_jwt=false`, validation manuelle) :
-- Input : `{ event_id, guest_email?, guest_nom?, guest_prenom? }`.
-- Vérifie : événement publié, capacité non atteinte, droit d'inscription (membre OU `is_open_to_all` OU email reconnu membre via `is_member`).
-- Si gratuit (prix=0 ou null) : insert direct en DB, statut `registered`, retour `{ free: true }`.
-- Sinon : crée une Stripe Checkout Session (mode `payment`), `customer_email` pré-rempli, metadata `event_id` + `user_id`/`guest_email`. Retour `{ url }` → redirect client.
-
-**Edge function `stripe-webhook`** (`verify_jwt=false`) :
-- Vérifie la signature Stripe (`STRIPE_WEBHOOK_SECRET`).
-- Sur `checkout.session.completed` : insert/upsert `event_registrations` avec statut `paid`, `amount_paid`, `paid_at`, `stripe_session_id`.
-- Idempotent via `stripe_session_id` unique.
-
-**Edge function `check-member-email`** (`verify_jwt=false`) :
-- Input `{ email }` → output `{ is_member: boolean, prenom?, nom? }` via `is_member()` + lookup profile/candidature pour pré-remplir le nom.
-
-**Pages de retour** :
-- `/evenements/:slug/success?session_id=...` — confirmation visuelle "Inscription confirmée", récap, lien vers espace membre.
-- `/evenements/:slug/cancel` — message simple, retour à la page détail.
-
-## 5. Espace membre — historique participants
-
-`MembreDashboard.tsx` ou nouvelle section dans `MembreEvenements.tsx` :
-- Section "Mes événements passés" : liste des événements passés où le user a une inscription.
-- Pour chaque événement : bouton "Voir les participants" → modal/drawer affichant les autres membres inscrits (photo, prénom, nom, entreprise, poste, lien LinkedIn). Données chargées via RLS (le user voit uniquement les participants des événements auxquels il est inscrit).
-
-Mise à jour `MembreEvenements.tsx` existant : remplacer le bouton "S'inscrire" actuel par un lien vers `/evenements/:slug` pour passer par le tunnel unifié.
-
-## 6. Hors scope
-
-- Pas de gestion remboursement.
-- Pas d'emails transactionnels (peut être ajouté ensuite via email-domain infra).
-- Pas de waitlist quand capacité atteinte.
-- Pas de modification du système de candidature/auth.
-
-## Détails techniques
-
-**Fichiers créés**
-- `src/pages/EvenementDetail.tsx`
-- `src/pages/EvenementSuccess.tsx`
-- `src/components/event/RegistrationBlock.tsx`
-- `src/components/event/ParticipantsList.tsx`
-- `supabase/functions/create-event-checkout/index.ts`
-- `supabase/functions/stripe-webhook/index.ts`
-- `supabase/functions/check-member-email/index.ts`
-
-**Fichiers modifiés**
-- `src/App.tsx` (routes `/evenements/:slug`, `/evenements/:slug/success`)
-- `src/pages/Evenements.tsx` (liens vers détail)
-- `src/pages/admin/AdminEvenements.tsx` (toggle is_open_to_all)
-- `src/pages/membre/MembreEvenements.tsx` (lien détail + section passés avec trombi)
-- `supabase/config.toml` (verify_jwt=false pour stripe-webhook)
-
-**Migrations Supabase**
-- Ajout colonnes events/event_registrations.
-- Fonction `is_member()` SECURITY DEFINER.
-- Refonte policies RLS event_registrations.
-
-**Secrets demandés** : `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (après création endpoint webhook le user copie l'URL chez Stripe pour récupérer le secret).
+## Fichiers impactés
+- Migration SQL (ajout `recap`, `gallery`).
+- `src/pages/admin/AdminEvenements.tsx` — UI résumé + uploader galerie.
+- `src/pages/Evenements.tsx` — split À venir / Passés avec recap.
+- `src/pages/EvenementDetail.tsx` — sections recap + galerie + lightbox.
+- `src/pages/membre/MembreEvenements.tsx` — aperçu galerie.
+- Nouveau composant `src/components/event/EventGallery.tsx` (grid + lightbox réutilisable).
+- Nouveau composant `src/components/admin/EventGalleryUploader.tsx`.

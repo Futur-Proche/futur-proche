@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, Calendar, Image, UserPlus, X, Search } from "lucid
 import { useState, useRef, useEffect } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
+import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -34,6 +35,8 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   speakers: [],
   slug: "",
   is_open_to_all: false,
+  recap: "",
+  gallery: [] as any,
 };
 
 const formatLabels: Record<string, string> = {
@@ -49,6 +52,7 @@ const AdminEvenements = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [visualEvent, setVisualEvent] = useState<Event | null>(null);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [showMemberSearch, setShowMemberSearch] = useState(false);
@@ -130,7 +134,7 @@ const AdminEvenements = () => {
   const saveMutation = useMutation({
     mutationFn: async (data: Omit<EventInsert, "id">) => {
       const slug = data.titre.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const payload = { ...data, slug, speakers: speakers as any };
+      const payload = { ...data, slug, speakers: speakers as any, gallery: gallery as any };
       if (editing) {
         const { error } = await supabase.from("events").update(payload).eq("id", editing.id);
         if (error) throw error;
@@ -147,6 +151,7 @@ const AdminEvenements = () => {
       setEditing(null);
       setForm(defaultEvent);
       setSpeakers([]);
+      setGallery([]);
     },
   });
 
@@ -177,10 +182,13 @@ const AdminEvenements = () => {
       speakers: e.speakers ?? [],
       slug: e.slug ?? "",
       is_open_to_all: (e as any).is_open_to_all ?? false,
+      recap: (e as any).recap ?? "",
+      gallery: ((e as any).gallery ?? []) as any,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
     setSpeakers(existingSpeakers);
+    setGallery((((e as any).gallery as unknown as GalleryItem[]) ?? []));
     setShowForm(true);
   };
 
@@ -188,6 +196,7 @@ const AdminEvenements = () => {
     setEditing(null);
     setForm(defaultEvent);
     setSpeakers([]);
+    setGallery([]);
     setShowForm(!showForm);
   };
 
@@ -426,11 +435,40 @@ const AdminEvenements = () => {
             </div>
           </div>
 
+          {/* ── Après l'événement (recap + galerie) ── */}
+          <div className="pt-4 border-t" style={{ borderColor: "hsl(228 30% 22%)" }}>
+            <label className="block text-xs text-primary font-mono uppercase mb-3 tracking-wider">
+              Après l'événement {form.statut !== "past" && <span className="text-white/30 normal-case">(visible une fois l'événement passé)</span>}
+            </label>
+
+            <div className="mb-4">
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Compte-rendu / résumé</label>
+              <textarea
+                className={`${inputClass} min-h-[140px]`}
+                style={inputStyle}
+                placeholder="Ce qui s'est dit, les moments forts, les insights partagés…"
+                value={form.recap ?? ""}
+                onChange={(e) => setForm({ ...form, recap: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-2">Galerie photo</label>
+              {editing ? (
+                <EventGalleryUploader eventId={editing.id} items={gallery} onChange={setGallery} />
+              ) : (
+                <p className="text-xs text-white/40 italic">
+                  Enregistrez d'abord l'événement pour pouvoir ajouter des photos.
+                </p>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-3">
             <button type="submit" disabled={saveMutation.isPending} className="px-6 py-2 rounded-lg text-sm font-grotesk bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50">
               {editing ? "Modifier" : "Créer"}
             </button>
-            <button type="button" onClick={() => { setShowForm(false); setEditing(null); setSpeakers([]); }} className="px-6 py-2 rounded-lg text-sm font-grotesk text-white/50 hover:text-white transition-colors">
+            <button type="button" onClick={() => { setShowForm(false); setEditing(null); setSpeakers([]); setGallery([]); }} className="px-6 py-2 rounded-lg text-sm font-grotesk text-white/50 hover:text-white transition-colors">
               Annuler
             </button>
           </div>
