@@ -35,6 +35,8 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   speakers: [],
   slug: "",
   is_open_to_all: false,
+  recap: "",
+  gallery: [] as any,
 };
 
 const formatLabels: Record<string, string> = {
