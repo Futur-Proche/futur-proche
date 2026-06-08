@@ -292,10 +292,13 @@ const Evenements = () => {
         {/* ── SECTION 4 — Prochains rendez-vous (from DB) ── */}
         <section className="section-cream">
           <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
-            <span className="section-label">— Bientôt près de chez vous</span>
-            <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-10 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
+            <span className="section-label">— Bientôt près de chez vous · Inscriptions ouvertes</span>
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold mt-3 mb-3 tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
               Nos prochains rendez-vous
             </h2>
+            <p className="text-sm md:text-base mb-10 max-w-2xl" style={{ color: "hsl(228 15% 45%)" }}>
+              Les dates à venir, à réserver dès maintenant.
+            </p>
 
             <div className="space-y-5">
               {publishedEvents && publishedEvents.length > 0 ? (
