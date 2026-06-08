@@ -299,6 +299,15 @@ const AdminEvenements = () => {
             <textarea className={`${inputClass} min-h-[80px]`} style={inputStyle} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
 
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-2">Bannière de l'événement</label>
+            <EventBannerUploader
+              value={form.image_url}
+              onChange={(url) => setForm({ ...form, image_url: url })}
+            />
+          </div>
+
+
           {/* ── Speakers Section ── */}
           <div>
             <label className="block text-xs text-white/40 font-mono uppercase mb-3">Speakers</label>
