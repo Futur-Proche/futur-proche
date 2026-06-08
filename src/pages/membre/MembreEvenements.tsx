@@ -35,9 +35,15 @@ const MembreEvenements = () => {
   });
 
   const today = new Date().toISOString().split("T")[0];
+
   const upcoming = events?.filter((e) => e.date >= today && e.statut === "published") ?? [];
   const past = events?.filter((e) => e.date < today || e.statut === "past") ?? [];
+
+  const myUpcoming = upcoming.filter((ev) => myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
+  const otherUpcoming = upcoming.filter((ev) => !myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
+
   const myPast = past.filter((ev) => myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
+  const otherPast = past.filter((ev) => !myRegistrations?.some((r) => r.event_id === ev.id && r.statut !== "cancelled"));
 
   const isRegistered = (eventId: string) => myRegistrations?.some((r) => r.event_id === eventId && r.statut !== "cancelled");
 
@@ -89,18 +95,27 @@ const MembreEvenements = () => {
     <div>
       <h1 className="text-2xl font-grotesk font-bold text-white mb-6">Événements</h1>
 
-      {upcoming.length > 0 && (
+      {myUpcoming.length > 0 && (
         <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">À venir</h2>
+          <h2 className="text-xs font-mono uppercase tracking-wider text-emerald-400 mb-4">Mes prochaines participations</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-            {upcoming.map((ev) => <EventCard key={ev.id} ev={ev} />)}
+            {myUpcoming.map((ev) => <EventCard key={ev.id} ev={ev} />)}
+          </div>
+        </>
+      )}
+
+      {otherUpcoming.length > 0 && (
+        <>
+          <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">À venir · Ouverts aux inscriptions</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+            {otherUpcoming.map((ev) => <EventCard key={ev.id} ev={ev} />)}
           </div>
         </>
       )}
 
       {myPast.length > 0 && (
         <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">Mes événements passés</h2>
+          <h2 className="text-xs font-mono uppercase tracking-wider text-white/50 mb-4">Mes événements passés</h2>
           <div className="space-y-3 mb-8">
             {myPast.map((ev) => (
               <div key={ev.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
@@ -160,11 +175,11 @@ const MembreEvenements = () => {
         </>
       )}
 
-      {past.length > 0 && (
+      {otherPast.length > 0 && (
         <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Tous les événements passés</h2>
+          <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Événements passés</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-60">
-            {past.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
+            {otherPast.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
           </div>
         </>
       )}
