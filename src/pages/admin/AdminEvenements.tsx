@@ -435,11 +435,40 @@ const AdminEvenements = () => {
             </div>
           </div>
 
+          {/* ── Après l'événement (recap + galerie) ── */}
+          <div className="pt-4 border-t" style={{ borderColor: "hsl(228 30% 22%)" }}>
+            <label className="block text-xs text-primary font-mono uppercase mb-3 tracking-wider">
+              Après l'événement {form.statut !== "past" && <span className="text-white/30 normal-case">(visible une fois l'événement passé)</span>}
+            </label>
+
+            <div className="mb-4">
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Compte-rendu / résumé</label>
+              <textarea
+                className={`${inputClass} min-h-[140px]`}
+                style={inputStyle}
+                placeholder="Ce qui s'est dit, les moments forts, les insights partagés…"
+                value={form.recap ?? ""}
+                onChange={(e) => setForm({ ...form, recap: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-2">Galerie photo</label>
+              {editing ? (
+                <EventGalleryUploader eventId={editing.id} items={gallery} onChange={setGallery} />
+              ) : (
+                <p className="text-xs text-white/40 italic">
+                  Enregistrez d'abord l'événement pour pouvoir ajouter des photos.
+                </p>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-3">
             <button type="submit" disabled={saveMutation.isPending} className="px-6 py-2 rounded-lg text-sm font-grotesk bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50">
               {editing ? "Modifier" : "Créer"}
             </button>
-            <button type="button" onClick={() => { setShowForm(false); setEditing(null); setSpeakers([]); }} className="px-6 py-2 rounded-lg text-sm font-grotesk text-white/50 hover:text-white transition-colors">
+            <button type="button" onClick={() => { setShowForm(false); setEditing(null); setSpeakers([]); setGallery([]); }} className="px-6 py-2 rounded-lg text-sm font-grotesk text-white/50 hover:text-white transition-colors">
               Annuler
             </button>
           </div>
