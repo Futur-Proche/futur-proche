@@ -256,33 +256,54 @@ export type Database = {
       resources: {
         Row: {
           access: Database["public"]["Enums"]["resource_access"]
+          auteur: string | null
+          contenu: string | null
           created_at: string
           description: string | null
+          extrait: string | null
           file_url: string | null
           id: string
+          image_url: string | null
+          is_public: boolean
           published_at: string | null
+          slug: string | null
+          temps_lecture: number | null
           titre: string
           type: Database["public"]["Enums"]["resource_type"]
           url: string | null
         }
         Insert: {
           access?: Database["public"]["Enums"]["resource_access"]
+          auteur?: string | null
+          contenu?: string | null
           created_at?: string
           description?: string | null
+          extrait?: string | null
           file_url?: string | null
           id?: string
+          image_url?: string | null
+          is_public?: boolean
           published_at?: string | null
+          slug?: string | null
+          temps_lecture?: number | null
           titre: string
           type?: Database["public"]["Enums"]["resource_type"]
           url?: string | null
         }
         Update: {
           access?: Database["public"]["Enums"]["resource_access"]
+          auteur?: string | null
+          contenu?: string | null
           created_at?: string
           description?: string | null
+          extrait?: string | null
           file_url?: string | null
           id?: string
+          image_url?: string | null
+          is_public?: boolean
           published_at?: string | null
+          slug?: string | null
+          temps_lecture?: number | null
           titre?: string
           type?: Database["public"]["Enums"]["resource_type"]
           url?: string | null
@@ -324,6 +345,7 @@ export type Database = {
         Args: { _event_id: string; _user_id: string }
         Returns: boolean
       }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "member"
