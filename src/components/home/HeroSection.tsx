@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import communityGroup from "@/assets/community-group.jpg";
-import foundersAsset from "@/assets/membres-fondateurs.jpg.asset.json";
+import foundersImage from "@/assets/membres-fondateurs.jpg";
 
 const rotatingPhrases = [
   "ne se prennent pas seul.",
