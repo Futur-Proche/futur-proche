@@ -80,7 +80,7 @@ export const TensionSection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="tension" className="relative bg-cream text-navy md:min-h-[260vh]">
+    <section ref={sectionRef} id="tension" className="relative bg-cream text-navy md:min-h-[200vh]">
       {/* DESKTOP : sticky cloud */}
       <div className="hidden md:block md:sticky md:top-0 md:h-screen overflow-hidden">
         <div
