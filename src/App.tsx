@@ -12,6 +12,7 @@ import Evenements from "./pages/Evenements";
 import EvenementDetail from "./pages/EvenementDetail";
 import EvenementSuccess from "./pages/EvenementSuccess";
 import Ressources from "./pages/Ressources";
+import RessourceDetail from "./pages/RessourceDetail";
 import Partenaires from "./pages/Partenaires";
 import APropos from "./pages/APropos";
 import Candidater from "./pages/Candidater";
