@@ -22,6 +22,16 @@ const thoughts: Thought[] = [
   { text: "Le ComEx veut du ROI. Le brand met 18 mois à payer.", signature: "Brand Director", x: 36, y: 80, rotate: 2, size: "sm" },
   { text: "Je n'ai personne à qui demander « tu ferais quoi à ma place ? »", signature: "CMO, fintech", x: 18, y: 82, rotate: -1, size: "md" },
   { text: "L'IA générative : je dois trancher cette semaine, sans recul.", signature: "Head of Content", x: 60, y: 42, rotate: -1, size: "sm" },
+  { text: "Mon CFO veut un ROI à 90 jours sur une campagne brand.", signature: "CMO, retail", x: 28, y: 30, rotate: 1, size: "sm" },
+  { text: "MMM, MTA, incrementality — je tranche comment ?", signature: "Head of Analytics", x: 88, y: 46, rotate: -2, size: "sm" },
+  { text: "Recruter un·e Head of Growth senior : 6 mois que je cherche.", signature: "VP Marketing", x: 8, y: 48, rotate: 1, size: "md" },
+  { text: "Le board me demande une stratégie IA. Personne en interne n'en a fait.", signature: "CMO, industrie", x: 50, y: 26, rotate: 2, size: "md" },
+  { text: "Mon équipe brûle. Je n'ose plus leur ajouter un projet.", signature: "Directrice Comm", x: 90, y: 30, rotate: -1, size: "sm" },
+  { text: "Internaliser le SEO ou rester avec l'agence ?", signature: "Head of Acquisition", x: 30, y: 64, rotate: -2, size: "sm" },
+  { text: "Mon NPS monte, mes ventes baissent. Qu'est-ce que je rate ?", signature: "CMO, DTC", x: 66, y: 60, rotate: 1, size: "md" },
+  { text: "Le DG veut « faire comme Backmarket ». On n'a ni le budget ni la marque.", signature: "VP Brand", x: 48, y: 88, rotate: -1, size: "md" },
+  { text: "Comment je justifie un budget influence sans data propre ?", signature: "Head of Social", x: 10, y: 72, rotate: 2, size: "sm" },
+  { text: "On a 4 outils d'analytics. Aucun ne dit la même chose.", signature: "Directeur Data Marketing", x: 88, y: 88, rotate: -2, size: "sm" },
 ];
 
 const sizeClasses: Record<Thought["size"], string> = {
