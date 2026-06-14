@@ -94,12 +94,12 @@ export const TensionSection = () => {
 
         {/* HEADER — cream backdrop so quotes never overlap text */}
         <div
-          className="absolute top-0 left-0 right-0 z-30 pt-20 lg:pt-24 pb-6 text-center px-6 pointer-events-none"
+          className="absolute top-0 left-0 right-0 z-30 pt-12 lg:pt-16 pb-4 text-center px-6 pointer-events-none"
           style={{
-            background: "linear-gradient(to bottom, hsl(36 29% 93%) 60%, hsl(36 29% 93% / 0) 100%)",
+            background: "linear-gradient(to bottom, hsl(36 29% 93%) 65%, hsl(36 29% 93% / 0) 100%)",
           }}
         >
-          <span className="section-label mb-3 inline-block">— Le constat</span>
+          <span className="section-label mb-2 inline-block">— Le constat</span>
           <h2 className="font-grotesk text-3xl lg:text-5xl font-medium tracking-tight leading-[1.05] mt-2 max-w-3xl mx-auto">
             Ce qui tourne en boucle dans la tête{" "}
             <em className="font-serif italic font-normal">d'un·e leader Marketing / Comm.</em>
@@ -107,7 +107,7 @@ export const TensionSection = () => {
         </div>
 
         {/* CLOUD stage — pushed below header */}
-        <div className="absolute inset-0 pt-[260px] lg:pt-[300px] pb-32">
+        <div className="absolute inset-0 pt-[180px] lg:pt-[210px] pb-24">
           <div className="relative w-full h-full max-w-6xl mx-auto px-6">
             {thoughts.map((t, i) => {
               const visible = i < visibleCount;
