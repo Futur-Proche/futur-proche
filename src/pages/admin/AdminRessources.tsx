@@ -8,13 +8,28 @@ import type { Database } from "@/integrations/supabase/types";
 type Resource = Database["public"]["Tables"]["resources"]["Row"];
 type ResourceInsert = Database["public"]["Tables"]["resources"]["Insert"];
 
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 const defaultResource: Omit<ResourceInsert, "id"> = {
   titre: "",
+  slug: "",
   description: "",
+  extrait: "",
+  contenu: "",
   type: "autre",
   url: "",
   file_url: "",
+  image_url: "",
+  auteur: "",
+  temps_lecture: null,
   access: "public",
+  is_public: false,
   published_at: new Date().toISOString(),
 };
 
