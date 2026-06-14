@@ -27,7 +27,7 @@ const Index = () => (
         label="La vie de la communauté"
         heading="Ce qui s'est passé récemment."
         intro="Photos des derniers After Proche et dîners — entre Futuristes."
-        surface="navy"
+        surface="cream"
         limit={3}
         perEvent={8}
       />
