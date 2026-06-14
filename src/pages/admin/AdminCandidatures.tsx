@@ -125,7 +125,7 @@ const AdminCandidatures = () => {
       nom: c.nom,
       poste: c.poste,
       entreprise: c.entreprise ?? "",
-      secteur: c.secteur ?? "",
+      
       email: c.email,
       telephone: c.telephone ?? "",
       linkedin: c.linkedin ?? "",
