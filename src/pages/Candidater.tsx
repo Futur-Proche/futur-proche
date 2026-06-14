@@ -295,14 +295,6 @@ const Candidater = () => {
               ))}
             </div>
 
-            {/* Témoignage mobile */}
-            <div className="lg:hidden max-w-2xl mx-auto rounded-2xl p-8 mt-12 text-center relative overflow-hidden" style={{ background: "hsl(228 56% 10%)" }}>
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-              <p className="font-serif-accent italic text-white/80 text-lg leading-relaxed mb-4">
-                "En 3 mois chez futur proche, j'ai plus appris sur mon métier qu'en 2 ans de conférences. Les échanges sont d'une qualité rare."
-              </p>
-              <p className="text-xs font-mono uppercase tracking-wider text-primary">— CMO, Scale-up SaaS · Membre depuis 2024</p>
-            </div>
           </div>
         </section>
       </main>
