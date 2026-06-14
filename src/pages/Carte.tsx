@@ -91,10 +91,10 @@ const Carte = () => {
               {/* Map */}
               <div
                 className="relative rounded-2xl overflow-hidden"
-                style={{ background: "hsl(228 40% 12%)", border: "1px solid hsl(228 30% 22%)" }}
+                style={{ background: "hsl(36 29% 93%)", border: "1px solid hsl(228 15% 80%)" }}
               >
                 {!geoData ? (
-                  <div className="flex items-center justify-center h-[500px] text-white/40 text-sm">
+                  <div className="flex items-center justify-center h-[500px] text-sm" style={{ color: "hsl(228 15% 45%)" }}>
                     Chargement de la carte…
                   </div>
                 ) : (
@@ -118,15 +118,15 @@ const Carte = () => {
                               onClick={() => count > 0 && setSelectedDept(code)}
                               style={{
                                 default: {
-                                  fill: isSelected ? "hsl(186 79% 47% / 0.25)" : "hsl(228 30% 18%)",
-                                  stroke: "hsl(228 30% 28%)",
+                                  fill: isSelected ? "hsl(186 79% 47% / 0.35)" : "hsl(36 22% 86%)",
+                                  stroke: "hsl(228 20% 70%)",
                                   strokeWidth: 0.5,
                                   outline: "none",
                                 },
                                 hover: {
-                                  fill: count > 0 ? "hsl(186 79% 47% / 0.18)" : "hsl(228 30% 22%)",
-                                  stroke: "hsl(186 79% 47% / 0.5)",
-                                  strokeWidth: 0.8,
+                                  fill: count > 0 ? "hsl(186 79% 47% / 0.22)" : "hsl(36 22% 82%)",
+                                  stroke: "hsl(186 60% 32%)",
+                                  strokeWidth: 0.9,
                                   outline: "none",
                                   cursor: count > 0 ? "pointer" : "default",
                                 },
@@ -149,11 +149,11 @@ const Carte = () => {
                           onClick={() => setSelectedDept(code)}
                           style={{ default: { cursor: "pointer" }, hover: { cursor: "pointer" }, pressed: {} }}
                         >
-                          <circle r={r} fill="hsl(186 79% 47%)" fillOpacity={0.35} stroke="hsl(186 79% 60%)" strokeWidth={1.2} />
+                          <circle r={r} fill="hsl(186 79% 38%)" fillOpacity={0.55} stroke="hsl(228 56% 10%)" strokeWidth={1.2} />
                           <text
                             textAnchor="middle"
                             y={3}
-                            style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 9, fill: "white", fontWeight: 600, pointerEvents: "none" }}
+                            style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 9, fill: "white", fontWeight: 700, pointerEvents: "none" }}
                           >
                             {arr.length}
                           </text>
@@ -164,13 +164,13 @@ const Carte = () => {
                 )}
 
                 {/* Legend */}
-                <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center gap-4 text-xs font-mono uppercase tracking-wider text-white/50">
+                <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center gap-4 text-xs font-mono uppercase tracking-wider" style={{ color: "hsl(228 25% 35%)" }}>
                   <span>{locatedCount} / {total} géolocalisés</span>
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: "hsl(186 79% 47% / 0.6)" }} /> 1 membre
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: "hsl(186 79% 38% / 0.7)" }} /> 1 membre
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full" style={{ background: "hsl(186 79% 47% / 0.6)" }} /> 10+ membres
+                    <span className="w-4 h-4 rounded-full" style={{ background: "hsl(186 79% 38% / 0.7)" }} /> 10+ membres
                   </span>
                 </div>
               </div>
