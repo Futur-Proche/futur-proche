@@ -33,12 +33,11 @@ const Index = () => (
       />
       <KeyElementsSection />
       <FormatsSection />
-      {/* Teaser événements (à venir + passés) */}
+      {/* Bloc groupé : Événements + Ressources (même background cream) */}
       <EventsTeaserSection />
-      <TestimonialsSection />
-      {/* Teaser ressources */}
       <RessourcesTeaserSection />
       <ForYouSection />
+      <TestimonialsSection />
       <MembersCloud />
       <JoinSection />
       <CTASection />
