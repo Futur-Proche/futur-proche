@@ -117,15 +117,15 @@ export const EventsTeaserSection = () => {
   const pastEmpty = !past || past.length === 0;
 
   return (
-    <section className="section-cream">
+    <section className="section-navy">
       <div className="container mx-auto px-6 lg:px-12 py-20 md:py-24">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div className="max-w-2xl">
             <span className="section-label inline-block mb-3">— Les rendez-vous</span>
-            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight text-white">
               Ce qui <span className="font-serif-accent italic text-primary">arrive</span> et ce qui s'est <span className="font-serif-accent italic text-primary">passé</span>.
             </h2>
-            <p className="mt-3 text-sm md:text-base" style={{ color: "hsl(228 15% 45%)" }}>
+            <p className="mt-3 text-sm md:text-base text-white/60">
               Rencontres physiques entre leaders Marketing / Comm, dans plusieurs villes françaises.
             </p>
           </div>
@@ -144,7 +144,7 @@ export const EventsTeaserSection = () => {
             <h3 className="text-xs font-mono uppercase tracking-[2px]" style={{ color: "hsl(186 60% 32%)" }}>
               — À venir
             </h3>
-            <span className="text-xs font-mono" style={{ color: "hsl(228 15% 55%)" }}>
+            <span className="text-xs font-mono text-white/50">
               {upcoming?.length ?? 0}
             </span>
           </div>
@@ -182,7 +182,7 @@ export const EventsTeaserSection = () => {
         {!pastEmpty && (
           <div>
             <div className="flex items-baseline gap-3 mb-5">
-              <h3 className="text-xs font-mono uppercase tracking-[2px]" style={{ color: "hsl(228 15% 45%)" }}>
+              <h3 className="text-xs font-mono uppercase tracking-[2px] text-white/60">
                 — Récemment passés
               </h3>
               <span className="text-xs font-mono" style={{ color: "hsl(228 15% 55%)" }}>
