@@ -76,7 +76,6 @@ const Candidater = () => {
       nom: form.nom,
       poste: form.poste,
       entreprise: form.entreprise || null,
-      secteur: form.secteur || null,
       email: form.email,
       telephone: form.telephone || null,
       linkedin: form.linkedin || null,
