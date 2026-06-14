@@ -46,6 +46,7 @@ interface FormData {
   telephone: string;
   linkedin: string;
   cooptation: string;
+  code_postal: string;
 }
 
 const reassurance = [
@@ -61,15 +62,8 @@ const Candidater = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<FormData>({
-    prenom: "",
-    nom: "",
-    poste: "",
-    entreprise: "",
-    secteur: "",
-    email: "",
-    telephone: "",
-    linkedin: "",
-    cooptation: "",
+    prenom: "", nom: "", poste: "", entreprise: "", secteur: "",
+    email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "",
   });
 
   const { data: members } = useQuery({
@@ -106,13 +100,14 @@ const Candidater = () => {
       telephone: form.telephone || null,
       linkedin: form.linkedin || null,
       cooptation: form.cooptation || null,
+      code_postal: form.code_postal || null,
     });
 
     if (error) {
       toast({ title: "Erreur", description: "Une erreur est survenue. Veuillez réessayer.", variant: "destructive" });
     } else {
       toast({ title: "Candidature envoyée !", description: "Nous reviendrons vers vous sous 48h." });
-      setForm({ prenom: "", nom: "", poste: "", entreprise: "", secteur: "", email: "", telephone: "", linkedin: "", cooptation: "" });
+      setForm({ prenom: "", nom: "", poste: "", entreprise: "", secteur: "", email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "" });
     }
     setIsSubmitting(false);
   };
@@ -250,9 +245,15 @@ const Candidater = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="linkedin" className={labelClass + " text-white/70"}>Profil LinkedIn</label>
-                    <input id="linkedin" name="linkedin" type="url" value={form.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/..." className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="linkedin" className={labelClass + " text-white/70"}>Profil LinkedIn</label>
+                      <input id="linkedin" name="linkedin" type="url" value={form.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/..." className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
+                    </div>
+                    <div>
+                      <label htmlFor="code_postal" className={labelClass + " text-white/70"}>Code postal</label>
+                      <input id="code_postal" name="code_postal" type="text" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={form.code_postal} onChange={handleChange} placeholder="75001" className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
+                    </div>
                   </div>
 
                   <div>

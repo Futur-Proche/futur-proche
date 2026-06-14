@@ -16,6 +16,9 @@ import Partenaires from "./pages/Partenaires";
 import APropos from "./pages/APropos";
 import Candidater from "./pages/Candidater";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Carte from "./pages/Carte";
 import NotFound from "./pages/NotFound";
 
 import AdminLayout from "./components/admin/AdminLayout";
@@ -52,7 +55,11 @@ const App = () => (
             <Route path="/partenaires" element={<Partenaires />} />
             <Route path="/a-propos" element={<APropos />} />
             <Route path="/candidater" element={<Candidater />} />
+            <Route path="/carte" element={<Carte />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+            <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+
 
             {/* Admin */}
             <Route path="/admin" element={<ProtectedRoute adminOnly><AdminLayout /></ProtectedRoute>}>

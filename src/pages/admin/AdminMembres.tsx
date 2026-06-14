@@ -23,6 +23,7 @@ type Profile = {
   entreprise: string | null;
   secteur: string | null;
   ville: string | null;
+  code_postal: string | null;
   telephone: string | null;
   linkedin: string | null;
   bio: string | null;
@@ -104,6 +105,7 @@ const AdminMembres = () => {
       entreprise: member.entreprise || "",
       secteur: member.secteur || "",
       ville: member.ville || "",
+      code_postal: member.code_postal || "",
       telephone: member.telephone || "",
       linkedin: member.linkedin || "",
       bio: member.bio || "",
@@ -114,7 +116,7 @@ const AdminMembres = () => {
   const handleSave = () => {
     if (!editingMember) return;
     const updates: Partial<Profile> = {};
-    const fields: (keyof Profile)[] = ["prenom", "nom", "email", "poste", "entreprise", "secteur", "ville", "telephone", "linkedin", "bio", "photo_url"];
+    const fields: (keyof Profile)[] = ["prenom", "nom", "email", "poste", "entreprise", "secteur", "ville", "code_postal", "telephone", "linkedin", "bio", "photo_url"];
     for (const f of fields) {
       const val = (form as Record<string, string>)[f];
       (updates as Record<string, string | null>)[f] = val?.trim() || null;
@@ -348,9 +350,15 @@ const AdminMembres = () => {
               </div>
             </div>
 
-            <div>
-              <Label className="text-white/60 text-xs">Téléphone</Label>
-              <Input value={form.telephone || ""} onChange={(e) => setForm({ ...form, telephone: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-white/60 text-xs">Code postal</Label>
+                <Input value={form.code_postal || ""} maxLength={5} placeholder="75001" onChange={(e) => setForm({ ...form, code_postal: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" />
+              </div>
+              <div>
+                <Label className="text-white/60 text-xs">Téléphone</Label>
+                <Input value={form.telephone || ""} onChange={(e) => setForm({ ...form, telephone: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" />
+              </div>
             </div>
 
             <div>
