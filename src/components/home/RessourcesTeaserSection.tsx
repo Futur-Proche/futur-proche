@@ -37,8 +37,9 @@ export const RessourcesTeaserSection = () => {
   ];
 
   return (
-    <section className="section-cream relative">
-      <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-24">
+    <section className="section-cream relative" style={{ paddingTop: 0 }}>
+      <div className="container relative z-10 mx-auto px-6 lg:px-12 pb-20 md:pb-24 pt-4">
+        <div className="h-px w-full mb-16" style={{ background: "hsl(228 10% 85%)" }} />
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div className="max-w-2xl">
             <span className="section-label inline-block mb-3">— Ressources</span>
