@@ -142,7 +142,7 @@ const AdminCandidatures = () => {
       nom: editForm.nom || editing.nom,
       poste: editForm.poste || editing.poste,
       entreprise: editForm.entreprise || null,
-      secteur: editForm.secteur || null,
+      
       email: editForm.email || editing.email,
       telephone: editForm.telephone || null,
       linkedin: editForm.linkedin || null,
