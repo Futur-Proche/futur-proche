@@ -7,6 +7,7 @@ import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
 import { EventBannerUploader } from "@/components/admin/EventBannerUploader";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -296,7 +297,12 @@ const AdminEvenements = () => {
           </div>
           <div>
             <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description</label>
-            <textarea className={`${inputClass} min-h-[80px]`} style={inputStyle} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <RichTextEditor
+              value={form.description ?? ""}
+              onChange={(html) => setForm({ ...form, description: html })}
+              placeholder="Présentez l'événement, le format, ce qui sera abordé…"
+              minHeight={160}
+            />
           </div>
 
           <div>
@@ -462,12 +468,11 @@ const AdminEvenements = () => {
 
             <div className="mb-4">
               <label className="block text-xs text-white/40 font-mono uppercase mb-1">Compte-rendu / résumé</label>
-              <textarea
-                className={`${inputClass} min-h-[140px]`}
-                style={inputStyle}
-                placeholder="Ce qui s'est dit, les moments forts, les insights partagés…"
+              <RichTextEditor
                 value={form.recap ?? ""}
-                onChange={(e) => setForm({ ...form, recap: e.target.value })}
+                onChange={(html) => setForm({ ...form, recap: html })}
+                placeholder="Ce qui s'est dit, les moments forts, les insights partagés…"
+                minHeight={200}
               />
             </div>
 

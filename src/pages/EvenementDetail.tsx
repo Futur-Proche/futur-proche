@@ -195,7 +195,11 @@ const EvenementDetail = () => {
                 {event.description && (
                   <div className="mb-10">
                     <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-3">À propos</h2>
-                    <p className="text-white/70 text-base leading-relaxed whitespace-pre-line">{event.description}</p>
+                    {/^\s*</.test(event.description) ? (
+                      <div className="prose-fp text-white/75" dangerouslySetInnerHTML={{ __html: event.description }} />
+                    ) : (
+                      <p className="text-white/70 text-base leading-relaxed whitespace-pre-line">{event.description}</p>
+                    )}
                   </div>
                 )}
 
@@ -225,9 +229,11 @@ const EvenementDetail = () => {
                 {recap && (
                   <div className="mb-10">
                     <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-3">Compte-rendu</h2>
-                    <div className="text-white/75 text-base leading-relaxed whitespace-pre-line font-serif-accent-none">
-                      {recap}
-                    </div>
+                    {/^\s*</.test(recap) ? (
+                      <div className="prose-fp text-white/80" dangerouslySetInnerHTML={{ __html: recap }} />
+                    ) : (
+                      <div className="text-white/75 text-base leading-relaxed whitespace-pre-line">{recap}</div>
+                    )}
                   </div>
                 )}
 
