@@ -200,18 +200,9 @@ const Candidater = () => {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label htmlFor="entreprise" className={labelClass + " text-white/70"}>Entreprise</label>
-                      <input id="entreprise" name="entreprise" type="text" required value={form.entreprise} onChange={handleChange} placeholder="Si indépendant·e, indiquer 'Indé'" className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
-                    </div>
-                    <div>
-                      <label htmlFor="secteur" className={labelClass + " text-white/70"}>Secteur</label>
-                      <select id="secteur" name="secteur" required value={form.secteur} onChange={handleChange} className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: form.secteur ? "white" : "hsl(228 15% 45%)" }}>
-                        <option value="" disabled>Choisissez</option>
-                        {secteurOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
+                  <div>
+                    <label htmlFor="entreprise" className={labelClass + " text-white/70"}>Entreprise</label>
+                    <input id="entreprise" name="entreprise" type="text" required value={form.entreprise} onChange={handleChange} placeholder="Si indépendant·e, indiquer 'Indé'" className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
