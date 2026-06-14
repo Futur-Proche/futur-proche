@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import communityGroup from "@/assets/community-group.jpg";
-import networkingEchanges from "@/assets/networking-echanges.jpg";
+import foundersAsset from "@/assets/membres-fondateurs.jpg.asset.json";
 
 const rotatingPhrases = [
   "ne se prennent pas seul.",
@@ -152,21 +152,34 @@ export const HeroSection = () => {
                 />
               </div>
 
-              {/* Polaroïd secondaire — desktop only */}
+              {/* Polaroïd secondaire — les fondateurs */}
               <div
-                className="hidden md:block absolute -bottom-8 -left-10 w-40 lg:w-48 rotate-[-6deg] rounded-lg overflow-hidden"
+                className="hidden md:block absolute -bottom-10 -left-12 w-44 lg:w-56 rotate-[-6deg] rounded-lg overflow-hidden"
                 style={{
                   border: "3px solid hsl(40 33% 94%)",
                   boxShadow: "0 20px 40px -10px hsl(228 56% 5% / 0.6)",
                 }}
               >
-                <div className="aspect-[4/5]">
+                <div className="aspect-[4/5] relative">
                   <img
-                    src={networkingEchanges}
-                    alt="Échanges entre Futuristes"
+                    src={foundersAsset.url}
+                    alt="Les fondateurs de futur proche"
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
+                  <div
+                    className="absolute inset-x-0 bottom-0 px-2.5 pt-6 pb-2"
+                    style={{
+                      background: "linear-gradient(to top, hsl(228 56% 8% / 0.92), transparent)",
+                    }}
+                  >
+                    <p className="font-mono text-[8.5px] uppercase tracking-[1.4px] text-primary leading-none mb-0.5">
+                      — Les fondateurs
+                    </p>
+                    <p className="font-grotesk text-[11px] font-medium text-white leading-tight">
+                      L'équipe futur proche
+                    </p>
+                  </div>
                 </div>
               </div>
 
