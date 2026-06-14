@@ -201,7 +201,7 @@ const AdminCandidatures = () => {
                     "bg-red-400/10 text-red-400"
                   }`}>{c.statut}</span>
                 </div>
-                <p className="text-white/50 text-sm">{c.poste} · {c.entreprise || "Indépendant"} · {c.secteur}</p>
+                <p className="text-white/50 text-sm">{c.poste} · {c.entreprise || "Indépendant"}</p>
                 <p className="text-white/40 text-xs mt-1">{c.email} · {c.telephone}</p>
                 {c.code_postal && <p className="text-white/40 text-xs mt-0.5">CP : {c.code_postal}</p>}
                 {c.linkedin && (
