@@ -26,7 +26,7 @@ export const EventsTeaserSection = () => {
     },
   });
 
-  if (!events || events.length === 0) return null;
+  const isEmpty = !events || events.length === 0;
 
   return (
     <section className="section-cream">
@@ -50,8 +50,31 @@ export const EventsTeaserSection = () => {
           </Link>
         </div>
 
+        {isEmpty ? (
+          <div
+            className="rounded-2xl bg-white p-8 md:p-12 text-center max-w-2xl mx-auto"
+            style={{ border: "1px solid hsl(228 10% 85%)" }}
+          >
+            <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "hsl(186 60% 32%)" }}>
+              — Bientôt
+            </span>
+            <h3 className="mt-3 text-xl md:text-2xl font-grotesk font-semibold" style={{ color: "hsl(228 56% 10%)" }}>
+              Le <span className="font-serif-accent italic text-primary">prochain rendez-vous</span> arrive bientôt.
+            </h3>
+            <p className="mt-2 text-sm" style={{ color: "hsl(228 15% 45%)" }}>
+              Les dates des prochains After Proche et dîners sont en cours de calage.
+            </p>
+            <Link
+              to="/candidater"
+              className="mt-5 inline-flex items-center gap-1.5 text-sm font-grotesk font-medium px-5 py-2.5 rounded-full"
+              style={{ background: "hsl(228 56% 10%)", color: "hsl(36 29% 93%)" }}
+            >
+              Être prévenu·e <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {events.map((ev) => {
+          {events!.map((ev) => {
             const d = new Date(ev.date + "T00:00:00");
             const day = d.getDate();
             const month = d.toLocaleDateString("fr-FR", { month: "short" }).toUpperCase().replace(".", "");
