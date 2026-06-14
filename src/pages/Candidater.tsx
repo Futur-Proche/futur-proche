@@ -18,30 +18,11 @@ const posteOptions = [
   "Autre",
 ];
 
-const secteurOptions = [
-  "Si indépendant·e, ne rien indiquer",
-  "SaaS / Logiciels",
-  "Marketplace",
-  "E-commerce / DTC",
-  "Retail / Distribution",
-  "FMCG / Grande Conso",
-  "Luxe / Mode / Beauté",
-  "FinTech / Assurances / Finances",
-  "Santé / Pharma / HealthTech",
-  "Industrie / Énergie / BTP",
-  "Médias / Édition / Divertissement",
-  "Éducation / Formation",
-  "Tourisme / Hospitality / Voyages",
-  "Agence / Conseil / Services Marketing",
-  "Autre",
-];
-
 interface FormData {
   prenom: string;
   nom: string;
   poste: string;
   entreprise: string;
-  secteur: string;
   email: string;
   telephone: string;
   linkedin: string;
