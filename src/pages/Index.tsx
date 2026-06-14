@@ -20,6 +20,7 @@ const Index = () => (
     <main>
       <HeroSection />
       <TensionSection />
+      <VideoSection />
       {/* Carrousel vie de la communauté (dynamique, photos d'événements) */}
       <EventsPhotoCarousel
         variant="marquee"
@@ -30,10 +31,9 @@ const Index = () => (
         limit={3}
         perEvent={8}
       />
-      <VideoSection />
       <KeyElementsSection />
       <FormatsSection />
-      {/* Teaser événements à venir */}
+      {/* Teaser événements (à venir + passés) */}
       <EventsTeaserSection />
       <TestimonialsSection />
       {/* Teaser ressources */}
