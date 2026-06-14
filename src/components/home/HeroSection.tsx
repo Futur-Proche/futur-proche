@@ -162,7 +162,7 @@ export const HeroSection = () => {
               >
                 <div className="aspect-[4/5] relative">
                   <img
-                    src={foundersAsset.url}
+                    src={foundersImage}
                     alt="Les fondateurs de futur proche"
                     className="w-full h-full object-cover"
                     loading="lazy"
