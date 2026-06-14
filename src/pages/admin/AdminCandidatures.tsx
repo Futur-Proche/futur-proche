@@ -125,7 +125,7 @@ const AdminCandidatures = () => {
       nom: c.nom,
       poste: c.poste,
       entreprise: c.entreprise ?? "",
-      secteur: c.secteur ?? "",
+      
       email: c.email,
       telephone: c.telephone ?? "",
       linkedin: c.linkedin ?? "",
@@ -142,7 +142,7 @@ const AdminCandidatures = () => {
       nom: editForm.nom || editing.nom,
       poste: editForm.poste || editing.poste,
       entreprise: editForm.entreprise || null,
-      secteur: editForm.secteur || null,
+      
       email: editForm.email || editing.email,
       telephone: editForm.telephone || null,
       linkedin: editForm.linkedin || null,
@@ -201,7 +201,7 @@ const AdminCandidatures = () => {
                     "bg-red-400/10 text-red-400"
                   }`}>{c.statut}</span>
                 </div>
-                <p className="text-white/50 text-sm">{c.poste} · {c.entreprise || "Indépendant"} · {c.secteur}</p>
+                <p className="text-white/50 text-sm">{c.poste} · {c.entreprise || "Indépendant"}</p>
                 <p className="text-white/40 text-xs mt-1">{c.email} · {c.telephone}</p>
                 {c.code_postal && <p className="text-white/40 text-xs mt-0.5">CP : {c.code_postal}</p>}
                 {c.linkedin && (
@@ -280,15 +280,9 @@ const AdminCandidatures = () => {
               <input className={inputClass} style={inputStyle} value={editForm.poste ?? ""} onChange={(e) => setEditForm({ ...editForm, poste: e.target.value })} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelClass}>Entreprise</label>
-                <input className={inputClass} style={inputStyle} value={editForm.entreprise ?? ""} onChange={(e) => setEditForm({ ...editForm, entreprise: e.target.value })} />
-              </div>
-              <div>
-                <label className={labelClass}>Secteur</label>
-                <input className={inputClass} style={inputStyle} value={editForm.secteur ?? ""} onChange={(e) => setEditForm({ ...editForm, secteur: e.target.value })} />
-              </div>
+            <div>
+              <label className={labelClass}>Entreprise</label>
+              <input className={inputClass} style={inputStyle} value={editForm.entreprise ?? ""} onChange={(e) => setEditForm({ ...editForm, entreprise: e.target.value })} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
