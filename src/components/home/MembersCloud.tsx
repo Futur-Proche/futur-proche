@@ -281,8 +281,8 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
       style={{
         height: "min(560px, 70vh)",
         background:
-          "radial-gradient(circle at 50% 50%, hsl(228 50% 14%) 0%, hsl(228 56% 10%) 70%)",
-        border: "1px solid hsl(228 30% 22%)",
+          "radial-gradient(circle at 50% 50%, hsl(40 30% 96%) 0%, hsl(40 25% 90%) 70%)",
+        border: "1px solid hsl(228 20% 80%)",
         touchAction: "none",
       }}
       onPointerMove={handlePointerMove}
@@ -306,8 +306,8 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
               transition: isDragging ? "none" : "box-shadow 200ms",
               boxShadow:
                 isDragging || isSelected
-                  ? "0 0 30px hsl(186 79% 47% / 0.6)"
-                  : "0 4px 12px hsl(228 56% 5% / 0.5)",
+                  ? "0 0 24px hsl(186 79% 40% / 0.45)"
+                  : "0 4px 12px hsl(228 30% 20% / 0.15)",
               borderRadius: "50%",
               zIndex: isSelected ? 20 : isDragging ? 15 : 1,
             }}
@@ -320,8 +320,8 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
                 className="w-full h-full rounded-full object-cover pointer-events-none"
                 style={{
                   border: isSelected
-                    ? "2px solid hsl(186 79% 47%)"
-                    : "2px solid hsl(228 30% 28%)",
+                    ? "2px solid hsl(186 79% 40%)"
+                    : "2px solid hsl(228 20% 75%)",
                 }}
               />
             ) : (
@@ -329,10 +329,10 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
                 className="w-full h-full rounded-full flex items-center justify-center font-mono font-medium pointer-events-none"
                 style={{
                   border: isSelected
-                    ? "1px solid hsl(186 79% 47%)"
-                    : "1px solid hsl(228 30% 28%)",
-                  background: "hsl(228 40% 14%)",
-                  color: "hsl(228 15% 65%)",
+                    ? "1px solid hsl(186 79% 40%)"
+                    : "1px solid hsl(228 20% 70%)",
+                  background: "hsl(228 56% 10%)",
+                  color: "hsl(40 30% 92%)",
                   fontSize: b.r * 0.45,
                 }}
               >
@@ -348,12 +348,12 @@ const BubblePhysics = ({ members }: { members: Member[] }) => {
                   marginTop: 8,
                   padding: "4px 10px",
                   borderRadius: 999,
-                  background: "hsl(228 56% 8%)",
+                  background: "hsl(228 56% 10%)",
                   border: "1px solid hsl(186 79% 47% / 0.5)",
                   color: "hsl(0 0% 100%)",
                   fontSize: 12,
                   letterSpacing: "0.02em",
-                  boxShadow: "0 4px 12px hsl(228 56% 5% / 0.6)",
+                  boxShadow: "0 4px 12px hsl(228 56% 5% / 0.3)",
                 }}
               >
                 {b.member.prenom} {b.member.nom?.[0]?.toUpperCase()}.
