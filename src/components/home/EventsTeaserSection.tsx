@@ -185,7 +185,7 @@ export const EventsTeaserSection = () => {
               <h3 className="text-xs font-mono uppercase tracking-[2px] text-white/60">
                 — Récemment passés
               </h3>
-              <span className="text-xs font-mono" style={{ color: "hsl(228 15% 55%)" }}>
+              <span className="text-xs font-mono text-white/50">
                 {past!.length}
               </span>
             </div>
