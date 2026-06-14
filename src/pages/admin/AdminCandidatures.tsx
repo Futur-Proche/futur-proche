@@ -280,15 +280,9 @@ const AdminCandidatures = () => {
               <input className={inputClass} style={inputStyle} value={editForm.poste ?? ""} onChange={(e) => setEditForm({ ...editForm, poste: e.target.value })} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelClass}>Entreprise</label>
-                <input className={inputClass} style={inputStyle} value={editForm.entreprise ?? ""} onChange={(e) => setEditForm({ ...editForm, entreprise: e.target.value })} />
-              </div>
-              <div>
-                <label className={labelClass}>Secteur</label>
-                <input className={inputClass} style={inputStyle} value={editForm.secteur ?? ""} onChange={(e) => setEditForm({ ...editForm, secteur: e.target.value })} />
-              </div>
+            <div>
+              <label className={labelClass}>Entreprise</label>
+              <input className={inputClass} style={inputStyle} value={editForm.entreprise ?? ""} onChange={(e) => setEditForm({ ...editForm, entreprise: e.target.value })} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
