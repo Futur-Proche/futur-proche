@@ -1,40 +1,28 @@
-## Réorganisation de la home
+## Ajustement de l'alternance des backgrounds
 
-### 1. Regrouper Événements + Ressources
+Cible :
 
-Dans `src/pages/Index.tsx`, placer `EventsTeaserSection` et `RessourcesTeaserSection` côte à côte, avec **le même background cream**, sans rupture visuelle entre les deux.
+| Section | Background |
+|---|---|
+| Événements (`EventsTeaserSection`) | **Navy** |
+| Ressources (`RessourcesTeaserSection`) | **Navy** (continu avec Événements) |
+| ForYouSection ("Votre place est ici si…") | Cream (inchangé) |
+| TestimonialsSection ("La parole…") | Navy (inchangé) |
+| MembersCloud ("Ils sont déjà Futuristes.") | **Cream** (était navy) |
+| JoinSection ("Comment devenir Futuriste ?") | **Navy** (était cream) |
 
-Pour assurer la cohérence :
-- Supprimer le `<section class="section-cream">` interne de `RessourcesTeaserSection.tsx` (le remplacer par un simple wrapper `<div>` sans background), idem possiblement pour `EventsTeaserSection.tsx`.
-- Créer dans `Index.tsx` un seul bloc `<section className="section-cream">` qui contient les deux teasers à la suite, avec un seul padding vertical global et un séparateur léger (ou juste un espacement) entre les deux.
-- Réduire les paddings verticaux internes (`py-20 md:py-24`) pour éviter le double espacement.
+### Modifications
 
-### 2. Nouvel ordre des sections dans `Index.tsx`
-
-```
-HeroSection
-TensionSection
-VideoSection
-EventsPhotoCarousel (la vie de la communauté)
-KeyElementsSection
-FormatsSection
-[Bloc groupé : EventsTeaserSection + RessourcesTeaserSection]  ← même background cream
-ForYouSection                  ("Votre place est ici si...")
-TestimonialsSection            ("La parole à ceux qui en sont.")  ← déplacée ici
-MembersCloud                   ("Ils sont déjà Futuristes.")
-JoinSection
-CTASection
-```
+1. **`EventsTeaserSection.tsx`** : `section-cream` → `section-navy`. Adapter les couleurs internes (titres blancs, cartes : conserver fond blanc OK sur navy, ou passer sur surface foncée — on garde les cartes blanches pour la lisibilité, on ajuste juste titres/labels/intro en blanc/cyan).
+2. **`RessourcesTeaserSection.tsx`** : `section-cream` → `section-navy`. Mêmes ajustements (titre, intro, lien "Toutes les ressources" en cyan, séparateur en `hsl(228 30% 22%)`). Garder cartes blanches.
+3. **`MembersCloud.tsx`** : `section-navy` → `section-cream`. Adapter textes (passer du blanc au navy), retirer/adapter le `dot-grid` s'il existe, ajuster les couleurs des cartes membres pour rester lisibles sur cream.
+4. **`JoinSection.tsx`** : `section-cream` → `section-navy`. Adapter titres et textes (blanc), boutons CTA (variante claire sur fond foncé).
+5. **`EventsPhotoCarousel`** (juste avant) reste sur `surface="cream"` → enchaînement cream → navy (Events) → ok.
+6. **`FormatsSection`** : à vérifier après reorder pour éviter deux cream consécutifs avant Events (Events devient navy, donc Formats peut rester tel quel).
 
 ### Détails techniques
 
-- **Fichiers modifiés** :
-  - `src/pages/Index.tsx` : nouvel ordre + wrapper unique pour Events+Ressources.
-  - `src/components/home/EventsTeaserSection.tsx` : export d'un variant "inline" (sans `<section>` ni background) OU prop `wrapper={false}`.
-  - `src/components/home/RessourcesTeaserSection.tsx` : idem.
-- **Harmonie background** : la nouvelle séquence reste alternée (navy / cream / navy …). À vérifier après reorder :
-  - FormatsSection → cream
-  - Events+Ressources → cream (peut créer 2 cream consécutifs) → on ajoutera une transition douce (séparateur fin ou variation de teinte) si nécessaire.
-  - TestimonialsSection → navy (inchangé)
-  - MembersCloud → vérifier qu'elle reste sur navy/cream cohérent.
-- **Aucun changement** sur le contenu des cartes, la data, ou l'admin.
+- Aucun changement de structure ni de contenu, uniquement les classes de background et les tokens de couleur des textes/bordures à l'intérieur de chaque section concernée.
+- Vérifier le contraste des badges (Libre / Membres) sur navy dans les cartes ressources.
+- Vérifier le rendu de la pastille date sur les cartes événements (déjà blanche, OK sur navy).
+- Pas d'impact sur l'admin ni la data.

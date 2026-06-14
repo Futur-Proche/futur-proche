@@ -42,26 +42,25 @@ export const MembersCloud = () => {
   const displayMembers: Member[] = members?.length ? members : placeholders;
 
   return (
-    <section className="section-navy relative">
-      <div className="dot-grid" />
+    <section className="section-cream relative">
       <div className="container relative z-10 mx-auto px-6 lg:px-12 py-20 md:py-28">
         <div className="flex items-center gap-2 mb-3">
-          <span className="w-2 h-2 rounded-full bg-primary" />
+          <span className="w-2 h-2 rounded-full" style={{ background: "hsl(186 60% 32%)" }} />
           <span className="section-label">La communauté</span>
         </div>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-3 text-white">
+        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-3" style={{ color: "hsl(228 56% 10%)" }}>
           Ils sont déjà{" "}
-          <span className="font-serif-accent text-primary">Futuristes.</span>
+          <span className="font-serif-accent" style={{ color: "hsl(186 60% 32%)" }}>Futuristes.</span>
         </h2>
-        <p className="text-base max-w-xl mb-10 leading-relaxed text-white/50">
+        <p className="text-base max-w-xl mb-10 leading-relaxed" style={{ color: "hsl(228 15% 45%)" }}>
           850+ leaders Marketing / Comm qui échangent chaque jour.{" "}
-          <span className="text-white/35 font-mono text-sm">Cliquez et déplacez une bulle.</span>
+          <span className="font-mono text-sm" style={{ color: "hsl(228 15% 60%)" }}>Cliquez et déplacez une bulle.</span>
         </p>
 
         <BubblePhysics members={displayMembers} />
 
         {!members?.length && (
-          <p className="text-center text-xs mt-6 font-mono uppercase tracking-wider text-white/30">
+          <p className="text-center text-xs mt-6 font-mono uppercase tracking-wider" style={{ color: "hsl(228 15% 55%)" }}>
             Photos bientôt connectées depuis l'espace admin
           </p>
         )}
