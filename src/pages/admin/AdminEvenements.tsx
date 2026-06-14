@@ -1,10 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit2, Trash2, Calendar, Image, UserPlus, X, Search } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Plus, Edit2, Trash2, Image, UserPlus, X, Search, LayoutGrid, List } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
+import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
+import { EventBannerUploader } from "@/components/admin/EventBannerUploader";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -33,6 +36,10 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   statut: "draft",
   speakers: [],
   slug: "",
+  is_open_to_all: false,
+  recap: "",
+  gallery: [] as any,
+  image_url: null,
 };
 
 const formatLabels: Record<string, string> = {
@@ -48,11 +55,19 @@ const AdminEvenements = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [visualEvent, setVisualEvent] = useState<Event | null>(null);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [showMemberSearch, setShowMemberSearch] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Filters + view toggle
+  const [search, setSearch] = useState("");
+  const [statutFilter, setStatutFilter] = useState<string>("all");
+  const [formatFilter, setFormatFilter] = useState<string>("all");
+  const [villeFilter, setVilleFilter] = useState<string>("all");
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   const { data: events, isLoading } = useQuery({
     queryKey: ["admin-events"],
@@ -129,7 +144,7 @@ const AdminEvenements = () => {
   const saveMutation = useMutation({
     mutationFn: async (data: Omit<EventInsert, "id">) => {
       const slug = data.titre.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const payload = { ...data, slug, speakers: speakers as any };
+      const payload = { ...data, slug, speakers: speakers as any, gallery: gallery as any };
       if (editing) {
         const { error } = await supabase.from("events").update(payload).eq("id", editing.id);
         if (error) throw error;
@@ -146,6 +161,7 @@ const AdminEvenements = () => {
       setEditing(null);
       setForm(defaultEvent);
       setSpeakers([]);
+      setGallery([]);
     },
   });
 
@@ -175,10 +191,15 @@ const AdminEvenements = () => {
       statut: e.statut,
       speakers: e.speakers ?? [],
       slug: e.slug ?? "",
+      is_open_to_all: (e as any).is_open_to_all ?? false,
+      recap: (e as any).recap ?? "",
+      gallery: ((e as any).gallery ?? []) as any,
+      image_url: e.image_url ?? null,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
     setSpeakers(existingSpeakers);
+    setGallery((((e as any).gallery as unknown as GalleryItem[]) ?? []));
     setShowForm(true);
   };
 
@@ -186,6 +207,7 @@ const AdminEvenements = () => {
     setEditing(null);
     setForm(defaultEvent);
     setSpeakers([]);
+    setGallery([]);
     setShowForm(!showForm);
   };
 
@@ -262,9 +284,35 @@ const AdminEvenements = () => {
             </div>
           </div>
           <div>
-            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description</label>
-            <textarea className={`${inputClass} min-h-[80px]`} style={inputStyle} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={(form as any).is_open_to_all ?? false}
+                onChange={(e) => setForm({ ...form, is_open_to_all: e.target.checked } as any)}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-sm font-grotesk text-white">Ouvert à tous</span>
+              <span className="text-xs text-white/40">(sinon réservé aux membres)</span>
+            </label>
           </div>
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description</label>
+            <RichTextEditor
+              value={form.description ?? ""}
+              onChange={(html) => setForm({ ...form, description: html })}
+              placeholder="Présentez l'événement, le format, ce qui sera abordé…"
+              minHeight={160}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-2">Bannière de l'événement</label>
+            <EventBannerUploader
+              value={form.image_url}
+              onChange={(url) => setForm({ ...form, image_url: url })}
+            />
+          </div>
+
 
           {/* ── Speakers Section ── */}
           <div>
@@ -412,24 +460,155 @@ const AdminEvenements = () => {
             </div>
           </div>
 
+          {/* ── Après l'événement (recap + galerie) ── */}
+          <div className="pt-4 border-t" style={{ borderColor: "hsl(228 30% 22%)" }}>
+            <label className="block text-xs text-primary font-mono uppercase mb-3 tracking-wider">
+              Après l'événement {form.statut !== "past" && <span className="text-white/30 normal-case">(visible une fois l'événement passé)</span>}
+            </label>
+
+            <div className="mb-4">
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Compte-rendu / résumé</label>
+              <RichTextEditor
+                value={form.recap ?? ""}
+                onChange={(html) => setForm({ ...form, recap: html })}
+                placeholder="Ce qui s'est dit, les moments forts, les insights partagés…"
+                minHeight={200}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-2">Galerie photo</label>
+              {editing ? (
+                <EventGalleryUploader eventId={editing.id} items={gallery} onChange={setGallery} />
+              ) : (
+                <p className="text-xs text-white/40 italic">
+                  Enregistrez d'abord l'événement pour pouvoir ajouter des photos.
+                </p>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-3">
             <button type="submit" disabled={saveMutation.isPending} className="px-6 py-2 rounded-lg text-sm font-grotesk bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50">
               {editing ? "Modifier" : "Créer"}
             </button>
-            <button type="button" onClick={() => { setShowForm(false); setEditing(null); setSpeakers([]); }} className="px-6 py-2 rounded-lg text-sm font-grotesk text-white/50 hover:text-white transition-colors">
+            <button type="button" onClick={() => { setShowForm(false); setEditing(null); setSpeakers([]); setGallery([]); }} className="px-6 py-2 rounded-lg text-sm font-grotesk text-white/50 hover:text-white transition-colors">
               Annuler
             </button>
           </div>
         </form>
       )}
 
+      {/* Filters bar */}
+      {events && events.length > 0 && (() => {
+        const selectClass = "px-3 py-2 rounded-lg text-xs font-grotesk text-white outline-none";
+        const selectStyle = { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" };
+        return (
+          <div className="flex flex-wrap gap-2 mb-4 items-center">
+            <div className="relative flex-1 min-w-[200px] max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
+              <input
+                type="text"
+                placeholder="Rechercher un événement…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-lg text-xs font-grotesk text-white outline-none"
+                style={selectStyle}
+              />
+            </div>
+            <select value={statutFilter} onChange={(e) => setStatutFilter(e.target.value)} className={selectClass} style={selectStyle}>
+              <option value="all">Tous statuts</option>
+              <option value="draft">Brouillon</option>
+              <option value="published">Publié</option>
+              <option value="past">Passé</option>
+            </select>
+            <select value={formatFilter} onChange={(e) => setFormatFilter(e.target.value)} className={selectClass} style={selectStyle}>
+              <option value="all">Tous formats</option>
+              {Object.entries(formatLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+            <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)} className={selectClass} style={selectStyle}>
+              <option value="all">Toutes villes</option>
+              {Array.from(new Set(events.map((e) => e.ville).filter(Boolean))).sort().map((v) => (
+                <option key={v as string} value={v as string}>{v}</option>
+              ))}
+            </select>
+            <div className="flex rounded-lg overflow-hidden ml-auto" style={selectStyle}>
+              <button onClick={() => setView("grid")} className={`p-2 ${view === "grid" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Grille">
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={() => setView("list")} className={`p-2 ${view === "list" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Liste">
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
       {isLoading ? (
         <p className="text-white/40 text-sm">Chargement...</p>
       ) : !events?.length ? (
         <p className="text-white/40 text-sm">Aucun événement.</p>
-      ) : (
+      ) : (() => {
+        const filteredEvents = events.filter((ev) => {
+          const term = search.toLowerCase();
+          const matchSearch = !term || `${ev.titre} ${ev.lieu ?? ""} ${ev.ville ?? ""} ${ev.description ?? ""}`.toLowerCase().includes(term);
+          const matchStatut = statutFilter === "all" || ev.statut === statutFilter;
+          const matchFormat = formatFilter === "all" || ev.format === formatFilter;
+          const matchVille = villeFilter === "all" || ev.ville === villeFilter;
+          return matchSearch && matchStatut && matchFormat && matchVille;
+        });
+        if (filteredEvents.length === 0) {
+          return <p className="text-white/40 text-sm">Aucun résultat avec ces filtres.</p>;
+        }
+        if (view === "list") {
+          return (
+            <div className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+              <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-3 border-b text-[10px] font-mono uppercase tracking-wider text-white/40" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                <span className="col-span-1">Date</span>
+                <span className="col-span-4">Titre</span>
+                <span className="col-span-2">Format</span>
+                <span className="col-span-2">Ville</span>
+                <span className="col-span-1">Statut</span>
+                <span className="col-span-2 text-right">Actions</span>
+              </div>
+              {filteredEvents.map((ev) => (
+                <div key={ev.id} className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 px-4 py-3 border-b items-center hover:bg-white/[0.02]" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                  <div className="md:col-span-1 text-center rounded-md py-1 px-2" style={{ background: "hsl(228 56% 10%)" }}>
+                    <p className="text-[9px] font-mono uppercase text-primary">{new Date(ev.date).toLocaleDateString("fr-FR", { month: "short" })}</p>
+                    <p className="text-base font-grotesk font-bold text-white">{new Date(ev.date).getDate()}</p>
+                  </div>
+                  <div className="md:col-span-4 min-w-0">
+                    <p className="text-sm font-grotesk font-semibold text-white truncate">{ev.titre}</p>
+                    {ev.lieu && <p className="text-xs text-white/40 truncate">{ev.lieu}</p>}
+                  </div>
+                  <p className="md:col-span-2 text-xs text-primary/80 font-mono uppercase tracking-wider">{formatLabels[ev.format] ?? ev.format}</p>
+                  <p className="md:col-span-2 text-xs text-white/60">{ev.ville}</p>
+                  <div className="md:col-span-1">
+                    <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full ${
+                      ev.statut === "published" ? "bg-emerald-400/10 text-emerald-400" :
+                      ev.statut === "draft" ? "bg-yellow-400/10 text-yellow-400" :
+                      "bg-white/10 text-white/40"
+                    }`}>{ev.statut}</span>
+                  </div>
+                  <div className="md:col-span-2 flex justify-end gap-1">
+                    <button onClick={() => openEdit(ev)} className="p-1.5 rounded hover:bg-white/10" title="Modifier">
+                      <Edit2 className="w-3.5 h-3.5 text-white/50" />
+                    </button>
+                    <button onClick={() => setVisualEvent(ev)} className="p-1.5 rounded hover:bg-primary/10" title="Visuels">
+                      <Image className="w-3.5 h-3.5 text-primary/70" />
+                    </button>
+                    <button onClick={() => deleteMutation.mutate(ev.id)} className="p-1.5 rounded hover:bg-red-500/10" title="Supprimer">
+                      <Trash2 className="w-3.5 h-3.5 text-red-400/70" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        }
+        return (
         <div className="space-y-3">
-          {events.map((ev) => {
+          {filteredEvents.map((ev) => {
             const evSpeakers = (ev.speakers as unknown as Speaker[] | null) ?? [];
             return (
               <div key={ev.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
@@ -504,7 +683,8 @@ const AdminEvenements = () => {
             );
           })}
         </div>
-      )}
+        );
+      })()}
       {visualEvent && (
         <EventVisualGenerator
           event={visualEvent}

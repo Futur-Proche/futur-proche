@@ -79,28 +79,49 @@ export type Database = {
       }
       event_registrations: {
         Row: {
+          amount_paid: number | null
           created_at: string
           event_id: string
+          guest_email: string | null
+          guest_nom: string | null
+          guest_prenom: string | null
           id: string
+          is_guest: boolean
+          paid_at: string | null
           statut: Database["public"]["Enums"]["registration_status"]
           stripe_payment_id: string | null
-          user_id: string
+          stripe_session_id: string | null
+          user_id: string | null
         }
         Insert: {
+          amount_paid?: number | null
           created_at?: string
           event_id: string
+          guest_email?: string | null
+          guest_nom?: string | null
+          guest_prenom?: string | null
           id?: string
+          is_guest?: boolean
+          paid_at?: string | null
           statut?: Database["public"]["Enums"]["registration_status"]
           stripe_payment_id?: string | null
-          user_id: string
+          stripe_session_id?: string | null
+          user_id?: string | null
         }
         Update: {
+          amount_paid?: number | null
           created_at?: string
           event_id?: string
+          guest_email?: string | null
+          guest_nom?: string | null
+          guest_prenom?: string | null
           id?: string
+          is_guest?: boolean
+          paid_at?: string | null
           statut?: Database["public"]["Enums"]["registration_status"]
           stripe_payment_id?: string | null
-          user_id?: string
+          stripe_session_id?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -119,11 +140,14 @@ export type Database = {
           date: string
           description: string | null
           format: Database["public"]["Enums"]["event_format"]
+          gallery: Json
           heure: string | null
           id: string
           image_url: string | null
+          is_open_to_all: boolean
           lieu: string | null
           prix: number | null
+          recap: string | null
           slug: string | null
           speakers: Json | null
           statut: Database["public"]["Enums"]["event_status"]
@@ -137,11 +161,14 @@ export type Database = {
           date: string
           description?: string | null
           format?: Database["public"]["Enums"]["event_format"]
+          gallery?: Json
           heure?: string | null
           id?: string
           image_url?: string | null
+          is_open_to_all?: boolean
           lieu?: string | null
           prix?: number | null
+          recap?: string | null
           slug?: string | null
           speakers?: Json | null
           statut?: Database["public"]["Enums"]["event_status"]
@@ -155,11 +182,14 @@ export type Database = {
           date?: string
           description?: string | null
           format?: Database["public"]["Enums"]["event_format"]
+          gallery?: Json
           heure?: string | null
           id?: string
           image_url?: string | null
+          is_open_to_all?: boolean
           lieu?: string | null
           prix?: number | null
+          recap?: string | null
           slug?: string | null
           speakers?: Json | null
           statut?: Database["public"]["Enums"]["event_status"]
@@ -172,6 +202,7 @@ export type Database = {
       profiles: {
         Row: {
           bio: string | null
+          code_postal: string | null
           created_at: string
           email: string
           entreprise: string | null
@@ -188,6 +219,7 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          code_postal?: string | null
           created_at?: string
           email: string
           entreprise?: string | null
@@ -204,6 +236,7 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          code_postal?: string | null
           created_at?: string
           email?: string
           entreprise?: string | null
@@ -223,33 +256,54 @@ export type Database = {
       resources: {
         Row: {
           access: Database["public"]["Enums"]["resource_access"]
+          auteur: string | null
+          contenu: string | null
           created_at: string
           description: string | null
+          extrait: string | null
           file_url: string | null
           id: string
+          image_url: string | null
+          is_public: boolean
           published_at: string | null
+          slug: string | null
+          temps_lecture: number | null
           titre: string
           type: Database["public"]["Enums"]["resource_type"]
           url: string | null
         }
         Insert: {
           access?: Database["public"]["Enums"]["resource_access"]
+          auteur?: string | null
+          contenu?: string | null
           created_at?: string
           description?: string | null
+          extrait?: string | null
           file_url?: string | null
           id?: string
+          image_url?: string | null
+          is_public?: boolean
           published_at?: string | null
+          slug?: string | null
+          temps_lecture?: number | null
           titre: string
           type?: Database["public"]["Enums"]["resource_type"]
           url?: string | null
         }
         Update: {
           access?: Database["public"]["Enums"]["resource_access"]
+          auteur?: string | null
+          contenu?: string | null
           created_at?: string
           description?: string | null
+          extrait?: string | null
           file_url?: string | null
           id?: string
+          image_url?: string | null
+          is_public?: boolean
           published_at?: string | null
+          slug?: string | null
+          temps_lecture?: number | null
           titre?: string
           type?: Database["public"]["Enums"]["resource_type"]
           url?: string | null
@@ -286,6 +340,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_member: { Args: { _email: string }; Returns: boolean }
+      is_registered_to_event: {
+        Args: { _event_id: string; _user_id: string }
+        Returns: boolean
+      }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "member"

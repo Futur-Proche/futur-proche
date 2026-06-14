@@ -9,11 +9,17 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Communaute from "./pages/Communaute";
 import Evenements from "./pages/Evenements";
+import EvenementDetail from "./pages/EvenementDetail";
+import EvenementSuccess from "./pages/EvenementSuccess";
 import Ressources from "./pages/Ressources";
+import RessourceDetail from "./pages/RessourceDetail";
 import Partenaires from "./pages/Partenaires";
 import APropos from "./pages/APropos";
 import Candidater from "./pages/Candidater";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Carte from "./pages/Carte";
 import NotFound from "./pages/NotFound";
 
 import AdminLayout from "./components/admin/AdminLayout";
@@ -44,11 +50,18 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/communaute" element={<Communaute />} />
             <Route path="/evenements" element={<Evenements />} />
+            <Route path="/evenements/:slug" element={<EvenementDetail />} />
+            <Route path="/evenements/:slug/success" element={<EvenementSuccess />} />
             <Route path="/ressources" element={<Ressources />} />
+            <Route path="/ressources/:slug" element={<RessourceDetail />} />
             <Route path="/partenaires" element={<Partenaires />} />
             <Route path="/a-propos" element={<APropos />} />
             <Route path="/candidater" element={<Candidater />} />
+            <Route path="/carte" element={<Carte />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+            <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+
 
             {/* Admin */}
             <Route path="/admin" element={<ProtectedRoute adminOnly><AdminLayout /></ProtectedRoute>}>

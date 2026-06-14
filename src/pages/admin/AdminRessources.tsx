@@ -8,13 +8,28 @@ import type { Database } from "@/integrations/supabase/types";
 type Resource = Database["public"]["Tables"]["resources"]["Row"];
 type ResourceInsert = Database["public"]["Tables"]["resources"]["Insert"];
 
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 const defaultResource: Omit<ResourceInsert, "id"> = {
   titre: "",
+  slug: "",
   description: "",
+  extrait: "",
+  contenu: "",
   type: "autre",
   url: "",
   file_url: "",
+  image_url: "",
+  auteur: "",
+  temps_lecture: null,
   access: "public",
+  is_public: false,
   published_at: new Date().toISOString(),
 };
 
@@ -90,14 +105,31 @@ const AdminRessources = () => {
 
       {showForm && (
         <form
-          onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const payload = { ...form, slug: form.slug?.trim() || slugify(form.titre || "") };
+            saveMutation.mutate(payload);
+          }}
           className="rounded-xl p-6 mb-6 space-y-4"
           style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-white/40 font-mono uppercase mb-1">Titre</label>
-              <input className={inputClass} style={inputStyle} value={form.titre} onChange={(e) => setForm({ ...form, titre: e.target.value })} required />
+              <input
+                className={inputClass}
+                style={inputStyle}
+                value={form.titre}
+                onChange={(e) => {
+                  const titre = e.target.value;
+                  setForm({ ...form, titre, slug: form.slug && editing ? form.slug : slugify(titre) });
+                }}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Slug (URL)</label>
+              <input className={inputClass} style={inputStyle} value={form.slug ?? ""} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="mon-article" />
             </div>
             <div>
               <label className="block text-xs text-white/40 font-mono uppercase mb-1">Type</label>
@@ -106,21 +138,57 @@ const AdminRessources = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Accès</label>
-              <select className={inputClass} style={inputStyle} value={form.access} onChange={(e) => setForm({ ...form, access: e.target.value as any })}>
-                <option value="public">Public</option>
-                <option value="members">Membres uniquement</option>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Visibilité</label>
+              <select
+                className={inputClass}
+                style={inputStyle}
+                value={form.is_public ? "public" : "members"}
+                onChange={(e) => {
+                  const isPub = e.target.value === "public";
+                  setForm({ ...form, is_public: isPub, access: isPub ? "public" : "members" });
+                }}
+              >
+                <option value="members">🔒 Réservé aux membres connectés</option>
+                <option value="public">🌍 Accès libre (visible par tous)</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs text-white/40 font-mono uppercase mb-1">URL externe</label>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Auteur</label>
+              <input className={inputClass} style={inputStyle} value={form.auteur ?? ""} onChange={(e) => setForm({ ...form, auteur: e.target.value })} />
+            </div>
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Temps de lecture (min)</label>
+              <input type="number" min={1} className={inputClass} style={inputStyle} value={form.temps_lecture ?? ""} onChange={(e) => setForm({ ...form, temps_lecture: e.target.value ? Number(e.target.value) : null })} />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Image de couverture (URL)</label>
+              <input className={inputClass} style={inputStyle} value={form.image_url ?? ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
+            </div>
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">URL externe (optionnel)</label>
               <input className={inputClass} style={inputStyle} value={form.url ?? ""} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
             </div>
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Fichier joint (URL)</label>
+              <input className={inputClass} style={inputStyle} value={form.file_url ?? ""} onChange={(e) => setForm({ ...form, file_url: e.target.value })} placeholder="https://..." />
+            </div>
           </div>
+
           <div>
-            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description</label>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Description courte (admin)</label>
             <textarea className={`${inputClass} min-h-[60px]`} style={inputStyle} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
+
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Extrait public (teaser visible par tous)</label>
+            <textarea className={`${inputClass} min-h-[80px]`} style={inputStyle} value={form.extrait ?? ""} onChange={(e) => setForm({ ...form, extrait: e.target.value })} placeholder="2-3 phrases d'accroche qui donnent envie de lire la suite." />
+          </div>
+
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Contenu complet (HTML autorisé)</label>
+            <textarea className={`${inputClass} min-h-[240px] font-mono text-xs leading-relaxed`} style={inputStyle} value={form.contenu ?? ""} onChange={(e) => setForm({ ...form, contenu: e.target.value })} placeholder="<p>Le corps de l'article…</p>" />
+          </div>
+
           <div className="flex gap-3">
             <button type="submit" disabled={saveMutation.isPending} className="px-6 py-2 rounded-lg text-sm font-grotesk bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50">
               {editing ? "Modifier" : "Créer"}
@@ -139,14 +207,37 @@ const AdminRessources = () => {
           {resources?.map((r) => (
             <div key={r.id} className="rounded-xl p-5 flex items-center gap-4" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <p className="text-white font-grotesk font-medium">{r.titre}</p>
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-white/5 text-white/40">{typeLabels[r.type]}</span>
-                  {r.access === "members" ? <Lock className="w-3 h-3 text-yellow-400" /> : <Globe className="w-3 h-3 text-emerald-400" />}
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-white/5 text-white/40">{typeLabels[r.type] ?? r.type}</span>
+                  {r.is_public ? <Globe className="w-3 h-3 text-emerald-400" /> : <Lock className="w-3 h-3 text-yellow-400" />}
+                  {r.slug && <span className="text-[10px] font-mono text-white/30">/{r.slug}</span>}
                 </div>
-                {r.description && <p className="text-white/40 text-xs truncate">{r.description}</p>}
+                {(r.extrait || r.description) && <p className="text-white/40 text-xs truncate">{r.extrait ?? r.description}</p>}
               </div>
-              <button onClick={() => { setEditing(r); setForm({ titre: r.titre, description: r.description, type: r.type, url: r.url, file_url: r.file_url, access: r.access, published_at: r.published_at }); setShowForm(true); }} className="text-white/30 hover:text-white transition-colors">
+              <button
+                onClick={() => {
+                  setEditing(r);
+                  setForm({
+                    titre: r.titre,
+                    slug: r.slug ?? "",
+                    description: r.description,
+                    extrait: r.extrait ?? "",
+                    contenu: r.contenu ?? "",
+                    type: r.type,
+                    url: r.url,
+                    file_url: r.file_url,
+                    image_url: r.image_url ?? "",
+                    auteur: r.auteur ?? "",
+                    temps_lecture: r.temps_lecture ?? null,
+                    access: r.access,
+                    is_public: r.is_public ?? false,
+                    published_at: r.published_at,
+                  });
+                  setShowForm(true);
+                }}
+                className="text-white/30 hover:text-white transition-colors"
+              >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button onClick={() => deleteMutation.mutate(r.id)} className="text-red-400/30 hover:text-red-400 transition-colors">

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 export type ScrollyStep = {
   tag: string;
@@ -6,6 +8,7 @@ export type ScrollyStep = {
   desc: string;
   image: string;
   icon?: ElementType;
+  cta?: { label: string; href: string };
 };
 
 type Props = {
@@ -389,6 +392,15 @@ const SlideContent = ({
         >
           {step.desc}
         </p>
+        {step.cta && (
+          <Link
+            to={step.cta.href}
+            className="inline-flex items-center gap-1.5 mt-5 px-5 py-2.5 rounded-full text-sm font-grotesk font-medium transition-all hover:gap-2.5"
+            style={{ background: accent, color: "hsl(228 56% 10%)" }}
+          >
+            {step.cta.label} <ArrowRight className="w-4 h-4" />
+          </Link>
+        )}
       </div>
     </div>
   );

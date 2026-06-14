@@ -89,6 +89,11 @@ const Login = () => {
               >
                 {loading ? "Connexion..." : "Se connecter →"}
               </button>
+              <p className="text-center text-xs pt-1">
+                <Link to="/mot-de-passe-oublie" className="text-white/40 hover:text-primary transition-colors">
+                  Mot de passe oublié ?
+                </Link>
+              </p>
             </form>
 
             <p className="text-center text-white/30 text-xs mt-6">

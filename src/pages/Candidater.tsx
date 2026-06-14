@@ -18,34 +18,16 @@ const posteOptions = [
   "Autre",
 ];
 
-const secteurOptions = [
-  "Si indépendant·e, ne rien indiquer",
-  "SaaS / Logiciels",
-  "Marketplace",
-  "E-commerce / DTC",
-  "Retail / Distribution",
-  "FMCG / Grande Conso",
-  "Luxe / Mode / Beauté",
-  "FinTech / Assurances / Finances",
-  "Santé / Pharma / HealthTech",
-  "Industrie / Énergie / BTP",
-  "Médias / Édition / Divertissement",
-  "Éducation / Formation",
-  "Tourisme / Hospitality / Voyages",
-  "Agence / Conseil / Services Marketing",
-  "Autre",
-];
-
 interface FormData {
   prenom: string;
   nom: string;
   poste: string;
   entreprise: string;
-  secteur: string;
   email: string;
   telephone: string;
   linkedin: string;
   cooptation: string;
+  code_postal: string;
 }
 
 const reassurance = [
@@ -61,15 +43,8 @@ const Candidater = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<FormData>({
-    prenom: "",
-    nom: "",
-    poste: "",
-    entreprise: "",
-    secteur: "",
-    email: "",
-    telephone: "",
-    linkedin: "",
-    cooptation: "",
+    prenom: "", nom: "", poste: "", entreprise: "",
+    email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "",
   });
 
   const { data: members } = useQuery({
@@ -101,18 +76,18 @@ const Candidater = () => {
       nom: form.nom,
       poste: form.poste,
       entreprise: form.entreprise || null,
-      secteur: form.secteur || null,
       email: form.email,
       telephone: form.telephone || null,
       linkedin: form.linkedin || null,
       cooptation: form.cooptation || null,
+      code_postal: form.code_postal || null,
     });
 
     if (error) {
       toast({ title: "Erreur", description: "Une erreur est survenue. Veuillez réessayer.", variant: "destructive" });
     } else {
       toast({ title: "Candidature envoyée !", description: "Nous reviendrons vers vous sous 48h." });
-      setForm({ prenom: "", nom: "", poste: "", entreprise: "", secteur: "", email: "", telephone: "", linkedin: "", cooptation: "" });
+      setForm({ prenom: "", nom: "", poste: "", entreprise: "", email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "" });
     }
     setIsSubmitting(false);
   };
@@ -158,16 +133,8 @@ const Candidater = () => {
                   </span>
                 </div>
 
-                {/* Témoignage */}
-                <div className="hidden lg:block rounded-xl p-5 relative" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-t-xl" />
-                  <p className="font-serif-accent italic text-white/70 text-sm leading-relaxed mb-2">
-                    "En 3 mois chez futur proche, j'ai plus appris sur mon métier qu'en 2 ans de conférences."
-                  </p>
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-primary">
-                    — CMO, Scale-up SaaS · Membre depuis 2024
-                  </p>
-                </div>
+
+
 
                 {/* Members cloud */}
                 <div className="hidden lg:block mt-6">
@@ -225,18 +192,9 @@ const Candidater = () => {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label htmlFor="entreprise" className={labelClass + " text-white/70"}>Entreprise</label>
-                      <input id="entreprise" name="entreprise" type="text" required value={form.entreprise} onChange={handleChange} placeholder="Si indépendant·e, indiquer 'Indé'" className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
-                    </div>
-                    <div>
-                      <label htmlFor="secteur" className={labelClass + " text-white/70"}>Secteur</label>
-                      <select id="secteur" name="secteur" required value={form.secteur} onChange={handleChange} className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: form.secteur ? "white" : "hsl(228 15% 45%)" }}>
-                        <option value="" disabled>Choisissez</option>
-                        {secteurOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
+                  <div>
+                    <label htmlFor="entreprise" className={labelClass + " text-white/70"}>Entreprise</label>
+                    <input id="entreprise" name="entreprise" type="text" required value={form.entreprise} onChange={handleChange} placeholder="Si indépendant·e, indiquer 'Indé'" className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
@@ -250,9 +208,15 @@ const Candidater = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="linkedin" className={labelClass + " text-white/70"}>Profil LinkedIn</label>
-                    <input id="linkedin" name="linkedin" type="url" value={form.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/..." className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="linkedin" className={labelClass + " text-white/70"}>Profil LinkedIn</label>
+                      <input id="linkedin" name="linkedin" type="url" value={form.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/..." className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
+                    </div>
+                    <div>
+                      <label htmlFor="code_postal" className={labelClass + " text-white/70"}>Code postal</label>
+                      <input id="code_postal" name="code_postal" type="text" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={form.code_postal} onChange={handleChange} placeholder="75001" className={inputClass} style={{ background: "hsl(228 30% 18%)", borderColor: "hsl(228 30% 25%)", color: "white" }} />
+                    </div>
                   </div>
 
                   <div>
@@ -331,14 +295,6 @@ const Candidater = () => {
               ))}
             </div>
 
-            {/* Témoignage mobile */}
-            <div className="lg:hidden max-w-2xl mx-auto rounded-2xl p-8 mt-12 text-center relative overflow-hidden" style={{ background: "hsl(228 56% 10%)" }}>
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-              <p className="font-serif-accent italic text-white/80 text-lg leading-relaxed mb-4">
-                "En 3 mois chez futur proche, j'ai plus appris sur mon métier qu'en 2 ans de conférences. Les échanges sont d'une qualité rare."
-              </p>
-              <p className="text-xs font-mono uppercase tracking-wider text-primary">— CMO, Scale-up SaaS · Membre depuis 2024</p>
-            </div>
           </div>
         </section>
       </main>

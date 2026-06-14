@@ -6,35 +6,40 @@ import { VideoSection } from "@/components/home/VideoSection";
 import { KeyElementsSection } from "@/components/home/KeyElementsSection";
 import { FormatsSection } from "@/components/home/FormatsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
-
 import { ForYouSection } from "@/components/home/ForYouSection";
 import { MembersCloud } from "@/components/home/MembersCloud";
 import { JoinSection } from "@/components/home/JoinSection";
 import { CTASection } from "@/components/home/CTASection";
+import { EventsTeaserSection } from "@/components/home/EventsTeaserSection";
+import { RessourcesTeaserSection } from "@/components/home/RessourcesTeaserSection";
+import { EventsPhotoCarousel } from "@/components/shared/EventsPhotoCarousel";
 
 const Index = () => (
   <>
     <Navbar />
     <main>
-      {/* 1. Navy — Hero */}
       <HeroSection />
-      {/* 2. Cream — Constat */}
       <TensionSection />
-      {/* 2b. Navy — Vidéo de présentation */}
       <VideoSection />
-      {/* 3. Navy — Stats */}
+      {/* Carrousel vie de la communauté (dynamique, photos d'événements) */}
+      <EventsPhotoCarousel
+        variant="marquee"
+        label="La vie de la communauté"
+        heading="Ce qui s'est passé récemment."
+        intro="Photos des derniers After Proche et dîners — entre Futuristes."
+        surface="cream"
+        limit={3}
+        perEvent={8}
+      />
       <KeyElementsSection />
-      {/* 4. Cream — Formats + Photos */}
       <FormatsSection />
-      {/* 5. Navy — Testimonials */}
-      <TestimonialsSection />
-      {/* 6. Cream — Pour qui (profils + Oui/Non) */}
+      {/* Bloc groupé : Événements + Ressources (même background cream) */}
+      <EventsTeaserSection />
+      <RessourcesTeaserSection />
       <ForYouSection />
-      {/* 7. Navy — Members */}
+      <TestimonialsSection />
       <MembersCloud />
-      {/* 8. Cream — Join */}
       <JoinSection />
-      {/* 9. Mesh gradient — CTA */}
       <CTASection />
     </main>
     <Footer />

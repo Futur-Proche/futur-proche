@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, ShieldCheck, ShieldOff, Pencil, X, Save, Trash2, Linkedin } from "lucide-react";
-import { useState } from "react";
+import { Search, ShieldCheck, ShieldOff, Pencil, Save, Linkedin, LayoutGrid, List } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -23,6 +23,7 @@ type Profile = {
   entreprise: string | null;
   secteur: string | null;
   ville: string | null;
+  code_postal: string | null;
   telephone: string | null;
   linkedin: string | null;
   bio: string | null;
@@ -33,8 +34,12 @@ type Profile = {
 
 const AdminMembres = () => {
   const [search, setSearch] = useState("");
+  const [secteurFilter, setSecteurFilter] = useState<string>("all");
+  const [villeFilter, setVilleFilter] = useState<string>("all");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [editingMember, setEditingMember] = useState<Profile | null>(null);
   const [form, setForm] = useState<Partial<Profile>>({});
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -100,6 +105,7 @@ const AdminMembres = () => {
       entreprise: member.entreprise || "",
       secteur: member.secteur || "",
       ville: member.ville || "",
+      code_postal: member.code_postal || "",
       telephone: member.telephone || "",
       linkedin: member.linkedin || "",
       bio: member.bio || "",
@@ -110,7 +116,7 @@ const AdminMembres = () => {
   const handleSave = () => {
     if (!editingMember) return;
     const updates: Partial<Profile> = {};
-    const fields: (keyof Profile)[] = ["prenom", "nom", "email", "poste", "entreprise", "secteur", "ville", "telephone", "linkedin", "bio", "photo_url"];
+    const fields: (keyof Profile)[] = ["prenom", "nom", "email", "poste", "entreprise", "secteur", "ville", "code_postal", "telephone", "linkedin", "bio", "photo_url"];
     for (const f of fields) {
       const val = (form as Record<string, string>)[f];
       (updates as Record<string, string | null>)[f] = val?.trim() || null;
@@ -123,32 +129,65 @@ const AdminMembres = () => {
     updateProfile.mutate({ id: editingMember.id, updates });
   };
 
+  const secteurs = useMemo(
+    () => Array.from(new Set((members ?? []).map((m) => m.secteur).filter(Boolean))).sort() as string[],
+    [members]
+  );
+  const villes = useMemo(
+    () => Array.from(new Set((members ?? []).map((m) => m.ville).filter(Boolean))).sort() as string[],
+    [members]
+  );
+
   const filtered = members?.filter((m) => {
     const term = search.toLowerCase();
-    return !term || `${m.prenom} ${m.nom} ${m.entreprise} ${m.poste} ${m.ville} ${m.email}`.toLowerCase().includes(term);
+    const matchSearch = !term || `${m.prenom} ${m.nom} ${m.entreprise ?? ""} ${m.poste ?? ""} ${m.ville ?? ""} ${m.email}`.toLowerCase().includes(term);
+    const matchSecteur = secteurFilter === "all" || m.secteur === secteurFilter;
+    const matchVille = villeFilter === "all" || m.ville === villeFilter;
+    return matchSearch && matchSecteur && matchVille;
   });
+
+  const selectClass = "px-3 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none";
+  const selectStyle = { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-grotesk font-bold text-white">Membres ({members?.length || 0})</h1>
+        <h1 className="text-2xl font-grotesk font-bold text-white">Membres ({filtered?.length ?? 0} / {members?.length || 0})</h1>
       </div>
 
-      <div className="relative mb-6 max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-        <input
-          type="text"
-          placeholder="Rechercher un membre..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none"
-          style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
-        />
+      <div className="flex flex-wrap gap-3 mb-6 items-center">
+        <div className="relative flex-1 min-w-[220px] max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <input
+            type="text"
+            placeholder="Rechercher un membre..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none"
+            style={selectStyle}
+          />
+        </div>
+        <select value={secteurFilter} onChange={(e) => setSecteurFilter(e.target.value)} className={selectClass} style={selectStyle}>
+          <option value="all">Tous secteurs</option>
+          {secteurs.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)} className={selectClass} style={selectStyle}>
+          <option value="all">Toutes villes</option>
+          {villes.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+        <div className="flex rounded-lg overflow-hidden ml-auto" style={selectStyle}>
+          <button onClick={() => setView("grid")} className={`p-2.5 ${view === "grid" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Grille">
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+          <button onClick={() => setView("list")} className={`p-2.5 ${view === "list" ? "bg-primary text-primary-foreground" : "text-white/50 hover:text-white"}`} aria-label="Liste">
+            <List className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
         <p className="text-white/40 text-sm">Chargement...</p>
-      ) : (
+      ) : view === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered?.map((m) => {
             const isAdmin = adminUserIds?.has(m.id) ?? false;
@@ -206,6 +245,62 @@ const AdminMembres = () => {
             );
           })}
         </div>
+      ) : (
+        <div className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 border-b text-[10px] font-mono uppercase tracking-wider text-white/40" style={{ borderColor: "hsl(228 30% 22%)" }}>
+            <span className="col-span-3">Membre</span>
+            <span className="col-span-2">Poste</span>
+            <span className="col-span-2">Entreprise</span>
+            <span className="col-span-2">Secteur</span>
+            <span className="col-span-1">Ville</span>
+            <span className="col-span-2 text-right">Actions</span>
+          </div>
+          {filtered?.map((m) => {
+            const isAdmin = adminUserIds?.has(m.id) ?? false;
+            return (
+              <div key={m.id} className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-4 py-3 border-b items-center hover:bg-white/[0.02]" style={{ borderColor: "hsl(228 30% 22%)" }}>
+                <div className="md:col-span-3 flex items-center gap-3 min-w-0">
+                  {m.photo_url ? (
+                    <img src={m.photo_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-mono flex-shrink-0" style={{ background: "hsl(228 30% 20%)", color: "hsl(228 15% 55%)" }}>
+                      {m.prenom[0]}{m.nom[0]}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-white text-sm font-grotesk font-medium truncate flex items-center gap-1.5">
+                      {m.prenom} {m.nom}
+                      {isAdmin && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ background: "hsl(187 78% 48% / 0.15)", color: "hsl(187 78% 48%)" }}>Admin</span>}
+                    </p>
+                    <p className="text-white/40 text-xs truncate">{m.email}</p>
+                  </div>
+                </div>
+                <p className="md:col-span-2 text-white/60 text-xs truncate">{m.poste}</p>
+                <p className="md:col-span-2 text-white/60 text-xs truncate">{m.entreprise}</p>
+                <p className="md:col-span-2 text-white/50 text-xs truncate">{m.secteur}</p>
+                <p className="md:col-span-1 text-primary/70 text-[10px] font-mono uppercase">{m.ville}</p>
+                <div className="md:col-span-2 flex justify-end items-center gap-2">
+                  {m.linkedin && (
+                    <a href={m.linkedin} target="_blank" rel="noopener noreferrer" className="text-primary/70 hover:text-primary">
+                      <Linkedin className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                  <button onClick={() => openEdit(m)} className="p-1.5 rounded-lg hover:bg-white/10" title="Modifier">
+                    <Pencil className="w-3.5 h-3.5 text-white/50" />
+                  </button>
+                  <button
+                    onClick={() => toggleAdmin.mutate({ userId: m.id, isCurrentlyAdmin: isAdmin })}
+                    disabled={toggleAdmin.isPending}
+                    className="p-1.5 rounded-lg hover:bg-white/10"
+                    title={isAdmin ? "Retirer admin" : "Rendre admin"}
+                  >
+                    {isAdmin ? <ShieldOff className="w-3.5 h-3.5 text-red-400" /> : <ShieldCheck className="w-3.5 h-3.5 text-primary" />}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       <Dialog open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)}>
@@ -255,9 +350,15 @@ const AdminMembres = () => {
               </div>
             </div>
 
-            <div>
-              <Label className="text-white/60 text-xs">Téléphone</Label>
-              <Input value={form.telephone || ""} onChange={(e) => setForm({ ...form, telephone: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-white/60 text-xs">Code postal</Label>
+                <Input value={form.code_postal || ""} maxLength={5} placeholder="75001" onChange={(e) => setForm({ ...form, code_postal: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" />
+              </div>
+              <div>
+                <Label className="text-white/60 text-xs">Téléphone</Label>
+                <Input value={form.telephone || ""} onChange={(e) => setForm({ ...form, telephone: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" />
+              </div>
             </div>
 
             <div>
@@ -266,11 +367,65 @@ const AdminMembres = () => {
             </div>
 
             <div>
-              <Label className="text-white/60 text-xs">Photo URL</Label>
-              <Input value={form.photo_url || ""} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} className="bg-white/5 border-white/10 text-white text-sm" placeholder="https://..." />
-              {form.photo_url && (
-                <img src={form.photo_url} alt="Preview" className="w-16 h-16 rounded-full object-cover mt-2" />
-              )}
+              <Label className="text-white/60 text-xs">Photo de profil</Label>
+              <div className="flex items-center gap-3 mt-1">
+                {form.photo_url ? (
+                  <img src={form.photo_url} alt="Photo" className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-xs font-mono flex-shrink-0" style={{ background: "hsl(228 30% 20%)", color: "hsl(228 15% 55%)" }}>
+                    {(form.prenom?.[0] ?? "?")}{(form.nom?.[0] ?? "?")}
+                  </div>
+                )}
+                <div className="flex-1 space-y-2">
+                  <Input
+                    value={form.photo_url || ""}
+                    onChange={(e) => setForm({ ...form, photo_url: e.target.value })}
+                    className="bg-white/5 border-white/10 text-white text-sm"
+                    placeholder="URL de la photo ou téléverser ↓"
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingPhoto}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !editingMember) return;
+                      setUploadingPhoto(true);
+                      try {
+                        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+                        const path = `profiles/${editingMember.id}/photo-${Date.now()}.${ext}`;
+                        const { error: upErr } = await supabase.storage
+                          .from("avatars")
+                          .upload(path, file, { upsert: true, contentType: file.type });
+                        if (upErr) throw upErr;
+                        const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+                        setForm((f) => ({ ...f, photo_url: pub.publicUrl }));
+                        toast({ title: "Photo téléversée", description: "N'oubliez pas d'enregistrer." });
+                      } catch (err) {
+                        toast({
+                          title: "Erreur",
+                          description: err instanceof Error ? err.message : "Téléversement impossible",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setUploadingPhoto(false);
+                        e.target.value = "";
+                      }
+                    }}
+                    className="text-xs text-white/60 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-primary/15 file:text-primary hover:file:bg-primary/25 file:cursor-pointer"
+                  />
+                  {uploadingPhoto && <p className="text-xs text-white/40">Téléversement…</p>}
+                  {form.photo_url && (
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, photo_url: "" })}
+                      className="text-xs text-red-400/70 hover:text-red-400"
+                    >
+                      Retirer la photo
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div>
