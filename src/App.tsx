@@ -12,6 +12,7 @@ import Evenements from "./pages/Evenements";
 import EvenementDetail from "./pages/EvenementDetail";
 import EvenementSuccess from "./pages/EvenementSuccess";
 import Ressources from "./pages/Ressources";
+import RessourceDetail from "./pages/RessourceDetail";
 import Partenaires from "./pages/Partenaires";
 import APropos from "./pages/APropos";
 import Candidater from "./pages/Candidater";
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/evenements/:slug" element={<EvenementDetail />} />
             <Route path="/evenements/:slug/success" element={<EvenementSuccess />} />
             <Route path="/ressources" element={<Ressources />} />
+            <Route path="/ressources/:slug" element={<RessourceDetail />} />
             <Route path="/partenaires" element={<Partenaires />} />
             <Route path="/a-propos" element={<APropos />} />
             <Route path="/candidater" element={<Candidater />} />

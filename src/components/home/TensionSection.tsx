@@ -144,8 +144,17 @@ export const TensionSection = () => {
           </div>
         </div>
 
+        {/* Bottom backdrop — protects CTA from quote overlap */}
+        <div
+          aria-hidden
+          className="absolute bottom-0 left-0 right-0 h-[26%] z-20 pointer-events-none"
+          style={{
+            background: "linear-gradient(to top, hsl(36 29% 93%) 55%, hsl(36 29% 93% / 0) 100%)",
+          }}
+        />
+
         {/* Counter + conclusion */}
-        <div className="absolute bottom-6 left-0 right-0 text-center z-20 pointer-events-none px-6">
+        <div className="absolute bottom-8 left-0 right-0 text-center z-30 pointer-events-none px-6">
           <div className="font-mono text-[10px] uppercase tracking-[2px] text-navy/50 mb-3">
             {String(Math.min(visibleCount, thoughts.length)).padStart(2, "0")} / {thoughts.length} pensées
           </div>
