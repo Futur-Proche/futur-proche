@@ -43,7 +43,7 @@ const Candidater = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<FormData>({
-    prenom: "", nom: "", poste: "", entreprise: "", secteur: "",
+    prenom: "", nom: "", poste: "", entreprise: "",
     email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "",
   });
 
