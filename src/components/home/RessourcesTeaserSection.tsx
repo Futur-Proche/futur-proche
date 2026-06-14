@@ -25,7 +25,13 @@ export const RessourcesTeaserSection = () => {
     },
   });
 
-  if (!items || items.length === 0) return null;
+  const isEmpty = !items || items.length === 0;
+
+  const placeholders = [
+    { label: "Podcast", icon: Headphones, titre: "Décisions en coulisses", desc: "Conversations longues avec des CMO sur leurs arbitrages réels." },
+    { label: "Étude", icon: BookOpen, titre: "Benchmarks sectoriels", desc: "Données propriétaires Marketing / Comm, par secteur et par taille." },
+    { label: "Framework", icon: FileText, titre: "Frameworks de décision", desc: "Templates et grilles éprouvés par les Futuristes pour trancher vite." },
+  ];
 
   return (
     <section className="section-navy relative">
@@ -49,8 +55,32 @@ export const RessourcesTeaserSection = () => {
           </Link>
         </div>
 
+        {isEmpty ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {placeholders.map((p) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.label}
+                  className="rounded-2xl p-5"
+                  style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "hsl(186 79% 47% / 0.12)" }}>
+                      <Icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-primary/80">Bientôt</span>
+                  </div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-primary">{p.label}</span>
+                  <h3 className="text-base font-grotesk font-semibold text-white mt-1.5 mb-2 leading-snug">{p.titre}</h3>
+                  <p className="text-xs text-white/55 leading-relaxed">{p.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {items.map((r) => {
+          {items!.map((r) => {
             const meta = typeMeta[r.type] ?? { label: r.type, icon: FileText };
             const Icon = meta.icon;
             const isMembers = r.access === "members";
@@ -84,6 +114,7 @@ export const RessourcesTeaserSection = () => {
             );
           })}
         </div>
+        )}
       </div>
     </section>
   );

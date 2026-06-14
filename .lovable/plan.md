@@ -1,76 +1,47 @@
+# Pourquoi les blocs n'apparaissent pas
 
-## 1. Carte de France des membres (`/carte`)
+Vérification en base :
+- **Événements à venir publiés** : `0` (5 événements en base, mais aucun avec `statut='published'` ET `date >= aujourd'hui`)
+- **Ressources publiées** : `0` (table vide)
 
-**Données**
-- Migration : ajouter `code_postal TEXT` sur `profiles` ET `candidatures` (si pas déjà fait côté candidatures).
-- Champ "Code postal" affiché et éditable :
-  - sur `Candidater.tsx` (étape coordonnées)
-  - sur `MembreProfil.tsx` (auto-éditable par le membre)
-  - sur `AdminMembres.tsx` (édition admin)
-- Dataset INSEE FR open data (`public/data/fr-postal-codes.json`, ~1.5 MB, lazy fetch côté `/carte` uniquement) : `{ code_postal → { lat, lng, ville, departement } }`.
+Les deux composants `EventsTeaserSection` et `RessourcesTeaserSection` font `if (!events.length) return null;` → ils disparaissent silencieusement de la home.
 
-**Page `/carte` (publique)**
-- Carte SVG France via `react-simple-maps` + topojson FR départements.
-- Agrégation côté client : groupe les profils par département (2 premiers chiffres du CP).
-- **Visiteur non loggué** : bulles départementales avec compteur, tooltip "X Futuristes dans le {nom département}", CTA flottant "Rejoindre la communauté → /candidater". Aucune donnée nominative.
-- **Membre loggué** : clic département → panneau latéral listant les membres (photo, prénom + initiale du nom, ville, fonction, lien `/espace-membre/annuaire?member=:id`). Zoom progressif possible.
-- Légende, recherche par ville, compteur total.
-- Route ajoutée dans `App.tsx`. CTA `04` de la home (`FormatsSection`) déjà préparé → pointe vers `/carte`.
+## Plan
 
-**Dépendances** : `react-simple-maps`, `d3-geo`, `topojson-client`.
+### 1. `EventsTeaserSection` — état vide élégant
+- Garder le header (titre + CTA "Tous les événements").
+- Si aucun événement à venir → afficher une **carte d'invitation** unique :
+  - Titre : *"Le prochain rendez-vous arrive bientôt."*
+  - Sous-titre : *"Les dates des prochains After Proche et dîners sont en cours de calage."*
+  - CTA : "Être prévenu·e" → `/candidater`
+- Visuel cohérent avec le reste (carte cream, bordure, accent cyan).
 
-## 2. Navigation membre loggué sur le site public
+### 2. `RessourcesTeaserSection` — état vide élégant
+- Garder le header.
+- Si aucune ressource → afficher **3 cartes "teaser"** statiques décrivant ce qui arrive (Podcast, Études, Frameworks) avec un badge "Bientôt" — pas de lien cassé. CTA global vers `/ressources` conservé.
 
-Aujourd'hui la `Navbar` affiche toujours "Se connecter" + "Devenir Futuriste", même quand un membre est authentifié. À retravailler.
+### 3. `TensionSection` — +10 pensées
+Ajouter 10 nouvelles citations signées (CMO/VP/Head of), repositionnées sur la stage desktop (coords `x/y/rotate/size`) sans chevaucher les 10 existantes. Total = **20 pensées**.
 
-- `Navbar.tsx` : si `user` présent
-  - remplace "Se connecter" par un bouton/menu **"Mon espace"** → `/espace-membre`
-  - ajoute un badge discret **"Admin"** → `/admin` si `isAdmin`
-  - bouton "Devenir Futuriste" caché (déjà membre)
-  - menu déroulant : Mon espace · Annuaire · Mes événements · Profil · Déconnexion
-- `Ressources.tsx` (page publique) : marquer visuellement les ressources réservées membres avec cadenas ; si `user` connecté → CTA "Accéder" qui redirige vers `/espace-membre/ressources` ou ouvre directement le contenu ; sinon → CTA "Se connecter".
-- `EvenementDetail.tsx` : si membre loggué, pré-remplir l'inscription avec son profil, ne plus redemander email/nom.
-- Garder l'accès public en lecture aux pages `/communaute`, `/evenements`, `/ressources` (teasers), mais avec affordances claires pour les membres.
+Nouvelles pensées proposées (à signer comme les actuelles) :
+1. "Mon CFO veut un ROI à 90 jours sur une campagne brand."
+2. "On me parle de MMM, MTA, incrementality — je tranche comment ?"
+3. "Recruter un·e Head of Growth senior : 6 mois que je cherche."
+4. "Le board me demande une stratégie IA. Personne en interne n'en a fait."
+5. "Mon équipe brûle. Je n'ose plus leur ajouter un projet."
+6. "Faut-il internaliser le SEO ou rester avec l'agence ?"
+7. "Mon NPS monte, mes ventes baissent. Qu'est-ce que je rate ?"
+8. "Le DG veut « faire comme Backmarket ». On n'a ni le budget ni la marque."
+9. "Comment je justifie un budget influence sans data propre ?"
+10. "On a 4 outils d'analytics. Aucun ne dit la même chose."
 
-## 3. Mot de passe oublié
+Coords ajustées pour densifier le nuage sans masquer le header (zones libres : 25-35% / 64-72% / 88-92%) et avec tailles variées (sm/md/lg).
 
-- `Login.tsx` : lien "Mot de passe oublié ?" sous le formulaire.
-- **Nouvelle page `/mot-de-passe-oublie`** (`ForgotPassword.tsx`) :
-  - input email → `supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reinitialiser-mot-de-passe' })`
-  - toast de confirmation, design cohérent avec `Login.tsx`.
-- **Nouvelle page `/reinitialiser-mot-de-passe`** (`ResetPassword.tsx`, route publique) :
-  - détecte `type=recovery` dans le hash
-  - formulaire nouveau mot de passe + confirmation
-  - `supabase.auth.updateUser({ password })`
-  - redirige vers `/espace-membre` après succès
-- Routes ajoutées dans `App.tsx`.
-- Note : les emails auth utilisent les templates Lovable par défaut (suffisant). Pas de scaffolding custom demandé.
+### Détails techniques
 
-## Fichiers
+**Fichiers modifiés** :
+- `src/components/home/EventsTeaserSection.tsx` — retirer `return null`, ajouter branche vide.
+- `src/components/home/RessourcesTeaserSection.tsx` — retirer `return null`, ajouter 3 cartes placeholder.
+- `src/components/home/TensionSection.tsx` — étendre le tableau `thoughts` à 20 entrées + ajuster le compteur (`xx / 20`).
 
-**Créés**
-- `src/pages/Carte.tsx`
-- `src/pages/ForgotPassword.tsx`
-- `src/pages/ResetPassword.tsx`
-- `src/components/carte/FranceMap.tsx`
-- `src/components/carte/DepartementPanel.tsx`
-- `public/data/fr-postal-codes.json` (script de génération depuis dataset INSEE public)
-- `public/data/fr-departements.topo.json`
-- Migration SQL : `code_postal` sur `candidatures` (et sur `profiles` si manquant)
-
-**Édités**
-- `src/App.tsx` (routes `/carte`, `/mot-de-passe-oublie`, `/reinitialiser-mot-de-passe`)
-- `src/components/Navbar.tsx` (état loggué + admin)
-- `src/pages/Login.tsx` (lien mdp oublié)
-- `src/pages/Candidater.tsx` (champ code postal)
-- `src/pages/membre/MembreProfil.tsx` (champ code postal)
-- `src/pages/admin/AdminMembres.tsx` (champ code postal)
-- `src/pages/Ressources.tsx` (affordances membre)
-- `package.json` (deps map)
-
-## Détails techniques
-
-- Carte : `react-simple-maps` permet `<ComposableMap projection="geoMercator">` centré sur la France, `<Geographies>` pour les départements, `<Marker>` pour les bulles agrégées. Tailwind + couleurs design tokens (cyan accent, navy bg).
-- Géocodage : pas d'API externe — lookup direct dans le JSON local par `code_postal`. Profils sans CP affichés dans une section "Localisation à compléter" pour les admins.
-- RLS : la liste publique sur `/carte` n'expose que les compteurs ; côté membre loggué la liste détaillée passe par les policies `profiles` existantes (membres voient les autres membres).
-- Auth : `resetPasswordForEmail` + page `/reinitialiser-mot-de-passe` publique (critique pour ne pas auto-logger l'utilisateur sans changement).
+Aucune migration, aucun changement de schéma.
