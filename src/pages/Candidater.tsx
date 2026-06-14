@@ -87,7 +87,7 @@ const Candidater = () => {
       toast({ title: "Erreur", description: "Une erreur est survenue. Veuillez réessayer.", variant: "destructive" });
     } else {
       toast({ title: "Candidature envoyée !", description: "Nous reviendrons vers vous sous 48h." });
-      setForm({ prenom: "", nom: "", poste: "", entreprise: "", secteur: "", email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "" });
+      setForm({ prenom: "", nom: "", poste: "", entreprise: "", email: "", telephone: "", linkedin: "", cooptation: "", code_postal: "" });
     }
     setIsSubmitting(false);
   };
