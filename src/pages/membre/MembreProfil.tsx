@@ -24,7 +24,7 @@ const MembreProfil = () => {
 
   // Initialize form when profile loads
   if (profile && !form) {
-    setForm({ prenom: profile.prenom, nom: profile.nom, poste: profile.poste ?? "", entreprise: profile.entreprise ?? "", ville: profile.ville ?? "", bio: profile.bio ?? "", linkedin: profile.linkedin ?? "", telephone: profile.telephone ?? "" });
+    setForm({ prenom: profile.prenom, nom: profile.nom, poste: profile.poste ?? "", entreprise: profile.entreprise ?? "", ville: profile.ville ?? "", code_postal: (profile as any).code_postal ?? "", bio: profile.bio ?? "", linkedin: profile.linkedin ?? "", telephone: profile.telephone ?? "" });
   }
 
   const updateMutation = useMutation({
@@ -102,6 +102,17 @@ const MembreProfil = () => {
           <div>
             <label className="block text-xs text-white/40 font-mono uppercase mb-1">Ville</label>
             <input className={inputClass} style={inputStyle} value={form.ville} onChange={(e) => setForm({ ...form, ville: e.target.value })} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Code postal</label>
+            <input className={inputClass} style={inputStyle} value={form.code_postal} maxLength={5} placeholder="75001" onChange={(e) => setForm({ ...form, code_postal: e.target.value })} />
+            <p className="text-[10px] text-white/30 mt-1">Permet de vous localiser sur la carte des Futuristes.</p>
+          </div>
+          <div>
+            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Téléphone</label>
+            <input className={inputClass} style={inputStyle} value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
           </div>
         </div>
         <div>
