@@ -19,7 +19,7 @@ const typeLabels: Record<string, string> = {
 
 const RessourceDetail = () => {
   const { slug } = useParams();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
   const { data: resource, isLoading, error } = useQuery({
     queryKey: ["resource", slug],
