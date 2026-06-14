@@ -25,7 +25,13 @@ export const RessourcesTeaserSection = () => {
     },
   });
 
-  if (!items || items.length === 0) return null;
+  const isEmpty = !items || items.length === 0;
+
+  const placeholders = [
+    { label: "Podcast", icon: Headphones, titre: "Décisions en coulisses", desc: "Conversations longues avec des CMO sur leurs arbitrages réels." },
+    { label: "Étude", icon: BookOpen, titre: "Benchmarks sectoriels", desc: "Données propriétaires Marketing / Comm, par secteur et par taille." },
+    { label: "Framework", icon: FileText, titre: "Frameworks de décision", desc: "Templates et grilles éprouvés par les Futuristes pour trancher vite." },
+  ];
 
   return (
     <section className="section-navy relative">
