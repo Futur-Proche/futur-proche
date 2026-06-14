@@ -37,23 +37,23 @@ export const RessourcesTeaserSection = () => {
   ];
 
   return (
-    <section className="section-cream relative" style={{ paddingTop: 0 }}>
+    <section className="section-navy relative" style={{ paddingTop: 0 }}>
       <div className="container relative z-10 mx-auto px-6 lg:px-12 pb-20 md:pb-24 pt-4">
-        <div className="h-px w-full mb-16" style={{ background: "hsl(228 10% 85%)" }} />
+        <div className="h-px w-full mb-16" style={{ background: "hsl(228 30% 22%)" }} />
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div className="max-w-2xl">
             <span className="section-label inline-block mb-3">— Ressources</span>
-            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight" style={{ color: "hsl(228 56% 10%)" }}>
+            <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight text-white">
               Podcast, études, frameworks <span className="font-serif-accent italic text-primary">à portée de main.</span>
             </h2>
-            <p className="mt-3 text-sm md:text-base" style={{ color: "hsl(228 15% 45%)" }}>
+            <p className="mt-3 text-sm md:text-base text-white/60">
               Les contenus produits par et pour les Futuristes — épisodes longs, études sectorielles, cas concrets.
             </p>
           </div>
           <Link
             to="/ressources"
             className="self-start md:self-auto inline-flex items-center gap-1.5 text-sm font-grotesk font-medium group"
-            style={{ color: "hsl(186 60% 32%)" }}
+            style={{ color: "hsl(186 79% 47%)" }}
           >
             Toutes les ressources <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </Link>

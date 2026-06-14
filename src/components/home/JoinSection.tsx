@@ -23,15 +23,15 @@ const steps = [
 
 export const JoinSection = () => {
   return (
-    <section className="section-cream">
+    <section className="section-navy">
       <div className="container mx-auto px-6 lg:px-12 py-20 md:py-28">
         <div className="flex items-center gap-2 mb-2">
-          <span className="w-2 h-2 rounded-full" style={{ background: "hsl(186 60% 32%)" }} />
+          <span className="w-2 h-2 rounded-full bg-primary" />
           <span className="section-label">Rejoindre</span>
         </div>
-        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10" style={{ color: "hsl(228 56% 10%)" }}>
+        <h2 className="text-3xl md:text-4xl font-grotesk font-bold tracking-tight mb-10 text-white">
           Comment devenir{" "}
-          <span className="font-serif-accent" style={{ color: "hsl(186 60% 32%)" }}>Futuriste</span> ?
+          <span className="font-serif-accent text-primary">Futuriste</span> ?
         </h2>
 
         {/* Steps */}
@@ -67,12 +67,12 @@ export const JoinSection = () => {
         <div
           className="mx-auto max-w-3xl rounded-lg px-5 py-4 md:px-6 md:py-5"
           style={{
-            background: "hsl(228 24% 96%)",
-            border: "1px dashed hsl(228 15% 80%)",
+            background: "hsl(228 40% 14%)",
+            border: "1px dashed hsl(228 30% 30%)",
           }}
         >
-          <p className="text-xs md:text-sm leading-relaxed text-center md:text-left" style={{ color: "hsl(228 12% 50%)" }}>
-            <span className="font-grotesk font-semibold" style={{ color: "hsl(228 12% 38%)" }}>
+          <p className="text-xs md:text-sm leading-relaxed text-center md:text-left text-white/70">
+            <span className="font-grotesk font-semibold text-white">
               Pourquoi un process de sélection ?
             </span>
             <br />
