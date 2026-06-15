@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.link_registration_to_profile() FROM PUBLIC, anon, authenticated;

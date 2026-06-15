@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CalendarDays, MapPin, Users, CreditCard, ChevronDown, ChevronUp, LayoutGrid, List } from "lucide-react";
 import { ParticipantsList } from "@/components/event/ParticipantsList";
+import { stripHtml } from "@/lib/text";
 
 const formatLabels: Record<string, string> = {
   after_proche: "After Proche",
@@ -29,10 +30,17 @@ const MembreEvenements = () => {
   });
 
   const { data: myRegistrations } = useQuery({
-    queryKey: ["my-registrations", user?.id],
+    queryKey: ["my-registrations", user?.id, user?.email],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("event_registrations").select("event_id, statut").eq("user_id", user!.id);
+      const email = user?.email?.toLowerCase() ?? "";
+      const filter = email
+        ? `user_id.eq.${user!.id},guest_email.ilike.${email}`
+        : `user_id.eq.${user!.id}`;
+      const { data } = await supabase
+        .from("event_registrations")
+        .select("event_id, statut, user_id, guest_email")
+        .or(filter);
       return data ?? [];
     },
   });
@@ -109,7 +117,7 @@ const MembreEvenements = () => {
                 {formatLabels[ev.format]}{ev.is_open_to_all && " · Ouvert à tous"}
               </span>
               <h3 className="text-lg font-grotesk font-bold text-white mt-1">{ev.titre}</h3>
-              {ev.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{ev.description}</p>}
+              {ev.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{stripHtml(ev.description, 160)}</p>}
             </div>
             <div className="flex-shrink-0 text-center rounded-lg px-3 py-2 ml-4" style={{ border: "1px solid hsl(186 79% 47% / 0.3)" }}>
               <p className="text-[10px] font-mono uppercase text-primary">
@@ -248,20 +256,6 @@ const MembreEvenements = () => {
         </>
       )}
 
-      {otherPast.length > 0 && (
-        <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Événements passés</h2>
-          {view === "grid" ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-60">
-              {otherPast.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
-            </div>
-          ) : (
-            <div className="rounded-xl overflow-hidden opacity-60" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-              {otherPast.map((ev) => <EventRow key={ev.id} ev={ev} isPast />)}
-            </div>
-          )}
-        </>
-      )}
 
       {!events?.length && <p className="text-white/40 text-sm">Aucun événement pour le moment.</p>}
     </div>
