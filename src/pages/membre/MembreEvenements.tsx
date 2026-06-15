@@ -256,20 +256,6 @@ const MembreEvenements = () => {
         </>
       )}
 
-      {otherPast.length > 0 && (
-        <>
-          <h2 className="text-xs font-mono uppercase tracking-wider text-white/30 mb-4">Événements passés</h2>
-          {view === "grid" ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-60">
-              {otherPast.map((ev) => <EventCard key={ev.id} ev={ev} isPast />)}
-            </div>
-          ) : (
-            <div className="rounded-xl overflow-hidden opacity-60" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-              {otherPast.map((ev) => <EventRow key={ev.id} ev={ev} isPast />)}
-            </div>
-          )}
-        </>
-      )}
 
       {!events?.length && <p className="text-white/40 text-sm">Aucun événement pour le moment.</p>}
     </div>
