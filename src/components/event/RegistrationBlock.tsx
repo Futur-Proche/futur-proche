@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,6 +14,7 @@ interface Props {
 export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount }: Props) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
@@ -59,8 +60,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
         return;
       }
       if (data?.free || data?.registered) {
-        toast({ title: "Inscription confirmée !" });
-        window.location.reload();
+        navigate(`/evenements/${event.slug ?? event.id}/success`);
         return;
       }
       if (data?.already_registered) {
