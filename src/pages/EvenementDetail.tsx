@@ -279,6 +279,7 @@ const EvenementDetail = () => {
                   <RegistrationBlock
                     event={event}
                     isUserRegistered={isUserRegistered}
+                    isRegistrationStatusLoading={isRegistrationStatusLoading}
                     registrationsCount={registrationsCount}
                   />
                 )}
