@@ -1,13 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit2, Trash2, Image, UserPlus, X, Search, LayoutGrid, List } from "lucide-react";
+import { Plus, Edit2, Trash2, Image, UserPlus, X, Search, LayoutGrid, List, Users } from "lucide-react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
 import { EventBannerUploader } from "@/components/admin/EventBannerUploader";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
+import { AdminEventRegistrationsDrawer } from "@/components/admin/AdminEventRegistrationsDrawer";
+import { EventCountBadge } from "@/components/event/EventCountBadge";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -40,6 +42,7 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   recap: "",
   gallery: [] as any,
   image_url: null,
+  registrations_closed: false,
 };
 
 const formatLabels: Record<string, string> = {
@@ -57,6 +60,7 @@ const AdminEvenements = () => {
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [visualEvent, setVisualEvent] = useState<Event | null>(null);
+  const [registrationsEvent, setRegistrationsEvent] = useState<Event | null>(null);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [showMemberSearch, setShowMemberSearch] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
@@ -195,6 +199,7 @@ const AdminEvenements = () => {
       recap: (e as any).recap ?? "",
       gallery: ((e as any).gallery ?? []) as any,
       image_url: e.image_url ?? null,
+      registrations_closed: (e as any).registrations_closed ?? false,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
