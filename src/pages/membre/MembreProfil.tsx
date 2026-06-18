@@ -24,7 +24,7 @@ const MembreProfil = () => {
 
   // Initialize form when profile loads
   if (profile && !form) {
-    setForm({ prenom: profile.prenom, nom: profile.nom, poste: profile.poste ?? "", entreprise: profile.entreprise ?? "", ville: profile.ville ?? "", code_postal: (profile as any).code_postal ?? "", bio: profile.bio ?? "", linkedin: profile.linkedin ?? "", telephone: profile.telephone ?? "" });
+    setForm({ prenom: profile.prenom, nom: profile.nom, email: profile.email ?? "", poste: profile.poste ?? "", entreprise: profile.entreprise ?? "", ville: profile.ville ?? "", code_postal: (profile as any).code_postal ?? "", bio: profile.bio ?? "", linkedin: profile.linkedin ?? "", telephone: profile.telephone ?? "" });
   }
 
   const updateMutation = useMutation({
