@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
+import { EventCountBadge } from "@/components/event/EventCountBadge";
 
 const formatLabels: Record<string, string> = {
   after_proche: "After Proche",
@@ -73,6 +74,7 @@ const EventCard = ({ ev, past = false }: { ev: Ev; past?: boolean }) => {
           {(ev.lieu || ev.ville) && (
             <span className="flex items-center gap-1"><MapPin size={12} /> {ev.ville}</span>
           )}
+          <EventCountBadge eventId={ev.id} iconSize={12} />
         </div>
         <span className="mt-4 inline-flex items-center gap-1 text-xs font-mono font-medium group-hover:gap-2 transition-all" style={{ color: "hsl(186 60% 32%)" }}>
           {past ? "Voir le compte-rendu" : "Voir & s'inscrire"} <ArrowRight className="w-3 h-3" />
