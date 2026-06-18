@@ -38,6 +38,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (evErr || !ev) return json({ error: "event not found" }, 404);
     if (ev.statut !== "published") return json({ error: "event not open" }, 400);
+    if (ev.registrations_closed) return json({ error: "registrations_closed" }, 403);
 
     // Capacity check
     if (ev.capacite) {
