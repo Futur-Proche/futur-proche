@@ -8,10 +8,11 @@ import { Lock, Mail, Loader2 } from "lucide-react";
 interface Props {
   event: any;
   isUserRegistered: boolean;
+  isRegistrationStatusLoading?: boolean;
   registrationsCount: number;
 }
 
-export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount }: Props) => {
+export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatusLoading, registrationsCount }: Props) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
