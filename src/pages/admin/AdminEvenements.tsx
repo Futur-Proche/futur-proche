@@ -605,7 +605,14 @@ const AdminEvenements = () => {
                       "bg-white/10 text-white/40"
                     }`}>{ev.statut}</span>
                   </div>
-                  <div className="md:col-span-2 flex justify-end gap-1">
+                  <div className="md:col-span-2 flex justify-end gap-1 items-center">
+                    <EventCountBadge eventId={ev.id} capacite={ev.capacite} className="text-[10px] font-mono text-white/50 mr-1" iconSize={11} />
+                    {(ev as any).registrations_closed && (
+                      <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-yellow-400/15 text-yellow-400">Fermées</span>
+                    )}
+                    <button onClick={() => setRegistrationsEvent(ev)} className="p-1.5 rounded hover:bg-primary/10" title="Inscrits">
+                      <Users className="w-3.5 h-3.5 text-primary/70" />
+                    </button>
                     <button onClick={() => openEdit(ev)} className="p-1.5 rounded hover:bg-white/10" title="Modifier">
                       <Edit2 className="w-3.5 h-3.5 text-white/50" />
                     </button>
@@ -681,7 +688,10 @@ const AdminEvenements = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 p-4">
+                <div className="flex items-center gap-2 p-4 flex-wrap">
+                  <button onClick={() => setRegistrationsEvent(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-primary hover:bg-primary/10 transition-colors" style={{ border: "1px solid hsl(186 79% 47% / 0.3)" }}>
+                    <Users className="w-3 h-3" /> Inscrits
+                  </button>
                   <button onClick={() => openEdit(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                     <Edit2 className="w-3 h-3" /> Modifier
                   </button>
@@ -691,8 +701,13 @@ const AdminEvenements = () => {
                   <button onClick={() => deleteMutation.mutate(ev.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-colors">
                     <Trash2 className="w-3 h-3" /> Supprimer
                   </button>
-                  {ev.prix && <span className="ml-auto text-xs font-mono text-primary">{Number(ev.prix).toFixed(0)}€</span>}
-                  {ev.capacite && <span className="text-xs font-mono text-white/30">{ev.capacite} places</span>}
+                  <div className="ml-auto flex items-center gap-3">
+                    <EventCountBadge eventId={ev.id} capacite={ev.capacite} className="text-xs font-mono text-white/60" iconSize={12} />
+                    {(ev as any).registrations_closed && (
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-yellow-400/15 text-yellow-400">Fermées</span>
+                    )}
+                    {ev.prix && <span className="text-xs font-mono text-primary">{Number(ev.prix).toFixed(0)}€</span>}
+                  </div>
                 </div>
               </div>
             );
@@ -704,6 +719,12 @@ const AdminEvenements = () => {
         <EventVisualGenerator
           event={visualEvent}
           onClose={() => setVisualEvent(null)}
+        />
+      )}
+      {registrationsEvent && (
+        <AdminEventRegistrationsDrawer
+          event={registrationsEvent}
+          onClose={() => setRegistrationsEvent(null)}
         />
       )}
     </div>
