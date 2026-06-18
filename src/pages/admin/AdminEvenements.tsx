@@ -288,7 +288,7 @@ const AdminEvenements = () => {
               </select>
             </div>
           </div>
-          <div>
+          <div className="flex flex-wrap gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -298,6 +298,16 @@ const AdminEvenements = () => {
               />
               <span className="text-sm font-grotesk text-white">Ouvert à tous</span>
               <span className="text-xs text-white/40">(sinon réservé aux membres)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={(form as any).registrations_closed ?? false}
+                onChange={(e) => setForm({ ...form, registrations_closed: e.target.checked } as any)}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-sm font-grotesk text-white">Inscriptions fermées</span>
+              <span className="text-xs text-white/40">(plus aucune inscription possible)</span>
             </label>
           </div>
           <div>
