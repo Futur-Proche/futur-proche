@@ -55,6 +55,8 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
         body.guest_email = email;
         body.guest_prenom = prenom;
         body.guest_nom = nom;
+        body.guest_poste = poste;
+        body.guest_entreprise = entreprise;
       }
       const { data, error } = await supabase.functions.invoke("create-event-checkout", { body });
       if (error) throw error;
