@@ -46,7 +46,7 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("event_registrations")
-        .select("id, user_id, is_guest, statut, guest_email, guest_prenom, guest_nom, stripe_payment_status, created_at")
+        .select("id, user_id, is_guest, statut, guest_email, guest_prenom, guest_nom, stripe_session_id, paid_at, created_at")
         .eq("event_id", event.id)
         .order("created_at", { ascending: true });
       if (error) throw error;
