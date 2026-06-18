@@ -1,75 +1,46 @@
 ## Objectif
+1. Permettre au membre de voir et éditer son email sur `/membre/profil` (le téléphone est déjà éditable).
+2. Garantir que l'admin voit et peut éditer email + téléphone d'un membre depuis `/admin/membres`.
+3. Garantir le strict cloisonnement : email/téléphone d'un membre **jamais** visibles par les autres membres (ni dans l'annuaire, ni dans la liste des participants).
+4. Corriger le bug d'inscription : quand un membre connecté est déjà inscrit, le bouton « Payer / S'inscrire » doit disparaître au profit d'un message « Vous êtes inscrit·e ».
 
-Améliorer l'expérience d'inscription aux événements pour les visiteurs, les membres et les administrateurs, et donner à l'admin le contrôle pour clore les inscriptions.
+## Diagnostic du bug d'inscription
 
-## 1. Nombre de participants visible partout
+`davhuin@gmail.com` est bien enregistré en base avec `user_id = 6820e1c3-…` sur l'événement `test-2-david-x-dimitri`. Pourtant le bouton « Payer » reste visible.
 
-- **Page liste publique `/evenements`** et **`EventsTeaserSection`** (home) : afficher `X inscrits` (et `/ capacité` si renseignée) sur chaque carte. Une seule requête `event_registrations` groupée par `event_id` (count) jointe côté client.
-- **Page détail `/evenements/:slug`** : le nombre est déjà visible dans le titre « Qui sera là (N) » — on conserve.
+Cause probable : la query `event-my-reg` dans `EvenementDetail.tsx` interroge `event_registrations` directement. Les policies RLS autorisent l'utilisateur à voir ses propres lignes, donc la query devrait fonctionner — sauf que `RegistrationBlock` est rendu en parallèle dans l'aside et reçoit `isUserRegistered=false` pendant la phase de chargement (la query est `enabled` mais retourne `undefined` au premier render). Le composant affiche alors la branche « membre connecté → CTA paiement » avant même que `myReg` soit résolu.
 
-## 2. Liste des inscrits : règle d'accès
+Solution : utiliser la RPC dédiée `is_registered_to_event` (déjà en base, security definer) et n'afficher le bloc d'inscription qu'une fois la requête résolue. En complément, ajouter un état de chargement explicite dans `RegistrationBlock`.
 
-Aujourd'hui : visible uniquement si **l'utilisateur est inscrit** à l'événement.
+## Modifications
 
-Nouvelle règle :
-- **Visiteur non connecté** → voit uniquement le nombre, pas les noms (message « Connectez-vous pour voir qui participe »).
-- **Membre connecté** (inscrit ou non) → voit la liste complète des participants.
-- **Admin** → idem membre.
+### 1. `src/pages/EvenementDetail.tsx`
+- Remplacer la query `event-my-reg` par un appel à `supabase.rpc('is_registered_to_event', …)`.
+- Exposer `isRegLoading` et passer un placeholder/skeleton dans l'aside tant que la requête n'est pas résolue (évite le flash du bouton Payer).
 
-Changement dans `ParticipantsList` : remplacer la prop `visible` par `canSeeNames` calculée à partir de `useAuth().user`.
+### 2. `src/components/event/RegistrationBlock.tsx`
+- Ajouter une garde : si `user` est connecté mais l'état d'inscription est encore inconnu, afficher un skeleton plutôt que le CTA.
+- Améliorer le bloc « Vous y êtes » : afficher le récap (date/lieu/heure) + lien vers « Mes événements ».
 
-## 3. Bloc d'inscription pour un membre connecté
+### 3. `src/pages/membre/MembreProfil.tsx`
+- Ajouter un champ **Email** éditable, à côté du téléphone.
+- Validation Zod (email + max 255).
+- Mention discrète : « Votre email et votre téléphone ne sont jamais affichés aux autres Futuristes. »
+- Mise à jour via `profiles.update({ email })` pour l'utilisateur courant (policy "Users update own profile" existante).
 
-Comportement attendu :
-- Si déjà inscrit → bloc « Vous êtes inscrit·e » (déjà OK) et **plus aucun bouton** « S'inscrire ».
-- Si non inscrit → bouton « S'inscrire » classique.
-- Si `registrations_closed = true` ou capacité atteinte → bloc « Inscriptions closes » sans bouton.
+### 4. `src/pages/admin/AdminMembres.tsx`
+- Dans le drawer/modal d'édition d'un membre, ajouter les champs Email et Téléphone éditables (policy admin déjà permissive).
+- Afficher l'email et le téléphone dans la fiche détaillée.
 
-Pas de changement majeur, juste s'assurer que la liste des participants est bien affichée juste en dessous.
+### 5. Vérification cloisonnement (lecture seule, pas de code à écrire si déjà OK)
+- `get_event_participants` (security definer) **ne renvoie pas** `email`/`telephone` ✅ déjà conforme.
+- `MembreAnnuaire` : vérifier que `select` ne demande pas `email`/`telephone`. Si oui, retirer ces colonnes.
+- `ParticipantsList` : déjà basé sur la RPC sans email ✅.
 
-## 4. Admin — vue claire des inscrits
+### 6. RLS / policies
+Aucune migration nécessaire :
+- La policy `Members can view all profiles` retourne déjà toutes les colonnes ; le cloisonnement est purement front (sélection des colonnes côté client).
+- Pour durcir : créer une vue `public.profiles_public` excluant `email` et `telephone` (`security_invoker=on`) et basculer l'annuaire / liste des membres sur cette vue, tout en gardant la table `profiles` pour le propriétaire et l'admin. *Option recommandée — à confirmer avant d'inclure dans l'implémentation.*
 
-Sur **`/admin/evenements`** :
-
-a) **Sur chaque carte/ligne**, afficher `N inscrits` (et `/ capacité`), avec un badge `Complet` ou `Inscriptions fermées` si applicable.
-
-b) **Nouveau bouton « Inscrits »** sur chaque événement → ouvre un **drawer/modal** listant tous les inscrits avec :
-- Nom, email, entreprise/poste, statut (`membre` ou `invité·e`), date d'inscription, statut paiement.
-- Compteur en tête : `N inscrits / capacité`.
-- Bouton **« Clore les inscriptions »** / **« Rouvrir les inscriptions »** (toggle sur la colonne `registrations_closed`).
-- Pour les événements payants : indication `payé` / `en attente`.
-
-c) **Dans le formulaire d'édition** d'un événement : nouvelle case à cocher **« Inscriptions fermées »** (équivalent du toggle).
-
-## 5. Blocage serveur des inscriptions
-
-- Nouvelle colonne `events.registrations_closed boolean default false`.
-- `create-event-checkout` (edge function) refuse l'inscription si :
-  - `registrations_closed = true`, ou
-  - capacité atteinte (déjà géré).
-- Le `RegistrationBlock` affiche le bloc « Inscriptions closes » quand l'un ou l'autre est vrai.
-
-## Détails techniques
-
-**Migration SQL**
-```sql
-ALTER TABLE public.events
-  ADD COLUMN registrations_closed boolean NOT NULL DEFAULT false;
-```
-
-**Fichiers modifiés**
-- `supabase/migrations/<new>.sql` — ajout colonne `registrations_closed`.
-- `supabase/functions/create-event-checkout/index.ts` — refus si `registrations_closed`.
-- `src/components/event/ParticipantsList.tsx` — règle d'accès basée sur `user` (membre connecté).
-- `src/pages/EvenementDetail.tsx` — passer `canSeeNames = !!user` à `ParticipantsList` ; tenir compte de `registrations_closed`.
-- `src/components/event/RegistrationBlock.tsx` — nouveau cas « Inscriptions closes ».
-- `src/pages/Evenements.tsx` + `src/components/home/EventsTeaserSection.tsx` — afficher `N inscrits / capacité` sur chaque carte (requête count groupée).
-- `src/pages/admin/AdminEvenements.tsx` :
-  - badges `N inscrits`, `Complet`, `Inscriptions fermées` sur chaque carte/ligne ;
-  - bouton « Inscrits » → drawer avec la liste détaillée + toggle « Clore/Rouvrir » ;
-  - case à cocher « Inscriptions fermées » dans le formulaire.
-- Nouveau composant `src/components/admin/AdminEventRegistrationsDrawer.tsx`.
-
-**Notes**
-- Pas de changement du modèle d'auth ni des politiques RLS sur `event_registrations` (l'admin lit déjà via `has_role`).
-- Aucune modification du flow Stripe.
+## Points à confirmer
+- Souhaitez-vous la vue `profiles_public` (durcissement RLS, recommandé) ou se contenter de filtrer côté front ?

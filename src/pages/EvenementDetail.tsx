@@ -45,22 +45,21 @@ const EvenementDetail = () => {
     },
   });
 
-  const { data: myReg } = useQuery({
-    queryKey: ["event-my-reg", event?.id, user?.id],
+  const { data: isUserRegisteredData, isLoading: regLoading } = useQuery({
+    queryKey: ["event-is-registered", event?.id, user?.id],
     enabled: !!event?.id && !!user?.id,
     queryFn: async () => {
-      const { data } = await supabase
-        .from("event_registrations")
-        .select("id")
-        .eq("event_id", event!.id)
-        .eq("user_id", user!.id)
-        .neq("statut", "cancelled")
-        .maybeSingle();
-      return data;
+      const { data, error } = await supabase.rpc("is_registered_to_event", {
+        _event_id: event!.id,
+        _user_id: user!.id,
+      });
+      if (error) throw error;
+      return !!data;
     },
   });
 
-  const isUserRegistered = !!myReg;
+  const isUserRegistered = !!isUserRegisteredData;
+  const isRegistrationStatusLoading = !!user && regLoading;
   const registrationsCount = regCount ?? 0;
 
   if (isLoading) {
@@ -280,6 +279,7 @@ const EvenementDetail = () => {
                   <RegistrationBlock
                     event={event}
                     isUserRegistered={isUserRegistered}
+                    isRegistrationStatusLoading={isRegistrationStatusLoading}
                     registrationsCount={registrationsCount}
                   />
                 )}

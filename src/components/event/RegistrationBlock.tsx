@@ -8,10 +8,11 @@ import { Lock, Mail, Loader2 } from "lucide-react";
 interface Props {
   event: any;
   isUserRegistered: boolean;
+  isRegistrationStatusLoading?: boolean;
   registrationsCount: number;
 }
 
-export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount }: Props) => {
+export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatusLoading, registrationsCount }: Props) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -82,16 +83,31 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
     }
   };
 
+  // Loading registration status (avoid flashing the Pay button)
+  if (isRegistrationStatusLoading) {
+    return (
+      <div className="rounded-2xl p-6 sticky top-24" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+        <div className="h-3 w-24 rounded bg-white/10 mb-3 animate-pulse" />
+        <div className="h-8 w-32 rounded bg-white/10 mb-4 animate-pulse" />
+        <div className="h-10 w-full rounded bg-white/10 animate-pulse" />
+      </div>
+    );
+  }
+
   // Already registered
   if (isUserRegistered) {
+    const dateLabel = new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
     return (
-      <div className="rounded-2xl p-6" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(186 79% 47% / 0.4)" }}>
+      <div className="rounded-2xl p-6 sticky top-24" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(186 79% 47% / 0.4)" }}>
         <div className="flex items-center gap-2 text-primary mb-2">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <span className="font-mono text-[11px] uppercase tracking-wider">Inscription confirmée</span>
         </div>
-        <h3 className="text-lg font-grotesk font-bold text-white mb-1">Vous y êtes</h3>
-        <p className="text-white/60 text-sm">Rendez-vous le {new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.</p>
+        <h3 className="text-lg font-grotesk font-bold text-white mb-1">Vous êtes inscrit·e</h3>
+        <p className="text-white/60 text-sm mb-4">Rendez-vous le {dateLabel}{event.heure ? ` à ${event.heure.slice(0,5)}` : ""}{event.lieu ? ` — ${event.lieu}` : ""}.</p>
+        <Link to="/membre/evenements" className="block text-center w-full px-4 py-2 rounded-lg text-xs font-grotesk text-white/80 hover:text-white" style={{ border: "1px solid hsl(228 30% 25%)" }}>
+          Voir mes événements →
+        </Link>
       </div>
     );
   }
