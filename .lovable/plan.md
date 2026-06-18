@@ -1,90 +1,75 @@
+## Objectif
 
-## Problèmes constatés
+Améliorer l'expérience d'inscription aux événements pour les visiteurs, les membres et les administrateurs, et donner à l'admin le contrôle pour clore les inscriptions.
 
-1. **David (logué) ne voit pas son inscription** : David s'est inscrit *avant connexion* (formulaire invité avec `u1david@hotmail.com`). La ligne `event_registrations` a `user_id = NULL` + `is_guest = true`. La page membre filtre uniquement par `user_id = auth.uid()` → rien ne remonte.
-2. **Balises HTML brutes** affichées dans les cards événements (admin, espace membre, public) car la description est stockée en HTML (RichTextEditor) mais rendue en texte brut dans les listings.
-3. **Espace membre événements** : affiche aussi "Événements passés" auxquels le membre n'a pas participé → bruit inutile.
-4. **Confirmation inscription invité gratuit** : le toast s'affiche puis `window.location.reload()` l'efface immédiatement, donc l'utilisateur ne voit rien. Pas d'email envoyé.
-5. **Stripe** : le secret est enregistré sous le nom `Stripe` mais l'edge function attend `STRIPE_SECRET_KEY`. Aucun `STRIPE_WEBHOOK_SECRET` n'est encore configuré → après un paiement, l'inscription ne serait jamais créée.
+## 1. Nombre de participants visible partout
 
----
+- **Page liste publique `/evenements`** et **`EventsTeaserSection`** (home) : afficher `X inscrits` (et `/ capacité` si renseignée) sur chaque carte. Une seule requête `event_registrations` groupée par `event_id` (count) jointe côté client.
+- **Page détail `/evenements/:slug`** : le nombre est déjà visible dans le titre « Qui sera là (N) » — on conserve.
 
-## Corrections
+## 2. Liste des inscrits : règle d'accès
 
-### 1. Auto-rattachement invité ↔ membre (DB)
+Aujourd'hui : visible uniquement si **l'utilisateur est inscrit** à l'événement.
 
-Ajouter un **trigger `BEFORE INSERT`** sur `event_registrations` qui, si `user_id IS NULL` et `guest_email` correspond à un profil, remplit automatiquement `user_id` et bascule `is_guest = false`. Faire un **backfill** sur les lignes existantes (la ligne de David passera ainsi du statut "guest" à "membre rattaché").
+Nouvelle règle :
+- **Visiteur non connecté** → voit uniquement le nombre, pas les noms (message « Connectez-vous pour voir qui participe »).
+- **Membre connecté** (inscrit ou non) → voit la liste complète des participants.
+- **Admin** → idem membre.
 
-Bénéfice : tout futur invité qui devient membre (ou inscription invité avec email déjà membre) est automatiquement reconnu côté profil et listing participants.
+Changement dans `ParticipantsList` : remplacer la prop `visible` par `canSeeNames` calculée à partir de `useAuth().user`.
 
-### 2. Nettoyage des descriptions dans les listings
+## 3. Bloc d'inscription pour un membre connecté
 
-Créer un petit utilitaire `stripHtml(html, maxLen)` (`src/lib/text.ts`) qui retire les balises et décode `&nbsp;` → utilisé dans :
-- `src/pages/admin/AdminEvenements.tsx` (card + ligne liste)
-- `src/pages/membre/MembreEvenements.tsx` (`EventCard.description`)
-- `src/components/home/EventsTeaserSection.tsx` (si besoin)
+Comportement attendu :
+- Si déjà inscrit → bloc « Vous êtes inscrit·e » (déjà OK) et **plus aucun bouton** « S'inscrire ».
+- Si non inscrit → bouton « S'inscrire » classique.
+- Si `registrations_closed = true` ou capacité atteinte → bloc « Inscriptions closes » sans bouton.
 
-La page détail événement garde déjà le rendu HTML correct via `dangerouslySetInnerHTML`.
+Pas de changement majeur, juste s'assurer que la liste des participants est bien affichée juste en dessous.
 
-### 3. Espace membre — Mes participations seulement
+## 4. Admin — vue claire des inscrits
 
-Dans `src/pages/membre/MembreEvenements.tsx` :
-- Récupérer aussi l'email du user (`useAuth`) et considérer comme "mes inscriptions" toute ligne où `user_id = me` **OU** `lower(guest_email) = lower(my_email)` (utile tant que le trigger n'a pas migré les anciennes lignes — ceinture + bretelles).
-- **Supprimer la section "Événements passés" non-participés** (`otherPast`) — ne plus afficher que `myUpcoming`, `otherUpcoming` (à venir = utile pour s'inscrire), et `myPast` (souvenirs/galerie).
+Sur **`/admin/evenements`** :
 
-### 4. Confirmation d'inscription gratuite (invité & membre)
+a) **Sur chaque carte/ligne**, afficher `N inscrits` (et `/ capacité`), avec un badge `Complet` ou `Inscriptions fermées` si applicable.
 
-Dans `src/components/event/RegistrationBlock.tsx`, remplacer le `toast + reload` par une **redirection vers `/evenements/:slug/success`** dès que la fonction renvoie `{ free: true }` ou `{ registered: true }`. La page success existe déjà et donne un vrai feedback visible. Au retour sur la page événement le compte d'inscrits est rafraîchi (query refetch).
+b) **Nouveau bouton « Inscrits »** sur chaque événement → ouvre un **drawer/modal** listant tous les inscrits avec :
+- Nom, email, entreprise/poste, statut (`membre` ou `invité·e`), date d'inscription, statut paiement.
+- Compteur en tête : `N inscrits / capacité`.
+- Bouton **« Clore les inscriptions »** / **« Rouvrir les inscriptions »** (toggle sur la colonne `registrations_closed`).
+- Pour les événements payants : indication `payé` / `en attente`.
 
-Pas d'email transactionnel pour l'instant (nécessiterait Resend) — à proposer en suivi si vous le souhaitez.
+c) **Dans le formulaire d'édition** d'un événement : nouvelle case à cocher **« Inscriptions fermées »** (équivalent du toggle).
 
-### 5. Stripe (paiements)
+## 5. Blocage serveur des inscriptions
 
-a. **Renommer le secret** : le code attend `STRIPE_SECRET_KEY`. Si le secret actuel s'appelle `Stripe`, je vous demanderai de le ré-ajouter sous le nom exact `STRIPE_SECRET_KEY` (ou je le ferai via l'outil secrets).
-
-b. **Webhook Stripe** : la fonction `stripe-webhook` existe déjà et est configurée `verify_jwt = false`. Il faut :
-   - Vous communiquer l'URL publique du webhook (`https://<projet>.functions.supabase.co/stripe-webhook`).
-   - Vous demandez à Stripe Dashboard → Developers → Webhooks → "Add endpoint" → coller l'URL, sélectionner `checkout.session.completed`, puis copier le **Signing secret** (commence par `whsec_…`).
-   - Ajouter ce secret sous le nom `STRIPE_WEBHOOK_SECRET`.
-
-c. **Filet de sécurité côté succès paiement** : si le webhook tarde, l'utilisateur revient sur `/evenements/:slug/success?session_id=…` et ne voit rien. Ajouter dans `EvenementSuccess.tsx` un **polling court** (5×, 1.5 s) qui interroge l'API `event_registrations` filtrée par `stripe_session_id`. Tant que l'inscription n'est pas vue, afficher "Confirmation en cours…", puis success définitif.
-
-d. La logique d'inscription `create-event-checkout` est déjà OK pour le payant ; pas de modif côté SQL.
-
----
+- Nouvelle colonne `events.registrations_closed boolean default false`.
+- `create-event-checkout` (edge function) refuse l'inscription si :
+  - `registrations_closed = true`, ou
+  - capacité atteinte (déjà géré).
+- Le `RegistrationBlock` affiche le bloc « Inscriptions closes » quand l'un ou l'autre est vrai.
 
 ## Détails techniques
 
-```text
-DB trigger
-──────────
-CREATE FUNCTION link_registration_to_profile() RETURNS TRIGGER
-  → si NEW.user_id IS NULL AND NEW.guest_email IS NOT NULL :
-      SELECT id FROM profiles WHERE lower(email)=lower(NEW.guest_email)
-      → si trouvé : NEW.user_id = found.id; NEW.is_guest = false;
-                    NEW.guest_email/_prenom/_nom = NULL
-  RETURN NEW
-TRIGGER BEFORE INSERT ON event_registrations FOR EACH ROW
-
-Backfill UPDATE (one-shot dans la migration) :
-  UPDATE event_registrations er
-  SET user_id = p.id, is_guest=false, guest_email=null, guest_prenom=null, guest_nom=null
-  FROM profiles p
-  WHERE er.user_id IS NULL AND lower(er.guest_email)=lower(p.email);
+**Migration SQL**
+```sql
+ALTER TABLE public.events
+  ADD COLUMN registrations_closed boolean NOT NULL DEFAULT false;
 ```
 
-Fichiers modifiés :
-- `supabase/migrations/<new>.sql` (trigger + backfill)
-- `src/lib/text.ts` (nouveau — `stripHtml`)
-- `src/pages/membre/MembreEvenements.tsx` (filtres + suppression `otherPast`, stripHtml)
-- `src/pages/admin/AdminEvenements.tsx` (stripHtml — bonus visuel)
-- `src/components/event/RegistrationBlock.tsx` (redirection success)
-- `src/pages/EvenementSuccess.tsx` (polling registration via session_id)
-- Secrets : `STRIPE_SECRET_KEY` (à renommer/ré-ajouter), `STRIPE_WEBHOOK_SECRET` (à fournir après création du endpoint dans Stripe).
+**Fichiers modifiés**
+- `supabase/migrations/<new>.sql` — ajout colonne `registrations_closed`.
+- `supabase/functions/create-event-checkout/index.ts` — refus si `registrations_closed`.
+- `src/components/event/ParticipantsList.tsx` — règle d'accès basée sur `user` (membre connecté).
+- `src/pages/EvenementDetail.tsx` — passer `canSeeNames = !!user` à `ParticipantsList` ; tenir compte de `registrations_closed`.
+- `src/components/event/RegistrationBlock.tsx` — nouveau cas « Inscriptions closes ».
+- `src/pages/Evenements.tsx` + `src/components/home/EventsTeaserSection.tsx` — afficher `N inscrits / capacité` sur chaque carte (requête count groupée).
+- `src/pages/admin/AdminEvenements.tsx` :
+  - badges `N inscrits`, `Complet`, `Inscriptions fermées` sur chaque carte/ligne ;
+  - bouton « Inscrits » → drawer avec la liste détaillée + toggle « Clore/Rouvrir » ;
+  - case à cocher « Inscriptions fermées » dans le formulaire.
+- Nouveau composant `src/components/admin/AdminEventRegistrationsDrawer.tsx`.
 
----
-
-## Questions avant de lancer
-
-1. Pour Stripe : pouvez-vous confirmer le nom exact du secret que vous avez ajouté ? Si c'est "Stripe", je le re-créerai en `STRIPE_SECRET_KEY` (ou vous le faites depuis l'UI Secrets).
-2. Souhaitez-vous aussi un **email de confirmation transactionnel** (gratuit/payant) ? Si oui, on branche Resend dans une étape suivante (besoin d'une clé API Resend).
+**Notes**
+- Pas de changement du modèle d'auth ni des politiques RLS sur `event_registrations` (l'admin lit déjà via `has_role`).
+- Aucune modification du flow Stripe.
