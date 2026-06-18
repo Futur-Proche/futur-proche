@@ -179,12 +179,12 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
                       {isPaid && (
                         <span
                           className={`text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                            r.stripe_payment_status === "paid"
+                            r.paid_at
                               ? "bg-emerald-400/15 text-emerald-400"
                               : "bg-yellow-400/15 text-yellow-400"
                           }`}
                         >
-                          {r.stripe_payment_status === "paid" ? "Payé" : "En attente"}
+                          {r.paid_at ? "Payé" : "En attente"}
                         </span>
                       )}
                     </div>
