@@ -18,6 +18,8 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
   const [email, setEmail] = useState("");
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
+  const [poste, setPoste] = useState("");
+  const [entreprise, setEntreprise] = useState("");
   const [emailCheckLoading, setEmailCheckLoading] = useState(false);
   const [emailIsMember, setEmailIsMember] = useState<boolean | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -53,6 +55,8 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
         body.guest_email = email;
         body.guest_prenom = prenom;
         body.guest_nom = nom;
+        body.guest_poste = poste;
+        body.guest_entreprise = entreprise;
       }
       const { data, error } = await supabase.functions.invoke("create-event-checkout", { body });
       if (error) throw error;
@@ -156,10 +160,16 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
               className="rounded-lg px-3 py-2 text-sm text-white outline-none"
               style={{ background: "hsl(228 40% 10%)", border: "1px solid hsl(228 30% 25%)" }} />
           </div>
+          <input placeholder="Poste" value={poste} onChange={(e) => setPoste(e.target.value)}
+            className="w-full rounded-lg px-3 py-2 text-sm text-white outline-none"
+            style={{ background: "hsl(228 40% 10%)", border: "1px solid hsl(228 30% 25%)" }} />
+          <input placeholder="Entreprise" value={entreprise} onChange={(e) => setEntreprise(e.target.value)}
+            className="w-full rounded-lg px-3 py-2 text-sm text-white outline-none"
+            style={{ background: "hsl(228 40% 10%)", border: "1px solid hsl(228 30% 25%)" }} />
         </div>
         <button
           onClick={handleRegister}
-          disabled={submitting || !email || !prenom || !nom}
+          disabled={submitting || !email || !prenom || !nom || !poste || !entreprise}
           className="w-full px-5 py-3 rounded-lg font-grotesk font-semibold text-sm bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}

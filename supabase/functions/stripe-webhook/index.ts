@@ -45,6 +45,8 @@ Deno.serve(async (req) => {
       row.guest_email = meta.guest_email || session.customer_email;
       row.guest_nom = meta.guest_nom || null;
       row.guest_prenom = meta.guest_prenom || null;
+      row.guest_poste = meta.guest_poste || null;
+      row.guest_entreprise = meta.guest_entreprise || null;
     } else {
       row.user_id = meta.user_id;
     }

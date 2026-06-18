@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { X, Lock, Unlock, Users as UsersIcon } from "lucide-react";
+import { X, Lock, Unlock, Users as UsersIcon, Mail } from "lucide-react";
 
 interface Registration {
   id: string;
@@ -11,6 +11,8 @@ interface Registration {
   guest_email: string | null;
   guest_prenom: string | null;
   guest_nom: string | null;
+  guest_poste: string | null;
+  guest_entreprise: string | null;
   stripe_session_id: string | null;
   paid_at: string | null;
   created_at: string;
@@ -46,7 +48,7 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("event_registrations")
-        .select("id, user_id, is_guest, statut, guest_email, guest_prenom, guest_nom, stripe_session_id, paid_at, created_at")
+        .select("id, user_id, is_guest, statut, guest_email, guest_prenom, guest_nom, guest_poste, guest_entreprise, stripe_session_id, paid_at, created_at")
         .eq("event_id", event.id)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -70,6 +72,14 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   const active = (regs ?? []).filter((r) => r.statut !== "cancelled");
   const isPaid = Number(event.prix ?? 0) > 0;
+
+  const allEmails = active
+    .map((r) => (r.user_id ? profileMap.get(r.user_id)?.email : r.guest_email))
+    .filter((e): e is string => !!e);
+
+  const mailtoAll = allEmails.length
+    ? `mailto:?bcc=${encodeURIComponent(allEmails.join(","))}&subject=${encodeURIComponent(event.titre)}`
+    : undefined;
 
   const toggleClosed = useMutation({
     mutationFn: async (closed: boolean) => {
@@ -115,22 +125,38 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
         </div>
 
         <div className="p-5">
-          <button
-            onClick={() => toggleClosed.mutate(!event.registrations_closed)}
-            disabled={toggleClosed.isPending}
-            className="w-full mb-5 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-grotesk text-sm transition-colors disabled:opacity-50"
-            style={
-              event.registrations_closed
-                ? { background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }
-                : { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)", color: "white" }
-            }
-          >
-            {event.registrations_closed ? (
-              <><Unlock className="w-4 h-4" /> Rouvrir les inscriptions</>
-            ) : (
-              <><Lock className="w-4 h-4" /> Clore les inscriptions</>
-            )}
-          </button>
+          <div className="grid grid-cols-2 gap-2 mb-5">
+            <button
+              onClick={() => toggleClosed.mutate(!event.registrations_closed)}
+              disabled={toggleClosed.isPending}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-grotesk text-sm transition-colors disabled:opacity-50"
+              style={
+                event.registrations_closed
+                  ? { background: "hsl(186 79% 47%)", color: "hsl(228 56% 10%)" }
+                  : { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)", color: "white" }
+              }
+            >
+              {event.registrations_closed ? (
+                <><Unlock className="w-4 h-4" /> Rouvrir</>
+              ) : (
+                <><Lock className="w-4 h-4" /> Clore les inscriptions</>
+              )}
+            </button>
+            <a
+              href={mailtoAll ?? "#"}
+              onClick={(e) => { if (!mailtoAll) e.preventDefault(); }}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-grotesk text-sm transition-colors"
+              style={{
+                background: "hsl(228 40% 14%)",
+                border: "1px solid hsl(228 30% 22%)",
+                color: mailtoAll ? "white" : "hsl(0 0% 100% / 0.3)",
+                pointerEvents: mailtoAll ? "auto" : "none",
+              }}
+              title="Email à tous les inscrits (en copie cachée)"
+            >
+              <Mail className="w-4 h-4" /> Email à tous ({allEmails.length})
+            </a>
+          </div>
 
           {isLoading ? (
             <p className="text-white/40 text-sm">Chargement…</p>
@@ -142,8 +168,11 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
                 const profile = r.user_id ? profileMap.get(r.user_id) : undefined;
                 const prenom = profile?.prenom ?? r.guest_prenom ?? "";
                 const nom = profile?.nom ?? r.guest_nom ?? "";
-                const email = profile?.email ?? r.guest_email ?? "—";
+                const email = profile?.email ?? r.guest_email ?? null;
+                const poste = profile?.poste ?? r.guest_poste ?? null;
+                const entreprise = profile?.entreprise ?? r.guest_entreprise ?? null;
                 const isMember = !!profile;
+                const mailto = email ? `mailto:${email}?subject=${encodeURIComponent(event.titre)}` : null;
                 return (
                   <div
                     key={r.id}
@@ -161,10 +190,10 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
                       <p className="text-sm font-grotesk font-semibold text-white truncate">
                         {prenom} {nom}
                       </p>
-                      <p className="text-xs text-white/50 truncate">{email}</p>
-                      {(profile?.poste || profile?.entreprise) && (
+                      <p className="text-xs text-white/50 truncate">{email ?? "—"}</p>
+                      {(poste || entreprise) && (
                         <p className="text-[11px] text-primary/70 truncate">
-                          {profile.poste}{profile.poste && profile.entreprise ? " · " : ""}{profile.entreprise}
+                          {poste}{poste && entreprise ? " · " : ""}{entreprise}
                         </p>
                       )}
                     </div>
@@ -186,6 +215,15 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
                         >
                           {r.paid_at ? "Payé" : "En attente"}
                         </span>
+                      )}
+                      {mailto && (
+                        <a
+                          href={mailto}
+                          className="mt-1 inline-flex items-center gap-1 text-[10px] font-mono text-white/50 hover:text-primary"
+                          title={`Email ${email}`}
+                        >
+                          <Mail className="w-3 h-3" /> Contacter
+                        </a>
                       )}
                     </div>
                   </div>
