@@ -104,16 +104,24 @@ const MembreProfil = () => {
             <input className={inputClass} style={inputStyle} value={form.ville} onChange={(e) => setForm({ ...form, ville: e.target.value })} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Code postal</label>
-            <input className={inputClass} style={inputStyle} value={form.code_postal} maxLength={5} placeholder="75001" onChange={(e) => setForm({ ...form, code_postal: e.target.value })} />
-            <p className="text-[10px] text-white/30 mt-1">Permet de vous localiser sur la carte des Futuristes.</p>
+        <div className="rounded-lg p-4" style={{ background: "hsl(228 40% 10%)", border: "1px solid hsl(228 30% 20%)" }}>
+          <p className="text-[10px] text-white/40 font-mono uppercase tracking-wider mb-3">Coordonnées privées</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Email</label>
+              <input type="email" className={inputClass} style={inputStyle} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            </div>
+            <div>
+              <label className="block text-xs text-white/40 font-mono uppercase mb-1">Téléphone</label>
+              <input className={inputClass} style={inputStyle} value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs text-white/40 font-mono uppercase mb-1">Téléphone</label>
-            <input className={inputClass} style={inputStyle} value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
-          </div>
+          <p className="text-[10px] text-white/40 mt-3 italic">Votre email et votre téléphone ne sont jamais affichés aux autres Futuristes.</p>
+        </div>
+        <div>
+          <label className="block text-xs text-white/40 font-mono uppercase mb-1">Code postal</label>
+          <input className={inputClass} style={inputStyle} value={form.code_postal} maxLength={5} placeholder="75001" onChange={(e) => setForm({ ...form, code_postal: e.target.value })} />
+          <p className="text-[10px] text-white/30 mt-1">Permet de vous localiser sur la carte des Futuristes.</p>
         </div>
         <div>
           <label className="block text-xs text-white/40 font-mono uppercase mb-1">Bio</label>
