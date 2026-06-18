@@ -36,20 +36,32 @@ const EvenementDetail = () => {
     },
   });
 
-  const { data: registrations } = useQuery({
+  const { data: regCount } = useQuery({
     queryKey: ["event-regs-count", event?.id],
     enabled: !!event?.id,
     queryFn: async () => {
-      const { data } = await supabase
-        .from("event_registrations")
-        .select("id, user_id, statut")
-        .eq("event_id", event!.id)
-        .neq("statut", "cancelled");
-      return data ?? [];
+      const { data } = await supabase.rpc("get_event_registrations_count", { _event_id: event!.id });
+      return (data as number | null) ?? 0;
     },
   });
 
-  const isUserRegistered = !!(user && registrations?.some((r) => r.user_id === user.id));
+  const { data: myReg } = useQuery({
+    queryKey: ["event-my-reg", event?.id, user?.id],
+    enabled: !!event?.id && !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("event_registrations")
+        .select("id")
+        .eq("event_id", event!.id)
+        .eq("user_id", user!.id)
+        .neq("statut", "cancelled")
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const isUserRegistered = !!myReg;
+  const registrationsCount = regCount ?? 0;
 
   if (isLoading) {
     return (
@@ -248,9 +260,9 @@ const EvenementDetail = () => {
 
                 <div>
                   <h2 className="text-xs font-mono uppercase tracking-wider text-primary mb-4">
-                    Qui {isPast ? "était là" : "sera là"} ? ({registrations?.length ?? 0})
+                    Qui {isPast ? "était là" : "sera là"} ? ({registrationsCount})
                   </h2>
-                  <ParticipantsList eventId={event.id} visible={isUserRegistered} />
+                  <ParticipantsList eventId={event.id} canSeeNames={!!user} count={registrationsCount} />
                 </div>
               </div>
 
@@ -268,7 +280,7 @@ const EvenementDetail = () => {
                   <RegistrationBlock
                     event={event}
                     isUserRegistered={isUserRegistered}
-                    registrationsCount={registrations?.length ?? 0}
+                    registrationsCount={registrationsCount}
                   />
                 )}
               </aside>
