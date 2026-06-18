@@ -11,7 +11,8 @@ interface Registration {
   guest_email: string | null;
   guest_prenom: string | null;
   guest_nom: string | null;
-  stripe_payment_status: string | null;
+  stripe_session_id: string | null;
+  paid_at: string | null;
   created_at: string;
 }
 
