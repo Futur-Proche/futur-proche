@@ -25,6 +25,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
   const price = Number(event.prix ?? 0);
   const isFree = !price || price <= 0;
   const capacityReached = event.capacite && registrationsCount >= event.capacite;
+  const registrationsClosed = !!event.registrations_closed;
 
   const checkEmail = async () => {
     if (!email) return;
@@ -91,13 +92,22 @@ export const RegistrationBlock = ({ event, isUserRegistered, registrationsCount 
     );
   }
 
-  // Capacity reached
-  if (capacityReached) {
+  // Registrations closed or capacity reached
+  if (registrationsClosed || capacityReached) {
     return (
       <div className="rounded-2xl p-6" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-        <p className="font-mono text-[11px] uppercase tracking-wider text-white/40 mb-2">Complet</p>
-        <h3 className="text-lg font-grotesk font-bold text-white mb-1">Capacité atteinte</h3>
-        <p className="text-white/60 text-sm">Cet événement affiche complet.</p>
+        <p className="font-mono text-[11px] uppercase tracking-wider text-white/40 mb-2">
+          {registrationsClosed ? "Inscriptions fermées" : "Complet"}
+        </p>
+        <h3 className="text-lg font-grotesk font-bold text-white mb-1">
+          {registrationsClosed ? "Les inscriptions sont closes" : "Capacité atteinte"}
+        </h3>
+        <p className="text-white/60 text-sm">
+          {registrationsClosed
+            ? "L'organisateur a fermé les inscriptions pour cet événement."
+            : "Cet événement affiche complet."}
+        </p>
+        <p className="text-white/40 text-xs mt-3 font-mono">{registrationsCount} inscrit{registrationsCount > 1 ? "s" : ""}</p>
       </div>
     );
   }

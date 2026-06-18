@@ -148,6 +148,7 @@ export type Database = {
           lieu: string | null
           prix: number | null
           recap: string | null
+          registrations_closed: boolean
           slug: string | null
           speakers: Json | null
           statut: Database["public"]["Enums"]["event_status"]
@@ -169,6 +170,7 @@ export type Database = {
           lieu?: string | null
           prix?: number | null
           recap?: string | null
+          registrations_closed?: boolean
           slug?: string | null
           speakers?: Json | null
           statut?: Database["public"]["Enums"]["event_status"]
@@ -190,6 +192,7 @@ export type Database = {
           lieu?: string | null
           prix?: number | null
           recap?: string | null
+          registrations_closed?: boolean
           slug?: string | null
           speakers?: Json | null
           statut?: Database["public"]["Enums"]["event_status"]
@@ -333,6 +336,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_event_participants: {
+        Args: { _event_id: string }
+        Returns: {
+          entreprise: string
+          kind: string
+          linkedin: string
+          nom: string
+          photo_url: string
+          poste: string
+          prenom: string
+          user_id: string
+        }[]
+      }
+      get_event_registrations_count: {
+        Args: { _event_id: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

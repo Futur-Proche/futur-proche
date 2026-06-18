@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { EventsPhotoCarousel } from "@/components/shared/EventsPhotoCarousel";
 import { Calendar, MapPin, Users, ExternalLink, ArrowRight, Search } from "lucide-react";
+import { EventCountBadge } from "@/components/event/EventCountBadge";
 
 interface Speaker {
   prenom: string;
@@ -114,9 +115,7 @@ const Evenements = () => {
                   <span className="flex items-center gap-1"><Calendar size={13} /> {ev.heure?.slice(0, 5)}</span>
                 )}
                 <span className="flex items-center gap-1"><MapPin size={13} /> {ev.lieu ? `${ev.lieu}, ${ev.ville}` : ev.ville}</span>
-                {ev.capacite && !isPast && (
-                  <span className="flex items-center gap-1"><Users size={13} /> {ev.capacite} places</span>
-                )}
+                <EventCountBadge eventId={ev.id} capacite={ev.capacite} className="text-xs" />
               </div>
 
               {speakers.length > 0 && (

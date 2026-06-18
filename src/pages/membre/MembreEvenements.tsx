@@ -247,7 +247,7 @@ const MembreEvenements = () => {
                         </div>
                       );
                     })()}
-                    <ParticipantsList eventId={ev.id} visible={true} />
+                    <ParticipantsList eventId={ev.id} canSeeNames={true} count={0} />
                   </div>
                 )}
               </div>

@@ -1,13 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit2, Trash2, Image, UserPlus, X, Search, LayoutGrid, List } from "lucide-react";
+import { Plus, Edit2, Trash2, Image, UserPlus, X, Search, LayoutGrid, List, Users } from "lucide-react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import EventVisualGenerator from "@/components/admin/EventVisualGenerator";
 import { EventGalleryUploader, type GalleryItem } from "@/components/admin/EventGalleryUploader";
 import { EventBannerUploader } from "@/components/admin/EventBannerUploader";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
+import { AdminEventRegistrationsDrawer } from "@/components/admin/AdminEventRegistrationsDrawer";
+import { EventCountBadge } from "@/components/event/EventCountBadge";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventInsert = Database["public"]["Tables"]["events"]["Insert"];
@@ -40,6 +42,7 @@ const defaultEvent: Omit<EventInsert, "id"> = {
   recap: "",
   gallery: [] as any,
   image_url: null,
+  registrations_closed: false,
 };
 
 const formatLabels: Record<string, string> = {
@@ -57,6 +60,7 @@ const AdminEvenements = () => {
   const [form, setForm] = useState<Omit<EventInsert, "id">>(defaultEvent);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [visualEvent, setVisualEvent] = useState<Event | null>(null);
+  const [registrationsEvent, setRegistrationsEvent] = useState<Event | null>(null);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [showMemberSearch, setShowMemberSearch] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
@@ -195,6 +199,7 @@ const AdminEvenements = () => {
       recap: (e as any).recap ?? "",
       gallery: ((e as any).gallery ?? []) as any,
       image_url: e.image_url ?? null,
+      registrations_closed: (e as any).registrations_closed ?? false,
     });
     // Parse existing speakers from event
     const existingSpeakers = (e.speakers as unknown as Speaker[] | null) ?? [];
@@ -283,7 +288,7 @@ const AdminEvenements = () => {
               </select>
             </div>
           </div>
-          <div>
+          <div className="flex flex-wrap gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -293,6 +298,16 @@ const AdminEvenements = () => {
               />
               <span className="text-sm font-grotesk text-white">Ouvert à tous</span>
               <span className="text-xs text-white/40">(sinon réservé aux membres)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={(form as any).registrations_closed ?? false}
+                onChange={(e) => setForm({ ...form, registrations_closed: e.target.checked } as any)}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-sm font-grotesk text-white">Inscriptions fermées</span>
+              <span className="text-xs text-white/40">(plus aucune inscription possible)</span>
             </label>
           </div>
           <div>
@@ -590,7 +605,14 @@ const AdminEvenements = () => {
                       "bg-white/10 text-white/40"
                     }`}>{ev.statut}</span>
                   </div>
-                  <div className="md:col-span-2 flex justify-end gap-1">
+                  <div className="md:col-span-2 flex justify-end gap-1 items-center">
+                    <EventCountBadge eventId={ev.id} capacite={ev.capacite} className="text-[10px] font-mono text-white/50 mr-1" iconSize={11} />
+                    {(ev as any).registrations_closed && (
+                      <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-yellow-400/15 text-yellow-400">Fermées</span>
+                    )}
+                    <button onClick={() => setRegistrationsEvent(ev)} className="p-1.5 rounded hover:bg-primary/10" title="Inscrits">
+                      <Users className="w-3.5 h-3.5 text-primary/70" />
+                    </button>
                     <button onClick={() => openEdit(ev)} className="p-1.5 rounded hover:bg-white/10" title="Modifier">
                       <Edit2 className="w-3.5 h-3.5 text-white/50" />
                     </button>
@@ -666,7 +688,10 @@ const AdminEvenements = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 p-4">
+                <div className="flex items-center gap-2 p-4 flex-wrap">
+                  <button onClick={() => setRegistrationsEvent(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-primary hover:bg-primary/10 transition-colors" style={{ border: "1px solid hsl(186 79% 47% / 0.3)" }}>
+                    <Users className="w-3 h-3" /> Inscrits
+                  </button>
                   <button onClick={() => openEdit(ev)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                     <Edit2 className="w-3 h-3" /> Modifier
                   </button>
@@ -676,8 +701,13 @@ const AdminEvenements = () => {
                   <button onClick={() => deleteMutation.mutate(ev.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-grotesk text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-colors">
                     <Trash2 className="w-3 h-3" /> Supprimer
                   </button>
-                  {ev.prix && <span className="ml-auto text-xs font-mono text-primary">{Number(ev.prix).toFixed(0)}€</span>}
-                  {ev.capacite && <span className="text-xs font-mono text-white/30">{ev.capacite} places</span>}
+                  <div className="ml-auto flex items-center gap-3">
+                    <EventCountBadge eventId={ev.id} capacite={ev.capacite} className="text-xs font-mono text-white/60" iconSize={12} />
+                    {(ev as any).registrations_closed && (
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-yellow-400/15 text-yellow-400">Fermées</span>
+                    )}
+                    {ev.prix && <span className="text-xs font-mono text-primary">{Number(ev.prix).toFixed(0)}€</span>}
+                  </div>
                 </div>
               </div>
             );
@@ -689,6 +719,12 @@ const AdminEvenements = () => {
         <EventVisualGenerator
           event={visualEvent}
           onClose={() => setVisualEvent(null)}
+        />
+      )}
+      {registrationsEvent && (
+        <AdminEventRegistrationsDrawer
+          event={registrationsEvent}
+          onClose={() => setRegistrationsEvent(null)}
         />
       )}
     </div>
