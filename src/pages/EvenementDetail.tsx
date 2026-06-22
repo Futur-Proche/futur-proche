@@ -8,6 +8,7 @@ import { Calendar, Clock, MapPin, Users, ArrowLeft, Globe } from "lucide-react";
 import { RegistrationBlock } from "@/components/event/RegistrationBlock";
 import { ParticipantsList } from "@/components/event/ParticipantsList";
 import { EventGallery, type GalleryItem } from "@/components/event/EventGallery";
+import { Seo } from "@/components/Seo";
 
 interface Speaker {
   prenom: string;
@@ -96,8 +97,35 @@ const EvenementDetail = () => {
   const dayLabel = eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const isPast = event.statut === "past" || eventDate < new Date(new Date().toDateString());
 
+  const seoTitle = `${event.titre} — futur proche`;
+  const seoDesc =
+    (event.description as string | null)?.slice(0, 155) ??
+    `Rejoignez ${event.titre} avec futur proche, communauté des leaders Marketing & Comm.`;
+  const eventJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.titre,
+    startDate: event.date,
+    eventStatus: isPast ? "https://schema.org/EventScheduled" : "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: event.lieu
+      ? { "@type": "Place", name: event.lieu, address: event.lieu }
+      : undefined,
+    image: event.image_url ?? undefined,
+    description: seoDesc,
+    organizer: { "@type": "Organization", name: "futur proche", url: "https://futurproche.com" },
+  };
+
   return (
     <>
+      <Seo
+        title={seoTitle}
+        description={seoDesc}
+        path={`/evenements/${slug}`}
+        image={event.image_url ?? undefined}
+        type="article"
+        jsonLd={eventJsonLd}
+      />
       <Navbar />
       <main className="section-navy">
         {/* Banner hero (if image) */}
