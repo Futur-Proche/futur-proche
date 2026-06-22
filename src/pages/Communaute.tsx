@@ -16,6 +16,7 @@ import formatEtudesImg from "@/assets/format-etudes.jpg";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Seo } from "@/components/Seo";
 
 /* ───────────── DATA ───────────── */
 
@@ -100,6 +101,7 @@ const Communaute = () => {
 
   return (
     <>
+      <Seo title={"Communauté Marketing / Comm — futur proche"} description={"Comment fonctionne notre communauté de 850+ leaders Marketing & Comm : formats, sujets, événements physiques et entraide entre pairs."} path={"/communaute"} />
       <Navbar />
       <main>
         {/* ── SECTION 1 — Hero ── */}

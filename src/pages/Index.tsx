@@ -13,9 +13,15 @@ import { CTASection } from "@/components/home/CTASection";
 import { EventsTeaserSection } from "@/components/home/EventsTeaserSection";
 import { RessourcesTeaserSection } from "@/components/home/RessourcesTeaserSection";
 import { EventsPhotoCarousel } from "@/components/shared/EventsPhotoCarousel";
+import { Seo } from "@/components/Seo";
 
 const Index = () => (
   <>
+    <Seo
+      title="futur proche — Communauté Marketing / Comm"
+      description="850+ leaders Marketing & Comm en France. Échanges entre pairs, événements, podcast, ressources. Rejoignez la communauté futur proche."
+      path="/"
+    />
     <Navbar />
     <main>
       <HeroSection />

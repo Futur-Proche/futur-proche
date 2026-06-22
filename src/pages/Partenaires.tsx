@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Seo } from "@/components/Seo";
 import {
   MapPin,
   FileText,
@@ -70,6 +71,7 @@ const processSteps = [
 
 const Partenaires = () => (
   <>
+    <Seo title={"Devenir partenaire — futur proche"} description={"Touchez 850+ décideurs Marketing & Comm seniors. Découvrez nos formats de partenariat et notre media kit."} path={"/partenaires"} />
     <Navbar />
     <main>
       {/* ── S1 — Hero ── */}

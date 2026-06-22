@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Seo } from "@/components/Seo";
 
 /* ───────── DATA ───────── */
 
@@ -57,6 +58,7 @@ const convictions = [
 
 const APropos = () => (
   <>
+    <Seo title={"À propos — futur proche"} description={"L'histoire, la mission et les cofondateurs de futur proche, communauté des leaders Marketing & Comm en France."} path={"/a-propos"} />
     <Navbar />
     <main>
       {/* ── S1 — Hero ── */}

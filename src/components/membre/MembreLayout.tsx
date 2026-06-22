@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LayoutDashboard, User, Users, CalendarDays, FileText, LogOut, ChevronLeft, Shield } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 const navItems = [
   { to: "/espace-membre", icon: LayoutDashboard, label: "Accueil", end: true },
@@ -21,6 +22,7 @@ const MembreLayout = () => {
 
   return (
     <div className="min-h-screen flex" style={{ background: "hsl(228 56% 8%)" }}>
+      <Seo title="Espace Futuriste — futur proche" description="Votre espace membre." path="/espace-membre" noindex />
       <aside className="w-64 flex-shrink-0 flex flex-col border-r" style={{ background: "hsl(228 40% 10%)", borderColor: "hsl(228 30% 18%)" }}>
         <div className="p-6 border-b" style={{ borderColor: "hsl(228 30% 18%)" }}>
           <NavLink to="/" className="flex items-center gap-2 text-white/50 hover:text-white text-xs font-mono uppercase tracking-wider">

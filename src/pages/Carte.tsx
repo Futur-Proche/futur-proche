@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { FR_DEPARTEMENTS, deptCodeFromCp } from "@/data/fr-departements";
 import { Lock, MapPin, X, Linkedin } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 const GEO_URL =
   "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
@@ -71,6 +72,7 @@ const Carte = () => {
 
   return (
     <>
+      <Seo title={"Carte des Futuristes — futur proche"} description={"Découvrez la carte des membres de la communauté futur proche partout en France."} path={"/carte"} />
       <Navbar />
       <main>
         <section className="section-navy relative min-h-screen pt-28 pb-20">
