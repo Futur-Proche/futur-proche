@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -73,6 +73,10 @@ const App = () => (
             </Route>
 
             {/* Espace membre */}
+            <Route path="/membre/evenements" element={<Navigate to="/espace-membre/evenements" replace />} />
+            <Route path="/membre/profil" element={<Navigate to="/espace-membre/profil" replace />} />
+            <Route path="/membre/annuaire" element={<Navigate to="/espace-membre/annuaire" replace />} />
+            <Route path="/membre/ressources" element={<Navigate to="/espace-membre/ressources" replace />} />
             <Route path="/espace-membre" element={<ProtectedRoute><MembreLayout /></ProtectedRoute>}>
               <Route index element={<MembreDashboard />} />
               <Route path="profil" element={<MembreProfil />} />

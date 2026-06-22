@@ -24,6 +24,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
   const [emailCheckLoading, setEmailCheckLoading] = useState(false);
   const [emailIsMember, setEmailIsMember] = useState<boolean | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [registrationInfo, setRegistrationInfo] = useState<string | null>(null);
 
   const price = Number(event.prix ?? 0);
   const isFree = !price || price <= 0;
@@ -49,6 +50,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
   };
 
   const handleRegister = async () => {
+    setRegistrationInfo(null);
     setSubmitting(true);
     try {
       const body: any = { event_id: event.id };
@@ -70,7 +72,11 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
         return;
       }
       if (data?.already_registered) {
-        toast({ title: "Vous êtes déjà inscrit·e." });
+        const message = user
+          ? "Vous êtes déjà inscrit·e à cet événement."
+          : "Cette adresse email est déjà inscrite à cet événement. Connectez-vous pour retrouver vos événements.";
+        setRegistrationInfo(message);
+        toast({ title: "Inscription déjà confirmée", description: message });
         return;
       }
       if (data?.error) {
@@ -105,7 +111,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
         </div>
         <h3 className="text-lg font-grotesk font-bold text-white mb-1">Vous êtes inscrit·e</h3>
         <p className="text-white/60 text-sm mb-4">Rendez-vous le {dateLabel}{event.heure ? ` à ${event.heure.slice(0,5)}` : ""}{event.lieu ? ` — ${event.lieu}` : ""}.</p>
-        <Link to="/membre/evenements" className="block text-center w-full px-4 py-2 rounded-lg text-xs font-grotesk text-white/80 hover:text-white" style={{ border: "1px solid hsl(228 30% 25%)" }}>
+        <Link to="/espace-membre/evenements" className="block text-center w-full px-4 py-2 rounded-lg text-xs font-grotesk text-white/80 hover:text-white" style={{ border: "1px solid hsl(228 30% 25%)" }}>
           Voir mes événements →
         </Link>
       </div>
@@ -149,6 +155,11 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           {ctaLabel} →
         </button>
+        {registrationInfo && (
+          <p className="mt-3 rounded-lg px-3 py-2 text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+            {registrationInfo}
+          </p>
+        )}
         {event.capacite && (
           <p className="text-xs text-white/40 mt-3 text-center">
             {Math.max(0, event.capacite - registrationsCount)} places restantes
@@ -165,7 +176,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
         <p className="font-mono text-[11px] uppercase tracking-wider text-primary mb-2">Ouvert à tous</p>
         <p className="text-3xl font-grotesk font-bold text-white mb-4">{priceLabel}</p>
         <div className="space-y-2 mb-4">
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+          <input type="email" placeholder="Email" value={email} onChange={(e) => { setEmail(e.target.value); setRegistrationInfo(null); }}
             className="w-full rounded-lg px-3 py-2 text-sm text-white outline-none"
             style={{ background: "hsl(228 40% 10%)", border: "1px solid hsl(228 30% 25%)" }} />
           <div className="grid grid-cols-2 gap-2">
@@ -191,6 +202,11 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           {ctaLabel} →
         </button>
+        {registrationInfo && (
+          <p className="mt-3 rounded-lg px-3 py-2 text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+            {registrationInfo}
+          </p>
+        )}
       </div>
     );
   }
@@ -219,7 +235,7 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
         </p>
         <div className="flex gap-2">
           <input type="email" placeholder="vous@exemple.com" value={email}
-            onChange={(e) => { setEmail(e.target.value); setEmailIsMember(null); }}
+            onChange={(e) => { setEmail(e.target.value); setEmailIsMember(null); setRegistrationInfo(null); }}
             className="flex-1 rounded-lg px-3 py-2 text-sm text-white outline-none"
             style={{ background: "hsl(228 40% 10%)", border: "1px solid hsl(228 30% 25%)" }} />
           <button
@@ -245,6 +261,11 @@ export const RegistrationBlock = ({ event, isUserRegistered, isRegistrationStatu
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               {ctaLabel} →
             </button>
+            {registrationInfo && (
+              <p className="mt-3 rounded-lg px-3 py-2 text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+                {registrationInfo}
+              </p>
+            )}
           </>
         )}
       </div>
