@@ -77,11 +77,11 @@ const MembreEvenements = () => {
   const selectClass = "px-3 py-2.5 rounded-lg text-sm font-grotesk text-white outline-none";
   const selectStyle = { background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" };
 
-  const EventRow = ({ ev, isPast }: { ev: any; isPast?: boolean }) => (
+  const EventRow = ({ ev, isPast, registered }: { ev: any; isPast?: boolean; registered?: boolean }) => (
     <Link
       to={`/evenements/${ev.slug ?? ev.id}`}
       className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-4 py-3 border-b items-center hover:bg-white/[0.02]"
-      style={{ borderColor: "hsl(228 30% 22%)" }}
+      style={{ borderColor: registered ? "hsl(160 84% 39% / 0.3)" : "hsl(228 30% 22%)", background: registered ? "hsl(160 84% 39% / 0.04)" : undefined }}
     >
       <div className="md:col-span-1 text-center rounded-md py-1 px-2" style={{ background: "hsl(228 56% 10%)" }}>
         <p className="text-[9px] font-mono uppercase text-primary">{new Date(ev.date).toLocaleDateString("fr-FR", { month: "short" })}</p>
@@ -95,8 +95,8 @@ const MembreEvenements = () => {
       <span className="md:col-span-1 text-white/50 text-xs">{ev.capacite ? `${ev.capacite} pl.` : "—"}</span>
       <span className="md:col-span-1 text-white/50 text-xs">{ev.prix ? `${Number(ev.prix).toFixed(0)}€` : "Gratuit"}</span>
       <div className="md:col-span-2 md:text-right text-xs">
-        {!isPast && isRegistered(ev.id) ? (
-          <span className="font-mono text-emerald-400">✓ Inscrit</span>
+        {!isPast && registered ? (
+          <span className="font-mono text-emerald-400">✓ Vous êtes inscrit·e →</span>
         ) : !isPast ? (
           <span className="text-primary font-mono">Voir & s'inscrire →</span>
         ) : (
@@ -106,8 +106,20 @@ const MembreEvenements = () => {
     </Link>
   );
 
-  const EventCard = ({ ev, isPast }: { ev: any; isPast?: boolean }) => (
-    <div className="rounded-xl overflow-hidden" style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
+  const EventCard = ({ ev, isPast, registered }: { ev: any; isPast?: boolean; registered?: boolean }) => (
+    <div
+      className="rounded-xl overflow-hidden relative"
+      style={{
+        background: registered ? "hsl(160 84% 39% / 0.05)" : "hsl(228 40% 14%)",
+        border: registered ? "1px solid hsl(160 84% 39% / 0.4)" : "1px solid hsl(228 30% 22%)",
+        boxShadow: registered ? "0 0 0 1px hsl(160 84% 39% / 0.15)" : undefined,
+      }}
+    >
+      {registered && !isPast && (
+        <div className="absolute top-3 right-3 z-20 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-400/15 text-emerald-400 border border-emerald-400/30">
+          ✓ Inscrit·e
+        </div>
+      )}
       <Link to={`/evenements/${ev.slug ?? ev.id}`} className="block">
         <div className="relative p-6 min-h-[140px]" style={{ background: "linear-gradient(135deg, hsl(228 56% 12%) 0%, hsl(248 60% 20%) 50%, hsl(228 56% 12%) 100%)" }}>
           <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, hsl(186 79% 47% / 0.15) 0%, transparent 60%)" }} />
@@ -135,8 +147,14 @@ const MembreEvenements = () => {
           {ev.prix && <span className="flex items-center gap-1"><CreditCard className="w-3 h-3" />{Number(ev.prix).toFixed(0)}€</span>}
         </div>
         {!isPast && (
-          isRegistered(ev.id) ? (
-            <span className="text-xs font-mono text-emerald-400">✓ Inscrit</span>
+          registered ? (
+            <Link
+              to={`/evenements/${ev.slug ?? ev.id}`}
+              className="px-4 py-1.5 rounded-lg text-xs font-grotesk text-emerald-400 hover:bg-emerald-400/10 transition-colors"
+              style={{ border: "1px solid hsl(160 84% 39% / 0.4)" }}
+            >
+              Vous êtes inscrit·e, voir l'événement →
+            </Link>
           ) : (
             <Link
               to={`/evenements/${ev.slug ?? ev.id}`}
@@ -150,18 +168,18 @@ const MembreEvenements = () => {
     </div>
   );
 
-  const renderSection = (title: string, color: string, items: any[], isPast?: boolean) => {
+  const renderSection = (title: string, color: string, items: any[], isPast?: boolean, registeredSection?: boolean) => {
     if (items.length === 0) return null;
     return (
       <>
         <h2 className={`text-xs font-mono uppercase tracking-wider ${color} mb-4`}>{title}</h2>
         {view === "grid" ? (
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8 ${isPast ? "opacity-60" : ""}`}>
-            {items.map((ev) => <EventCard key={ev.id} ev={ev} isPast={isPast} />)}
+            {items.map((ev) => <EventCard key={ev.id} ev={ev} isPast={isPast} registered={registeredSection} />)}
           </div>
         ) : (
           <div className={`rounded-xl overflow-hidden mb-8 ${isPast ? "opacity-60" : ""}`} style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}>
-            {items.map((ev) => <EventRow key={ev.id} ev={ev} isPast={isPast} />)}
+            {items.map((ev) => <EventRow key={ev.id} ev={ev} isPast={isPast} registered={registeredSection} />)}
           </div>
         )}
       </>
@@ -191,7 +209,7 @@ const MembreEvenements = () => {
         </div>
       </div>
 
-      {renderSection("Mes prochaines participations", "text-emerald-400", myUpcoming)}
+      {renderSection("Mes prochaines participations", "text-emerald-400", myUpcoming, false, true)}
       {renderSection("À venir · Ouverts aux inscriptions", "text-primary", otherUpcoming)}
 
       {myPast.length > 0 && (

@@ -355,6 +355,29 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_event_registrations_admin: {
+        Args: { _event_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          entreprise: string
+          guest_email: string
+          guest_entreprise: string
+          guest_nom: string
+          guest_poste: string
+          guest_prenom: string
+          id: string
+          is_guest: boolean
+          nom: string
+          paid_at: string
+          photo_url: string
+          poste: string
+          prenom: string
+          statut: string
+          stripe_session_id: string
+          user_id: string
+        }[]
+      }
       get_event_registrations_count: {
         Args: { _event_id: string }
         Returns: number
