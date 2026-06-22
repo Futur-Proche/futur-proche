@@ -209,7 +209,7 @@ const MembreEvenements = () => {
         </div>
       </div>
 
-      {renderSection("Mes prochaines participations", "text-emerald-400", myUpcoming)}
+      {renderSection("Mes prochaines participations", "text-emerald-400", myUpcoming, false, true)}
       {renderSection("À venir · Ouverts aux inscriptions", "text-primary", otherUpcoming)}
 
       {myPast.length > 0 && (
