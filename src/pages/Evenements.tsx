@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { EventsPhotoCarousel } from "@/components/shared/EventsPhotoCarousel";
 import { Calendar, MapPin, Users, ExternalLink, ArrowRight, Search } from "lucide-react";
 import { EventCountBadge } from "@/components/event/EventCountBadge";
+import { Seo } from "@/components/Seo";
 
 interface Speaker {
   prenom: string;
@@ -160,6 +161,7 @@ const Evenements = () => {
 
   return (
     <>
+      <Seo title={"Événements Marketing / Comm — futur proche"} description={"After Proche, dîners, workshops : les événements physiques de la communauté futur proche pour les leaders Marketing & Comm."} path={"/evenements"} />
       <Navbar />
       <main>
         {/* HERO */}

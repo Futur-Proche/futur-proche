@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import {
+import { Seo } from "@/components/Seo";
   Mic,
   BarChart3,
   FileText,
@@ -94,6 +95,7 @@ const Ressources = () => {
 
   return (
     <>
+      <Seo title={"Ressources Marketing / Comm — futur proche"} description={"Podcast, études, baromètre rémunération, contenus exclusifs : les ressources de la communauté futur proche."} path={"/ressources"} />
       <Navbar />
       <main>
         {/* ── S1 — Hero ── */}

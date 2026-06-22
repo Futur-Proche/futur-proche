@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 const EvenementSuccess = () => {
   const { slug } = useParams();
@@ -39,6 +40,7 @@ const EvenementSuccess = () => {
 
   return (
     <>
+      <Seo title={"Inscription confirmée — futur proche"} description={"Votre inscription à l'événement futur proche est confirmée."} path={"/evenements/success"} noindex />
       <Navbar />
       <main className="section-navy min-h-screen pt-32 pb-20">
         <div className="container mx-auto px-6 lg:px-12 max-w-xl text-center">

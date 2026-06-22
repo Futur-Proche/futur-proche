@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Seo } from "@/components/Seo";
 
 const Login = () => {
   const { signIn } = useAuth();
@@ -47,6 +48,7 @@ const Login = () => {
 
   return (
     <>
+      <Seo title={"Connexion — futur proche"} description={"Connectez-vous à votre espace Futuriste sur futur proche."} path={"/login"} noindex />
       <Navbar />
       <main>
         <section className="section-navy relative min-h-screen flex items-center justify-center">

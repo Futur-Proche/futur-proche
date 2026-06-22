@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import membresFondateurs from "@/assets/membres-fondateurs.jpg";
 import groupeAfterProche from "@/assets/groupe-after-proche.jpg";
 import { ShieldCheck, Users, Zap, Clock, MessageSquare, TrendingUp } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 const posteOptions = [
   "Dir. Marketing / Com ou assimilé",
@@ -98,6 +99,7 @@ const Candidater = () => {
 
   return (
     <>
+      <Seo title={"Devenir Futuriste — Candidater — futur proche"} description={"Rejoignez futur proche, communauté des leaders Marketing & Comm. Candidatez en 2 minutes et accédez à l'espace de décision entre pairs."} path={"/candidater"} />
       <Navbar />
       <main>
         {/* ── HERO + FORM ── */}

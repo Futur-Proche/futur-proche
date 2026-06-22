@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Seo } from "@/components/Seo";
 
 const ForgotPassword = () => {
   const { toast } = useToast();
@@ -30,6 +31,7 @@ const ForgotPassword = () => {
 
   return (
     <>
+      <Seo title={"Mot de passe oublié — futur proche"} description={"Réinitialisez votre mot de passe Futuriste."} path={"/mot-de-passe-oublie"} noindex />
       <Navbar />
       <main>
         <section className="section-navy relative min-h-screen flex items-center justify-center">
