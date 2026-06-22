@@ -1,14 +1,13 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /espace-membre
+Disallow: /espace-membre/
+Disallow: /membre/
+Disallow: /login
+Disallow: /mot-de-passe-oublie
+Disallow: /reinitialiser-mot-de-passe
+Disallow: /evenements/*/success
+
+Sitemap: https://futurproche.com/sitemap.xml
