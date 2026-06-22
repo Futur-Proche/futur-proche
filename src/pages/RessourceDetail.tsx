@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Lock, ArrowLeft, Clock, ExternalLink, Globe, User } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 const typeLabels: Record<string, string> = {
   etude: "Étude",
@@ -58,8 +59,27 @@ const RessourceDetail = () => {
     ? new Date(resource.published_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
+  const seoDesc =
+    (resource.extrait as string | null)?.slice(0, 155) ??
+    `${resource.titre} — Ressource futur proche pour les leaders Marketing & Comm.`;
+
   return (
     <>
+      <Seo
+        title={`${resource.titre} — futur proche`}
+        description={seoDesc}
+        path={`/ressources/${slug}`}
+        type="article"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: resource.titre,
+          author: resource.auteur ? { "@type": "Person", name: resource.auteur } : undefined,
+          datePublished: resource.published_at ?? undefined,
+          description: seoDesc,
+          publisher: { "@type": "Organization", name: "futur proche" },
+        }}
+      />
       <Navbar />
       <main>
         {/* Hero */}
