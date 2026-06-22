@@ -1,46 +1,61 @@
-## Objectif
-1. Permettre au membre de voir et éditer son email sur `/membre/profil` (le téléphone est déjà éditable).
-2. Garantir que l'admin voit et peut éditer email + téléphone d'un membre depuis `/admin/membres`.
-3. Garantir le strict cloisonnement : email/téléphone d'un membre **jamais** visibles par les autres membres (ni dans l'annuaire, ni dans la liste des participants).
-4. Corriger le bug d'inscription : quand un membre connecté est déjà inscrit, le bouton « Payer / S'inscrire » doit disparaître au profit d'un message « Vous êtes inscrit·e ».
+## 1. Bug admin "0 inscrit" sur la liste des participants
 
-## Diagnostic du bug d'inscription
+**Symptôme** : Le drawer admin affiche `0 / 50 inscrit` et "Aucun inscrit" alors que `event_registrations` contient bien 3 lignes pour `test-2-david-x-dimitri` (1 membre + 2 invités).
 
-`davhuin@gmail.com` est bien enregistré en base avec `user_id = 6820e1c3-…` sur l'événement `test-2-david-x-dimitri`. Pourtant le bouton « Payer » reste visible.
+**Cause** : `AdminEventRegistrationsDrawer.tsx` lit `event_registrations` en SELECT direct depuis le client. Bien que la policy `Admins can view all registrations` existe, la lecture directe est fragile (et silencieusement vide en cas de souci RLS / colonne / type). Le badge `EventCountBadge` à côté, lui, utilise une RPC SECURITY DEFINER et fonctionne — d'où l'incohérence.
 
-Cause probable : la query `event-my-reg` dans `EvenementDetail.tsx` interroge `event_registrations` directement. Les policies RLS autorisent l'utilisateur à voir ses propres lignes, donc la query devrait fonctionner — sauf que `RegistrationBlock` est rendu en parallèle dans l'aside et reçoit `isUserRegistered=false` pendant la phase de chargement (la query est `enabled` mais retourne `undefined` au premier render). Le composant affiche alors la branche « membre connecté → CTA paiement » avant même que `myReg` soit résolu.
+**Correctif** :
+- Créer une RPC SECURITY DEFINER `public.get_event_registrations_admin(_event_id uuid)` qui renvoie toutes les colonnes nécessaires (id, user_id, is_guest, statut, guest_*, stripe_session_id, paid_at, created_at + profile prenom/nom/email/poste/entreprise/photo_url joints) **et vérifie `has_role(auth.uid(), 'admin')`** en interne — sinon `RAISE EXCEPTION`.
+- Dans `AdminEventRegistrationsDrawer.tsx` : remplacer les deux queries (`admin-event-regs` + `admin-event-reg-profiles`) par un seul appel `supabase.rpc('get_event_registrations_admin', { _event_id })`. Le reste du rendu (mailto, badges Membre/Invité, Payé/En attente, Clore les inscriptions) reste inchangé.
 
-Solution : utiliser la RPC dédiée `is_registered_to_event` (déjà en base, security definer) et n'afficher le bloc d'inscription qu'une fois la requête résolue. En complément, ajouter un état de chargement explicite dans `RegistrationBlock`.
+## 2. UI "Je suis inscrit" sur `/membre/evenements`
 
-## Modifications
+**Demandé** : pour un événement à venir auquel le membre est déjà inscrit, le code couleur de la carte change et le bouton "Voir & s'inscrire" devient "Vous êtes inscrit·e, voir l'événement →".
 
-### 1. `src/pages/EvenementDetail.tsx`
-- Remplacer la query `event-my-reg` par un appel à `supabase.rpc('is_registered_to_event', …)`.
-- Exposer `isRegLoading` et passer un placeholder/skeleton dans l'aside tant que la requête n'est pas résolue (évite le flash du bouton Payer).
+**État actuel** : `MembreEvenements.tsx` affiche déjà une section "Mes prochaines participations" mais la carte garde le même fond, et le bouton est remplacé par un simple texte "✓ Inscrit" non cliquable.
 
-### 2. `src/components/event/RegistrationBlock.tsx`
-- Ajouter une garde : si `user` est connecté mais l'état d'inscription est encore inconnu, afficher un skeleton plutôt que le CTA.
-- Améliorer le bloc « Vous y êtes » : afficher le récap (date/lieu/heure) + lien vers « Mes événements ».
+**Correctif dans `src/pages/membre/MembreEvenements.tsx`** :
+- Ajouter une variante visuelle "inscrit" à `EventCard` et `EventRow` :
+  - Bordure et halo `emerald-400/40`, fond `emerald-400/5`, petit chip "✓ Inscrit·e" en haut de la carte.
+- Remplacer le texte plat par un bouton `Link` "Vous êtes inscrit·e, voir l'événement →" stylé emerald (bordure emerald + texte emerald) pointant vers `/evenements/{slug}`.
+- Même traitement pour la variante "list" : pastille emerald + lien "Vous êtes inscrit·e → voir l'événement".
 
-### 3. `src/pages/membre/MembreProfil.tsx`
-- Ajouter un champ **Email** éditable, à côté du téléphone.
-- Validation Zod (email + max 255).
-- Mention discrète : « Votre email et votre téléphone ne sont jamais affichés aux autres Futuristes. »
-- Mise à jour via `profiles.update({ email })` pour l'utilisateur courant (policy "Users update own profile" existante).
+## Détails techniques
 
-### 4. `src/pages/admin/AdminMembres.tsx`
-- Dans le drawer/modal d'édition d'un membre, ajouter les champs Email et Téléphone éditables (policy admin déjà permissive).
-- Afficher l'email et le téléphone dans la fiche détaillée.
+### SQL (migration)
+```sql
+CREATE OR REPLACE FUNCTION public.get_event_registrations_admin(_event_id uuid)
+RETURNS TABLE (
+  id uuid, user_id uuid, is_guest boolean, statut text,
+  guest_email text, guest_prenom text, guest_nom text,
+  guest_poste text, guest_entreprise text,
+  stripe_session_id text, paid_at timestamptz, created_at timestamptz,
+  prenom text, nom text, email text,
+  poste text, entreprise text, photo_url text
+)
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF NOT public.has_role(auth.uid(), 'admin') THEN
+    RAISE EXCEPTION 'Forbidden';
+  END IF;
+  RETURN QUERY
+  SELECT r.id, r.user_id, r.is_guest, r.statut,
+         r.guest_email, r.guest_prenom, r.guest_nom,
+         r.guest_poste, r.guest_entreprise,
+         r.stripe_session_id, r.paid_at, r.created_at,
+         p.prenom, p.nom, p.email,
+         p.poste, p.entreprise, p.photo_url
+  FROM public.event_registrations r
+  LEFT JOIN public.profiles p ON p.id = r.user_id
+  WHERE r.event_id = _event_id
+  ORDER BY r.created_at ASC;
+END; $$;
+```
 
-### 5. Vérification cloisonnement (lecture seule, pas de code à écrire si déjà OK)
-- `get_event_participants` (security definer) **ne renvoie pas** `email`/`telephone` ✅ déjà conforme.
-- `MembreAnnuaire` : vérifier que `select` ne demande pas `email`/`telephone`. Si oui, retirer ces colonnes.
-- `ParticipantsList` : déjà basé sur la RPC sans email ✅.
+### Front
+- `AdminEventRegistrationsDrawer.tsx` : une seule query, mapping direct sur le retour RPC. `active = data.filter(r => r.statut !== 'cancelled')`. `allEmails = active.map(r => r.email ?? r.guest_email)`. Plus besoin de `profileMap`.
+- `MembreEvenements.tsx` : nouveau prop `registered?: boolean` sur `EventCard`/`EventRow`. Styles emerald + nouveau libellé CTA.
 
-### 6. RLS / policies
-Aucune migration nécessaire :
-- La policy `Members can view all profiles` retourne déjà toutes les colonnes ; le cloisonnement est purement front (sélection des colonnes côté client).
-- Pour durcir : créer une vue `public.profiles_public` excluant `email` et `telephone` (`security_invoker=on`) et basculer l'annuaire / liste des membres sur cette vue, tout en gardant la table `profiles` pour le propriétaire et l'admin. *Option recommandée — à confirmer avant d'inclure dans l'implémentation.*
-
-## Points à confirmer
-- Souhaitez-vous la vue `profiles_public` (durcissement RLS, recommandé) ou se contenter de filtrer côté front ?
+## Hors scope
+- Pas de modification de la home, du détail événement, ni de Stripe.
+- Pas de modification des policies existantes.
