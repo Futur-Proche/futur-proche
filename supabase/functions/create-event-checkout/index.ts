@@ -99,6 +99,7 @@ Deno.serve(async (req) => {
         .eq("event_id", event_id)
         .eq("user_id", userId)
         .neq("statut", "cancelled")
+        .limit(1)
         .maybeSingle();
       if (existing) return json({ already_registered: true });
     }
@@ -110,6 +111,7 @@ Deno.serve(async (req) => {
         .eq("event_id", event_id)
         .ilike("guest_email", actorEmail)
         .neq("statut", "cancelled")
+        .limit(1)
         .maybeSingle();
       if (existingGuest) return json({ already_registered: true });
 
@@ -126,6 +128,7 @@ Deno.serve(async (req) => {
           .eq("event_id", event_id)
           .in("user_id", matchingProfileIds)
           .neq("statut", "cancelled")
+          .limit(1)
           .maybeSingle();
         if (existingMember) return json({ already_registered: true });
       }
