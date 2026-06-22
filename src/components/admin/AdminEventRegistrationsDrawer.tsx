@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { X, Lock, Unlock, Users as UsersIcon, Mail } from "lucide-react";
 
-interface Registration {
+interface RegistrationRow {
   id: string;
   user_id: string | null;
   is_guest: boolean;
@@ -16,12 +16,8 @@ interface Registration {
   stripe_session_id: string | null;
   paid_at: string | null;
   created_at: string;
-}
-
-interface Profile {
-  id: string;
-  prenom: string;
-  nom: string;
+  prenom: string | null;
+  nom: string | null;
   email: string | null;
   poste: string | null;
   entreprise: string | null;
@@ -46,35 +42,17 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
   const { data: regs, isLoading } = useQuery({
     queryKey: ["admin-event-regs", event.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("event_registrations")
-        .select("id, user_id, is_guest, statut, guest_email, guest_prenom, guest_nom, guest_poste, guest_entreprise, stripe_session_id, paid_at, created_at")
-        .eq("event_id", event.id)
-        .order("created_at", { ascending: true });
+      const { data, error } = await supabase.rpc("get_event_registrations_admin", { _event_id: event.id });
       if (error) throw error;
-      return (data ?? []) as Registration[];
+      return (data ?? []) as RegistrationRow[];
     },
   });
 
-  const userIds = (regs ?? []).filter((r) => r.user_id).map((r) => r.user_id as string);
-  const { data: profiles } = useQuery({
-    queryKey: ["admin-event-reg-profiles", event.id, userIds.join(",")],
-    enabled: userIds.length > 0,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id, prenom, nom, email, poste, entreprise, photo_url")
-        .in("id", userIds);
-      return (data ?? []) as Profile[];
-    },
-  });
-
-  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   const active = (regs ?? []).filter((r) => r.statut !== "cancelled");
   const isPaid = Number(event.prix ?? 0) > 0;
 
   const allEmails = active
-    .map((r) => (r.user_id ? profileMap.get(r.user_id)?.email : r.guest_email))
+    .map((r) => r.email ?? r.guest_email)
     .filter((e): e is string => !!e);
 
   const mailtoAll = allEmails.length
@@ -165,13 +143,12 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
           ) : (
             <div className="space-y-2">
               {active.map((r) => {
-                const profile = r.user_id ? profileMap.get(r.user_id) : undefined;
-                const prenom = profile?.prenom ?? r.guest_prenom ?? "";
-                const nom = profile?.nom ?? r.guest_nom ?? "";
-                const email = profile?.email ?? r.guest_email ?? null;
-                const poste = profile?.poste ?? r.guest_poste ?? null;
-                const entreprise = profile?.entreprise ?? r.guest_entreprise ?? null;
-                const isMember = !!profile;
+                const prenom = r.prenom ?? r.guest_prenom ?? "";
+                const nom = r.nom ?? r.guest_nom ?? "";
+                const email = r.email ?? r.guest_email ?? null;
+                const poste = r.poste ?? r.guest_poste ?? null;
+                const entreprise = r.entreprise ?? r.guest_entreprise ?? null;
+                const isMember = !!r.user_id;
                 const mailto = email ? `mailto:${email}?subject=${encodeURIComponent(event.titre)}` : null;
                 return (
                   <div
@@ -179,8 +156,8 @@ export const AdminEventRegistrationsDrawer = ({ event, onClose }: Props) => {
                     className="flex items-center gap-3 p-3 rounded-lg"
                     style={{ background: "hsl(228 40% 14%)", border: "1px solid hsl(228 30% 22%)" }}
                   >
-                    {profile?.photo_url ? (
-                      <img src={profile.photo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+                    {r.photo_url ? (
+                      <img src={r.photo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
                     ) : (
                       <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white/60" style={{ background: "hsl(228 40% 18%)" }}>
                         {prenom[0] ?? "?"}{nom[0] ?? "?"}
