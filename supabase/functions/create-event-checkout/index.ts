@@ -94,12 +94,44 @@ Deno.serve(async (req) => {
 
     if (userId) {
       const { data: existing } = await admin
-        .from("event_registrations").select("id").eq("event_id", event_id).eq("user_id", userId).maybeSingle();
+        .from("event_registrations")
+        .select("id")
+        .eq("event_id", event_id)
+        .eq("user_id", userId)
+        .neq("statut", "cancelled")
+        .limit(1)
+        .maybeSingle();
       if (existing) return json({ already_registered: true });
-    } else if (actorEmail) {
-      const { data: existing } = await admin
-        .from("event_registrations").select("id").eq("event_id", event_id).ilike("guest_email", actorEmail).maybeSingle();
-      if (existing) return json({ already_registered: true });
+    }
+
+    if (actorEmail) {
+      const { data: existingGuest } = await admin
+        .from("event_registrations")
+        .select("id")
+        .eq("event_id", event_id)
+        .ilike("guest_email", actorEmail)
+        .neq("statut", "cancelled")
+        .limit(1)
+        .maybeSingle();
+      if (existingGuest) return json({ already_registered: true });
+
+      const { data: matchingProfiles } = await admin
+        .from("profiles")
+        .select("id")
+        .ilike("email", actorEmail);
+
+      const matchingProfileIds = (matchingProfiles ?? []).map((p) => p.id).filter(Boolean);
+      if (matchingProfileIds.length > 0) {
+        const { data: existingMember } = await admin
+          .from("event_registrations")
+          .select("id")
+          .eq("event_id", event_id)
+          .in("user_id", matchingProfileIds)
+          .neq("statut", "cancelled")
+          .limit(1)
+          .maybeSingle();
+        if (existingMember) return json({ already_registered: true });
+      }
     }
 
     const price = Number(ev.prix ?? 0);
