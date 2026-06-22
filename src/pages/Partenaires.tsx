@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import {
 import { Seo } from "@/components/Seo";
+import {
   MapPin,
   FileText,
   CalendarRange,
