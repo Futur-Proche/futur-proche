@@ -33,14 +33,8 @@ const MembreEvenements = () => {
     queryKey: ["my-registrations", user?.id, user?.email],
     enabled: !!user,
     queryFn: async () => {
-      const email = user?.email?.toLowerCase() ?? "";
-      const filter = email
-        ? `user_id.eq.${user!.id},guest_email.ilike.${email}`
-        : `user_id.eq.${user!.id}`;
-      const { data } = await supabase
-        .from("event_registrations")
-        .select("event_id, statut, user_id, guest_email")
-        .or(filter);
+      const { data, error } = await supabase.rpc("get_my_event_registrations");
+      if (error) throw error;
       return data ?? [];
     },
   });
